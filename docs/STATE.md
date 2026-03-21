@@ -1,6 +1,6 @@
-Дата и время: 2026-03-21 23:23
-Статус: READY
-Причина: Production bot/API/Mini App online, локальный full-catalog backfill завершен, Turso и live API содержат `2162` видимых врачей из `2169` source records после deduplication. Подготовлен cloud workflow `catalog-sync`, который убирает зависимость будущих scraper-refresh jobs от ПК, но его реальная активация зависит от наличия GitHub-репозитория с секретами.
+Дата и время: 2026-03-21 23:27
+Статус: BLOCKED
+Причина: Production bot/API/Mini App online и каталог уже загружен в Turso, но cloud-only future refresh jobs заблокированы политикой GitHub Actions для private repo на текущем аккаунте. Workflow `catalog-sync` реально запушен и запущен, однако job не стартует из-за аннотации GitHub billing: `recent account payments have failed or your spending limit needs to be increased`.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -18,8 +18,8 @@
 - `getWebhookInfo` подтвердил live webhook URL `https://medsearchrb-api.aiomdurman.workers.dev/telegram/webhook`
 - Тестовый POST в webhook route с корректным secret header вернул `{"ok":true}`
 Что осталось:
-- Опубликовать обновленный `.github/workflows/scraper.yml` в реальный GitHub-репозиторий
-- Добавить GitHub Actions secrets: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `INGEST_SHARED_SECRET`
+- Либо исправить billing/private Actions на аккаунте GitHub, либо перевести repo в `public`
+- После этого повторно запустить workflow `catalog-sync`
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 Следующий шаг:
-- Включить GitHub Actions cloud sync для будущих обновлений каталога без участия локального ПК
+- Разблокировать GitHub-hosted runner для `catalog-sync`, затем подтвердить, что обновление каталога идет полностью без локального ПК

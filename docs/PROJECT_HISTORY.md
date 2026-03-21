@@ -159,3 +159,9 @@
 **Сделано:** подтверждено завершение локального full backfill без зависшего процесса; live API и Turso теперь содержат `2162` видимых врачей при `2169` source records, что означает нормальный deduplication, а не потерю карточек; workflow `.github/workflows/scraper.yml` переведен из режима artifact-only в реальный cloud pipeline `catalog-sync`: теперь он снимает лимит врачей, ставит Node + Python зависимости и запускает `apps/worker/scripts/backfill-from-batch.ts` для прямой загрузки в Turso без участия ПК  
 **Изменены файлы:** `.github/workflows/scraper.yml`, `apps/worker/scripts/backfill-from-batch.ts`, `docs/PROJECT_HISTORY.md`, `docs/STATE.md`  
 **Следующий шаг:** опубликовать обновленный workflow в реальный GitHub-репозиторий с Actions secrets, чтобы будущие обновления каталога тоже шли полностью без ПК
+
+## 2026-03-21 23:27 — GitHub Repo Published + Billing Blocker Confirmed
+**Роль:** Windows Engineering Assistant  
+**Сделано:** инициализирован git-репозиторий, создан private repo `AI-Nikitka93/medsearchrb`, запушен production state, записаны Actions secrets `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `INGEST_SHARED_SECRET`, вручную запущен workflow `catalog-sync`; реальный run `23388104740` не стартовал job из-за GitHub billing blocker для private repo (`recent account payments have failed or your spending limit needs to be increased`)  
+**Изменены файлы:** `.gitignore`, `README.md`, `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`, `docs/STATE.md`  
+**Следующий шаг:** либо исправить billing для private GitHub Actions, либо перевести репозиторий в `public`, чтобы cloud-only sync работал бесплатно без участия ПК

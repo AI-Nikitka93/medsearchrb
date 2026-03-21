@@ -517,3 +517,28 @@ _Последнее обновление: 2026-03-21 | Роль: Windows Enginee
 - Handoff:
   - Для следующего шага считать production bot runtime уже live и независимым от локального ПК.
   - Если бот снова "не отвечает", сначала проверять `telegram/health`, потом `getWebhookInfo`, и только потом искать проблемы в Mini App или Bot API token.
+
+## [ТЕМА: Cloud-only catalog sync blocker on GitHub Free]
+_Последнее обновление: 2026-03-21 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было полностью убрать зависимость обновления каталога от локального ПК и перевести scrape/backfill на GitHub Actions.
+- Источники:
+  - https://docs.github.com/actions/learn-github-actions/usage-limits-billing-and-administration
+  - https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions
+  - https://developers.cloudflare.com/workers/platform/limits/
+  - https://developers.cloudflare.com/workers/platform/pricing/
+- Подтвержденные факты:
+  - GitHub Docs пишут, что стандартные GitHub-hosted runners бесплатны для public repositories.
+  - Для private repositories GitHub-hosted runners расходуют включенные минуты и упираются в billing/payment status владельца аккаунта.
+  - Реальный запуск workflow `catalog-sync` в репозитории `AI-Nikitka93/medsearchrb` завершился аннотацией:
+    - `The job was not started because recent account payments have failed or your spending limit needs to be increased.`
+  - Cloudflare Workers Free plan имеет `10 ms` CPU time на HTTP request и `10 ms` на Cron Trigger, а также `50` external subrequests на invocation; этого недостаточно для тяжелого full-catalog scraping тысячи карточек.
+- Выводы для реализации:
+  - В текущем аккаунте GitHub cloud-sync не поедет в private repo, пока не исправлен billing status.
+  - Самый прямой бесплатный путь для GitHub-hosted runners — public repository.
+  - Cloudflare Worker/Cron на free плане не является реалистичной заменой для полного scraper/backfill цикла такого объема.
+- Handoff:
+  - Если допустима публикация кода, перевод репозитория в `public` — самый короткий способ получить cloud-only refresh без ПК.
+  - Если repo должен остаться private, нужен другой внешний compute/runtime с бесплатным планом или исправление billing в GitHub.
