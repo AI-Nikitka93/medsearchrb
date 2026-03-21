@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#93ccff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#007bb9",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary-fixed": "#cce5ff",
+                        "on-primary-container": "#fdfcff",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed": "#2d1600",
+                        "tertiary-container": "#ac6200",
+                        "on-primary-fixed-variant": "#004b73",
+                        "surface-container-low": "#f2f4f6",
+                        "background": "#f7f9fb",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary": "#006194",
+                        "outline": "#707881",
+                        "surface-tint": "#006398",
+                        "tertiary": "#894d00",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#001d31",
+                        "surface-variant": "#e0e3e5",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-secondary-container": "#54647a",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdcc0",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface-container": "#eceef0",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc7d2",
+                        "primary-fixed-dim": "#93ccff",
+                        "secondary": "#505f76",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "secondary-container": "#d0e1fb",
+                        "on-tertiary-container": "#fffbff",
+                        "on-background": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#3f4850",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-200 p-8">
+<div class="flex flex-row flex-nowrap items-start gap-12 overflow-x-auto pb-12 no-scrollbar">
+<!-- FRAME 1: HOME SCREEN -->
+<div class="max-w-md w-[400px] shrink-0 min-h-[844px] shadow-2xl bg-[#F7F9FB] rounded-[3rem] overflow-hidden relative border-[8px] border-white">
+<header class="h-16 flex justify-between items-center px-6 pt-4">
+<span class="text-xl font-extrabold text-[#006194] tracking-tight font-headline flex items-center gap-1.5">
+                    MedSearch <span class="text-sm font-bold text-[#006194]/60">BY</span> 🇧🇾
+                </span>
+<div class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#006194]/5 transition-colors">
+<span class="material-symbols-outlined text-[#191C1E]">menu</span>
+</div>
+</header>
+<main class="px-6 pb-10 space-y-8">
+<section class="mt-4">
+<h1 class="text-[2.5rem] leading-[1.1] font-bold tracking-tight text-[#191C1E] mb-2">Найдите врача в Минске</h1>
+<p class="text-[#3F4850] text-sm">Профессиональная медицинская помощь рядом с вами</p>
+</section>
+<div class="relative">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[#3F4850]">search</span>
+</div>
+<input class="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-4 shadow-sm focus:ring-2 focus:ring-[#006194] text-sm text-[#191C1E]" placeholder="Специальность, врач или клиника" type="text"/>
+</div>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+<div class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap">Все</div>
+<div class="bg-white text-[#3F4850] border border-[#BFC7D2]/30 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap">Гинеколог</div>
+<div class="bg-white text-[#3F4850] border border-[#BFC7D2]/30 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap">УЗИ</div>
+<div class="bg-white text-[#3F4850] border border-[#BFC7D2]/30 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap">Дерматолог</div>
+</div>
+<section>
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-lg font-bold text-[#191C1E]">Горячие акции</h2>
+<span class="text-[#006194] text-xs font-bold uppercase tracking-wider">Все акции</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-stretch bg-blue-50/50 rounded-r-2xl overflow-hidden shadow-sm">
+<div class="w-2 border-l-2 border-dashed border-[#0284C7] py-4"></div>
+<div class="p-5 flex-1 bg-blue-50">
+<span class="text-[10px] font-bold text-[#0284C7] uppercase tracking-widest mb-1 block">Кравира</span>
+<p class="text-sm font-bold text-[#191C1E] leading-tight">Скидка 10% на первичное УЗИ</p>
+</div>
+<div class="bg-[#0284C7] px-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-white">local_offer</span>
+</div>
+</div>
+<div class="flex items-stretch bg-blue-50/50 rounded-r-2xl overflow-hidden shadow-sm">
+<div class="w-2 border-l-2 border-dashed border-[#0284C7] py-4"></div>
+<div class="p-5 flex-1 bg-blue-50">
+<span class="text-[10px] font-bold text-[#0284C7] uppercase tracking-widest mb-1 block">Нордин</span>
+<p class="text-sm font-bold text-[#191C1E] leading-tight">Комплексное обследование организма</p>
+</div>
+<div class="bg-[#0284C7] px-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-white">local_offer</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- FRAME 2: DOCTORS LIST -->
+<div class="max-w-md w-[400px] shrink-0 min-h-[844px] shadow-2xl bg-[#F7F9FB] rounded-[3rem] overflow-hidden relative border-[8px] border-white">
+<header class="h-16 flex items-center px-4 gap-4 sticky top-0 bg-[#F7F9FB]/80 backdrop-blur-md z-10">
+<button class="w-10 h-10 flex items-center justify-center rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[#191C1E]">arrow_back</span>
+</button>
+<div class="flex-1 flex items-center gap-1.5">
+<span class="text-sm font-extrabold text-[#006194] tracking-tight font-headline">MedSearch <span class="text-[10px] font-bold text-[#006194]/60">BY</span> 🇧🇾</span>
+<span class="text-lg font-bold text-[#191C1E] ml-2">Найдено 3 врача</span>
+</div>
+</header>
+<main class="px-4 py-2 space-y-4">
+<!-- Doctor Card 1 -->
+<div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex gap-4">
+<div class="relative">
+<img alt="Doctor" class="w-16 h-16 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsRoHM0deI-0Zk_KpYjizi6PqeQ1Tns--jTyIseHzJ0Y2nrsXEdhN74v7qj95QQt83yRGVLhJ9v_u41E_r6uRirtenM1U0RA0Gn3NSMfbvLoEzxmK1ammoUG20jkTmywSwu2qcpfsEGNKtYE_mFUkE12URJjLPmMXp3C9BA3H9tXXRiznGz3_bJtSYSYY3_P2cKhOl5ywEmqXSKTAyVYhYT2DbyAozBR8HBiDqGu1NdcdG6vswO8oc7YIh2r_P2fsF95MxCrouVTw"/>
+<div class="absolute -bottom-2 -right-2 bg-emerald-500 w-4 h-4 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[#191C1E] text-base leading-tight">Иванова Анна Сергеевна</h4>
+<p class="text-xs text-[#3F4850] font-medium mt-1">Гинеколог • Нордин</p>
+</div>
+<div class="text-[#0284C7] bg-blue-50 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                                </div>
+</div>
+<div class="mt-3">
+<div class="flex gap-2">
+<span class="bg-blue-50 text-blue-600 rounded-md px-2 py-1 text-xs font-medium">Сегодня 14:30</span>
+<span class="bg-blue-50 text-blue-600 rounded-md px-2 py-1 text-xs font-medium">Сегодня 16:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Doctor Card 2 -->
+<div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex gap-4">
+<img alt="Doctor" class="w-16 h-16 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ6Y4y8len3-CJAjy3y_-WaMq_lYi5XFali_RIRnQ4ouAhDPikoYVq77O7cBOnluZpyw1mritB5TR8w6G8HQPHj1PVoY7qF1qcVyUqsFqnuiaSlcDCLBWckJgmdSXpET8zrpHamkFnULUQPDiecwIcs9fw25i6a9EP7nuT56ajcG-Xsl6sFI8xgjlOxmMhiDqBbkJVxCkoqiPNBK7KVO-d2aFBnTSIoIpdTGN72YNi88NHEYMxGmwKin3HjGF4kKQ-nniAnedYbos"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[#191C1E] text-base leading-tight">Смирнов Петр Ильич</h4>
+<p class="text-xs text-[#3F4850] font-medium mt-1">УЗИ • МедАрт</p>
+</div>
+<div class="text-[#0284C7] bg-blue-50 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span> 4.7
+                                </div>
+</div>
+<div class="mt-3">
+<div class="flex gap-2">
+<span class="bg-blue-50 text-blue-600 rounded-md px-2 py-1 text-xs font-medium">Завтра 11:15</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Doctor Card 3 -->
+<div class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex gap-4">
+<img alt="Doctor" class="w-16 h-16 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy1R8vXQ98jKLoakV6e7rqL5BrcpWpj4dhXpTDh17nTb3oOY89ZeCh2KfDom0o485g3Qx5XcOUlxZkELwB7Lzueyz37uXfsVDrVUp1CXXYhp9gHSQXd_LWN7Xb6AfuSO8y09w7eDA6Av4B1MoNLM0jU5wXMnRQCWyrTbCVGMJbznWfYaYsnPdzxMHhTdzFDKW29zHQ3i_J8dM4Ae_t1bSq7k4PDDfnkALPXObnRSAf-IpqKqfYLGC6zFpBE0JAE5xzEykUvPjeRvQ"/>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-[#191C1E] text-base leading-tight">Козлова Елена В.</h4>
+<p class="text-xs text-[#3F4850] font-medium mt-1">Дерматолог • Кравира</p>
+</div>
+<div class="text-[#0284C7] bg-blue-50 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span> 5.0
+                                </div>
+</div>
+<div class="mt-3">
+<div class="flex gap-2">
+<span class="bg-blue-50 text-blue-600 rounded-md px-2 py-1 text-xs font-medium">Ср, 12 Апр 09:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- FRAME 3: DOCTOR DETAIL -->
+<div class="max-w-md w-[400px] shrink-0 min-h-[844px] shadow-2xl bg-[#F7F9FB] rounded-[3rem] overflow-hidden relative border-[8px] border-white flex flex-col">
+<header class="h-16 flex items-center px-4 absolute top-0 w-full z-10 justify-between">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="bg-white/20 backdrop-blur-md rounded-full px-3 py-1">
+<span class="text-xs font-extrabold text-white tracking-tight font-headline">MedSearch <span class="text-[8px] font-bold text-white/80">BY</span> 🇧🇾</span>
+</div>
+</header>
+<div class="h-64 relative bg-[#006194]">
+<img alt="Detail" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCA3Zq0Og2Bs2e-dImuKpIyKBd46YAzcehNQU5DvBj79AM6eKg-3ve7u5qGpssiDWBLKkRsycssp6JwdVJJvq2rSTWf6g5Xi8PUzLqMOe3soV-X_hJI4BkPRrmTIqWwsHFs25qOyJumB0BcWK0wmQjxO4pU0SlwEDDfb782L7mHCiaGYbhNE62sDTsaVyFTW1JqSCAne4ajT7i82KwdPMeuW9toQxGqCW-4sDTp4UNzW8SkA1ngZbBtTQbbhnlRoXJcLOpwMS5UaXY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#F7F9FB] via-transparent to-transparent"></div>
+</div>
+<main class="flex-1 px-6 -mt-16 relative z-10 space-y-6">
+<div class="text-center space-y-3">
+<div class="inline-block p-1 bg-white rounded-3xl shadow-lg">
+<img class="w-24 h-24 rounded-[1.25rem] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh-17SD2gazMtkkkxO5IrUaApOftQsH03ZfEZW-acf4ItfobTNHg3wlnWE0l2QJnv3IU2i8u3Rt9thwzIl4GL9GSct8OeG0rk13MfoX9LdE8tWeaG8tgkDc0z3hdxmK1Bueqm-XP8MIvgVAj2htsRoe2F3HncNUq2kIdjsNoE8rdsMFnLc5Uzx4zgsXAt2OHBXHyjtRcqBHqeFzT16LSrVde9wmxIi9SrlBXTnVOV_tndWeqAL2pUrEMFqNWuiYb-FmAHmw9ndgbQ"/>
+</div>
+<div>
+<h1 class="text-2xl font-bold text-[#191C1E]">Козлова Елена В.</h1>
+<p class="text-[#3F4850] font-medium">Дерматолог, высшая категория</p>
+</div>
+<div class="flex justify-center gap-2">
+<div class="text-[#0284C7] bg-blue-50 px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span> 5.0 (205 отзывов)
+                        </div>
+</div>
+</div>
+<section class="space-y-3">
+<h3 class="text-sm font-bold text-[#191C1E] uppercase tracking-wider">Где принимает</h3>
+<div class="bg-white p-4 rounded-2xl flex items-center justify-between shadow-sm">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<h4 class="font-bold text-[#191C1E] text-base">Кравира</h4>
+<p class="text-xs text-[#3F4850]">Минск, пр. Победителей, 45</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</div>
+</section>
+<section class="space-y-4">
+<h3 class="text-sm font-bold text-[#191C1E] uppercase tracking-wider">Выберите время приема</h3>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+<div class="bg-primary text-white px-4 py-2 rounded-xl flex flex-col items-center min-w-[60px]">
+<span class="text-[10px] font-bold opacity-80 uppercase">Ср</span>
+<span class="text-lg font-bold">12</span>
+</div>
+<div class="bg-white text-[#191C1E] border border-[#BFC7D2]/30 px-4 py-2 rounded-xl flex flex-col items-center min-w-[60px]">
+<span class="text-[10px] font-bold text-[#3F4850] uppercase">Чт</span>
+<span class="text-lg font-bold">13</span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<button class="bg-[#0284C7] text-white py-2.5 rounded-lg text-sm font-bold shadow-sm">14:30</button>
+<button class="bg-blue-50 text-blue-600 border border-blue-100 py-2.5 rounded-lg text-sm font-medium">15:00</button>
+</div>
+</section>
+</main>
+<footer class="mt-auto bg-white/90 backdrop-blur-md border-t border-[#BFC7D2]/15 p-6">
+<button class="w-full bg-[#0284C7] text-white py-4 rounded-xl font-bold text-base shadow-lg shadow-[#0284C7]/20">
+                    Записаться на 14:30
+                </button>
+</footer>
+</div>
+<!-- FRAME 4: MENU & PROFILE (NEW) -->
+<div class="max-w-md w-[400px] shrink-0 min-h-[844px] shadow-2xl bg-[#F7F9FB] rounded-[3rem] overflow-hidden relative border-[8px] border-white flex flex-col">
+<header class="h-16 flex items-center justify-end px-6 pt-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#191C1E]/5 transition-colors">
+<span class="material-symbols-outlined text-[#191C1E]">close</span>
+</button>
+</header>
+<main class="px-6 flex-1 flex flex-col">
+<!-- User Info -->
+<div class="flex items-center gap-4 py-6">
+<div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-[#0284C7] font-bold text-xl">
+                        АС
+                    </div>
+<div>
+<h2 class="text-xl font-bold text-[#191C1E]">Алексей Смирнов</h2>
+<p class="text-sm text-[#3F4850]">+375 (29) 111-22-33</p>
+</div>
+</div>
+<!-- Navigation List -->
+<nav class="mt-8 space-y-2">
+<a class="flex items-center gap-4 p-4 hover:bg-white rounded-2xl transition-colors group" href="#">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#3F4850] group-hover:text-[#0284C7] shadow-sm">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<span class="flex-1 font-semibold text-[#191C1E]">Мои записи</span>
+<span class="bg-[#0284C7] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-white rounded-2xl transition-colors group" href="#">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#3F4850] group-hover:text-[#0284C7] shadow-sm">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<span class="flex-1 font-semibold text-[#191C1E]">Сохраненные врачи</span>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-white rounded-2xl transition-colors group" href="#">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#3F4850] group-hover:text-[#0284C7] shadow-sm">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="flex-1 font-semibold text-[#191C1E]">Медицинская карта</span>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-white rounded-2xl transition-colors group" href="#">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#3F4850] group-hover:text-[#0284C7] shadow-sm">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<span class="flex-1 font-semibold text-[#191C1E]">Настройки</span>
+</a>
+</nav>
+<div class="mt-auto pb-10">
+<button class="flex items-center gap-4 p-4 w-full text-red-600 font-bold hover:bg-red-50 rounded-2xl transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<span>Выйти из аккаунта</span>
+</button>
+</div>
+</main>
+</div>
+<!-- FRAME 5: MY APPOINTMENTS (NEW) -->
+<div class="max-w-md w-[400px] shrink-0 min-h-[844px] shadow-2xl bg-[#F7F9FB] rounded-[3rem] overflow-hidden relative border-[8px] border-white flex flex-col">
+<header class="h-16 flex items-center px-4 gap-4 sticky top-0 bg-[#F7F9FB]/80 backdrop-blur-md z-10">
+<button class="w-10 h-10 flex items-center justify-center rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[#191C1E]">arrow_back</span>
+</button>
+<h2 class="text-xl font-bold text-[#191C1E]">Мои записи</h2>
+</header>
+<main class="px-4 flex-1">
+<!-- Tabs -->
+<div class="flex p-1 bg-white rounded-2xl mb-6 shadow-sm">
+<button class="flex-1 py-2.5 bg-[#0284C7] text-white rounded-xl text-sm font-bold shadow-sm">Предстоящие</button>
+<button class="flex-1 py-2.5 text-[#3F4850] rounded-xl text-sm font-medium">Прошедшие</button>
+</div>
+<!-- Appointment Card -->
+<div class="space-y-4">
+<div class="bg-blue-50 border-l-4 border-[#0284C7] p-5 rounded-r-2xl shadow-sm space-y-4">
+<div class="flex items-center gap-2 text-[#0284C7]">
+<span class="material-symbols-outlined text-sm">event</span>
+<span class="text-sm font-bold">Ср, 12 Апр в 14:30</span>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-white flex-shrink-0 overflow-hidden shadow-sm">
+<img alt="Doctor" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh-17SD2gazMtkkkxO5IrUaApOftQsH03ZfEZW-acf4ItfobTNHg3wlnWE0l2QJnv3IU2i8u3Rt9thwzIl4GL9GSct8OeG0rk13MfoX9LdE8tWeaG8tgkDc0z3hdxmK1Bueqm-XP8MIvgVAj2htsRoe2F3HncNUq2kIdjsNoE8rdsMFnLc5Uzx4zgsXAt2OHBXHyjtRcqBHqeFzT16LSrVde9wmxIi9SrlBXTnVOV_tndWeqAL2pUrEMFqNWuiYb-FmAHmw9ndgbQ"/>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-bold text-[#191C1E]">Козлова Елена В.</h4>
+<p class="text-xs text-[#3F4850]">Дерматолог • Кравира</p>
+</div>
+</div>
+<div class="flex gap-3 pt-2">
+<button class="flex-1 py-2.5 bg-white text-[#0284C7] rounded-xl text-xs font-bold border border-[#0284C7]/10 shadow-sm hover:bg-blue-100/50 transition-colors">
+                                Перенести
+                            </button>
+<button class="flex-1 py-2.5 text-red-600 rounded-xl text-xs font-bold hover:bg-red-50 transition-colors">
+                                Отменить
+                            </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

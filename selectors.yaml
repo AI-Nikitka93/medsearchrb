@@ -1,0 +1,19 @@
+medart:
+  doctor_links:
+    primary:
+      - "a[href*='/spetsialisty/']"
+  promotions:
+    primary:
+      - "a[href*='/stocks/']"
+
+ydoc:
+  doctor_cards:
+    primary:
+      - "div.b-doctor-card"
+  doctor_name:
+    primary:
+      - "[itemprop='name']"
+      - "h1"
+  doctor_specialties:
+    primary:
+      - ".b-doctor-intro__spec"

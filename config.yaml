@@ -1,0 +1,26 @@
+app_name: MedsearchRB
+
+runtime:
+  output_dir: "%LOCALAPPDATA%\\MedsearchRB\\scraper"
+  ingest_url: null
+  ingest_token: null
+  max_doctors_per_source: 0
+
+http:
+  timeout_seconds: 25
+  max_attempts: 4
+  min_delay_seconds: 2.2
+  max_delay_seconds: 4.8
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+
+sources:
+  medart:
+    enabled: true
+    robots_reviewed_at: "2026-03-21"
+    notes:
+      - "Публичные страницы специалистов и акций доступны без авторизации."
+  ydoc:
+    enabled: true
+    robots_reviewed_at: "2026-03-21"
+    notes:
+      - "Используем только doctor list/detail страницы и summary review metrics."

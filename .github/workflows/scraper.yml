@@ -1,0 +1,73 @@
+name: catalog-sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 1 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: medsearchrb-catalog-sync
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/worker/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          npm --prefix apps/worker ci
+
+      - name: Run scrapers
+        env:
+          MAX_DOCTORS_PER_SOURCE: "0"
+        run: python -m apps.scrapers.main --sources medart ydoc --output-mode file --log-level INFO
+
+      - name: Backfill Turso from batch
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
+        run: >
+          npm --prefix apps/worker run catalog:backfill --
+          --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
+          --chunk-size 100
+
+      - name: Verify live API total
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          with urllib.request.urlopen("https://medsearchrb-api.aiomdurman.workers.dev/api/v1/doctors?page=1&per_page=1", timeout=60) as response:
+              payload = json.loads(response.read().decode("utf-8"))
+              print(json.dumps({"total": payload["total"]}, ensure_ascii=False))
+          PY
+
+      - name: Upload batch artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-batch
+          path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
+          if-no-files-found: warn

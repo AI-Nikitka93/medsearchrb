@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.env
+.env.txt
+.dev.vars
+node_modules/
+apps/miniapp/node_modules/
+apps/worker/node_modules/
+apps/miniapp/.next/
+apps/miniapp/out/
+apps/miniapp/.netlify/
+apps/worker/.wrangler/
+coverage/
+dist/
+build/
+*.tsbuildinfo
+*.log
