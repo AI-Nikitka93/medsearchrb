@@ -9,7 +9,8 @@
     "check": "tsc --noEmit",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:migrate": "node ./scripts/apply-migrations.mjs"
+    "db:migrate": "node ./scripts/apply-migrations.mjs",
+    "verify:clinics": "tsx ./scripts/verify-clinic-sites.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",

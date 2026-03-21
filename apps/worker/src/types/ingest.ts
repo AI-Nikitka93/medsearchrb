@@ -5,10 +5,37 @@ export const clinicRecordSchema = z.object({
   external_id: z.string().min(1),
   name: z.string().min(1),
   url: z.url(),
+  site_url: z.url().nullable().optional(),
+  booking_url_official: z.url().nullable().optional(),
+  official_directory_url: z.url().nullable().optional(),
+  official_booking_widget_url: z.url().nullable().optional(),
+  source_type: z.string().min(1).optional(),
+  is_official: z.boolean().optional(),
+  source_priority: z.number().int().nonnegative().optional(),
+  verification_status: z.string().min(1).optional(),
+  official_last_verified_at: z.string().nullable().optional(),
+  official_verification_notes: z.string().nullable().optional(),
   address: z.string().nullable().optional(),
   city: z.string().default("Минск"),
   source_url: z.url().nullable().optional(),
   captured_at: z.string().min(1),
+});
+
+export const doctorClinicLinkSchema = z.object({
+  clinic_external_id: z.string().min(1),
+  relation_source_url: z.url().nullable().optional(),
+  booking_url: z.url().nullable().optional(),
+  profile_url: z.url().nullable().optional(),
+  official_booking_url: z.url().nullable().optional(),
+  official_profile_url: z.url().nullable().optional(),
+  aggregator_booking_url: z.url().nullable().optional(),
+  aggregator_profile_url: z.url().nullable().optional(),
+  source_type: z.string().min(1).optional(),
+  verification_status: z.string().min(1).optional(),
+  verified_on_clinic_site: z.boolean().optional(),
+  last_verified_at: z.string().nullable().optional(),
+  confidence_score: z.number().min(0).max(1).optional(),
+  position_title: z.string().nullable().optional(),
 });
 
 export const doctorRecordSchema = z.object({
@@ -16,8 +43,18 @@ export const doctorRecordSchema = z.object({
   external_id: z.string().min(1),
   full_name: z.string().min(1),
   url: z.url(),
+  booking_url: z.url().nullable().optional(),
+  profile_url: z.url().nullable().optional(),
+  official_booking_url: z.url().nullable().optional(),
+  official_profile_url: z.url().nullable().optional(),
+  source_type: z.string().min(1).optional(),
+  verification_status: z.string().min(1).optional(),
+  verified_on_clinic_site: z.boolean().optional(),
+  last_verified_at: z.string().nullable().optional(),
+  confidence_score: z.number().min(0).max(1).optional(),
   specialty_names: z.array(z.string().min(1)).default([]),
   clinic_external_ids: z.array(z.string().min(1)).default([]),
+  clinic_links: z.array(doctorClinicLinkSchema).default([]),
   source_url: z.url().nullable().optional(),
   city: z.string().default("Минск"),
   captured_at: z.string().min(1),
@@ -80,6 +117,7 @@ export const sourceBatchEnvelopeSchema = z.union([
 ]);
 
 export type ClinicRecord = z.infer<typeof clinicRecordSchema>;
+export type DoctorClinicLinkRecord = z.infer<typeof doctorClinicLinkSchema>;
 export type DoctorRecord = z.infer<typeof doctorRecordSchema>;
 export type PromotionRecord = z.infer<typeof promotionRecordSchema>;
 export type ReviewSummaryRecord = z.infer<typeof reviewSummaryRecordSchema>;

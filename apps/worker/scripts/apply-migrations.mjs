@@ -54,6 +54,13 @@ if (!url || !authToken) {
 const client = createClient({ url, authToken });
 await client.execute("PRAGMA foreign_keys = ON");
 
+await client.execute(`
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    file_name TEXT PRIMARY KEY,
+    applied_at TEXT NOT NULL
+  )
+`);
+
 function splitSqlStatements(sqlText) {
   const statements = [];
   let current = "";
@@ -95,7 +102,19 @@ const migrationFiles = fs
   .filter((fileName) => fileName.endsWith(".sql"))
   .sort();
 
+const appliedRows = await client.execute(
+  "SELECT file_name FROM schema_migrations ORDER BY file_name",
+);
+const appliedSet = new Set(
+  appliedRows.rows.map((row) => String(row.file_name)),
+);
+
 for (const fileName of migrationFiles) {
+  if (appliedSet.has(fileName)) {
+    console.log(`Skipped migration: ${fileName}`);
+    continue;
+  }
+
   const fullPath = path.join(migrationsDir, fileName);
   const sqlText = fs.readFileSync(fullPath, "utf8");
   const statements = splitSqlStatements(sqlText);
@@ -105,6 +124,13 @@ for (const fileName of migrationFiles) {
     for (const statement of statements) {
       await tx.execute(statement);
     }
+    await tx.execute({
+      sql: `
+        INSERT INTO schema_migrations (file_name, applied_at)
+        VALUES (?, ?)
+      `,
+      args: [fileName, new Date().toISOString()],
+    });
     await tx.commit();
     console.log(`Applied migration: ${fileName}`);
   } catch (error) {

@@ -3,9 +3,15 @@ from __future__ import annotations
 import json
 import math
 import re
+from html import unescape
 from urllib.parse import urldefrag, urlparse
 
-from apps.scrapers.models import ClinicRecord, DoctorRecord, ReviewSummaryRecord
+from apps.scrapers.models import (
+    ClinicRecord,
+    DoctorClinicLinkRecord,
+    DoctorRecord,
+    ReviewSummaryRecord,
+)
 from apps.scrapers.scrapers.base import BaseScraper
 
 
@@ -17,6 +23,10 @@ class YDocScraper(BaseScraper):
         "https://ydoc.by/minsk/vrach/",
         "https://ydoc.by/minsk/klinika/",
     )
+
+    def __init__(self, client, config) -> None:
+        super().__init__(client, config)
+        self._clinic_cache: dict[str, ClinicRecord] = {}
 
     def collect(self):
         batch = self.empty_batch()
@@ -66,8 +76,15 @@ class YDocScraper(BaseScraper):
                             existing_doctor.clinic_external_ids,
                             doctor.clinic_external_ids,
                         )
+                        existing_doctor.clinic_links = self._merge_clinic_links(
+                            existing_doctor.clinic_links,
+                            doctor.clinic_links,
+                        )
                     else:
+                        self.client.sleep_with_jitter()
+                        doctor, detail_clinics = self._enrich_doctor_from_detail(doctor)
                         doctor_map[doctor.external_id] = doctor
+                        clinics = self._merge_clinics(clinics, detail_clinics)
 
                     existing_review = review_map.get(review.subject_external_id)
                     if existing_review:
@@ -136,8 +153,29 @@ class YDocScraper(BaseScraper):
             external_id=doctor_id,
             full_name=full_name,
             url=doctor_url,
+            booking_url=doctor_url,
+            profile_url=doctor_url,
+            source_type="aggregator",
+            verification_status="aggregator_only",
+            verified_on_clinic_site=False,
+            confidence_score=0.4,
             specialty_names=specialty_names or ["Не указано"],
             clinic_external_ids=clinic_ids,
+            clinic_links=[
+                DoctorClinicLinkRecord(
+                    clinic_external_id=clinic.external_id,
+                    relation_source_url=doctor_url,
+                    booking_url=doctor_url,
+                    profile_url=doctor_url,
+                    aggregator_booking_url=doctor_url,
+                    aggregator_profile_url=doctor_url,
+                    source_type="aggregator",
+                    verification_status="aggregator_only",
+                    verified_on_clinic_site=False,
+                    confidence_score=0.4,
+                )
+                for clinic in clinic_records
+            ],
             source_url=doctor_url,
         )
         review = ReviewSummaryRecord(
@@ -150,6 +188,54 @@ class YDocScraper(BaseScraper):
             source_url=doctor_url,
         )
         return doctor, review, clinic_records
+
+    def _enrich_doctor_from_detail(self, doctor: DoctorRecord) -> tuple[DoctorRecord, list[ClinicRecord]]:
+        response = self.client.get_text(doctor.url, referer=self.absolute_url("/minsk/vrach/"))
+        detail_clinics = self._extract_clinics_from_detail(response.text)
+        clinic_external_ids = self._merge_values(
+            doctor.clinic_external_ids,
+            [clinic.external_id for clinic in detail_clinics],
+        )
+        clinic_links = self._merge_clinic_links(
+            doctor.clinic_links,
+            [
+                DoctorClinicLinkRecord(
+                    clinic_external_id=clinic.external_id,
+                    relation_source_url=response.url,
+                    booking_url=doctor.url,
+                    profile_url=doctor.url,
+                    aggregator_booking_url=doctor.url,
+                    aggregator_profile_url=doctor.url,
+                    source_type="aggregator",
+                    verification_status="aggregator_only",
+                    verified_on_clinic_site=False,
+                    confidence_score=0.45,
+                )
+                for clinic in detail_clinics
+            ],
+        )
+        enriched_doctor = DoctorRecord(
+            source=doctor.source,
+            external_id=doctor.external_id,
+            full_name=doctor.full_name,
+            url=doctor.url,
+            booking_url=doctor.booking_url,
+            profile_url=response.url,
+            official_booking_url=doctor.official_booking_url,
+            official_profile_url=doctor.official_profile_url,
+            source_type=doctor.source_type,
+            verification_status=doctor.verification_status,
+            verified_on_clinic_site=doctor.verified_on_clinic_site,
+            last_verified_at=doctor.last_verified_at,
+            confidence_score=doctor.confidence_score,
+            specialty_names=doctor.specialty_names,
+            clinic_external_ids=clinic_external_ids,
+            clinic_links=clinic_links,
+            source_url=response.url,
+            city=doctor.city,
+            captured_at=doctor.captured_at,
+        )
+        return enriched_doctor, detail_clinics
 
     def _extract_clinics(self, soup, html: str) -> list[ClinicRecord]:
         clinics: dict[str, ClinicRecord] = {}
@@ -238,11 +324,116 @@ class YDocScraper(BaseScraper):
                     source=self.source_name,
                     external_id=f"ydoc-lpu-{lpu_id}",
                     name=clinic_name,
-                    url=self.absolute_url("/minsk/klinika/"),
-                )
+                    url=self.absolute_url(f"/minsk/lpu/{lpu_id}/"),
+                    source_type="aggregator",
+                    is_official=False,
+                    source_priority=100,
+                    )
             )
 
         return clinics
+
+    def _extract_clinics_from_detail(self, html: str) -> list[ClinicRecord]:
+        payloads = self._parse_lpu_address_list(html)
+        clinics: list[ClinicRecord] = []
+        for payload in payloads:
+            clinic = self._build_clinic_from_detail_payload(payload)
+            if clinic:
+                clinics.append(clinic)
+        return clinics
+
+    def _parse_lpu_address_list(self, html: str) -> list[dict]:
+        match = re.search(r':lpu-address-list="(?P<payload>\[.*?\])"', html, re.DOTALL)
+        if not match:
+            return []
+
+        raw_payload = unescape(match.group("payload"))
+        try:
+            data = json.loads(raw_payload)
+        except json.JSONDecodeError:
+            return []
+
+        return data if isinstance(data, list) else []
+
+    def _build_clinic_from_detail_payload(self, payload: dict) -> ClinicRecord | None:
+        lpu = payload.get("lpu", {}) if isinstance(payload.get("lpu"), dict) else {}
+        lpu_id = payload.get("lpu_id") or lpu.get("id") or payload.get("id")
+        if not lpu_id:
+            return None
+
+        clinic_external_id = f"ydoc-lpu-{lpu_id}"
+        cached = self._clinic_cache.get(clinic_external_id)
+        if cached:
+            return cached
+
+        translit = self.normalize_space(lpu.get("translit"))
+        clinic_url = self._build_lpu_url(str(lpu_id), translit)
+        clinic_name = self.normalize_space(lpu.get("name")) or f"YDoc clinic {lpu_id}"
+        address = self.normalize_space(payload.get("address") or lpu.get("address"))
+        clinic = ClinicRecord(
+            source=self.source_name,
+            external_id=clinic_external_id,
+            name=clinic_name,
+            url=clinic_url,
+            address=address or None,
+            source_type="aggregator",
+            is_official=False,
+            source_priority=100,
+            verification_status="unverified",
+            source_url=clinic_url,
+        )
+        enriched = self._enrich_clinic_from_ydoc_page(clinic)
+        self._clinic_cache[clinic_external_id] = enriched
+        return enriched
+
+    def _enrich_clinic_from_ydoc_page(self, clinic: ClinicRecord) -> ClinicRecord:
+        self.client.sleep_with_jitter()
+        try:
+            response = self.client.get_text(clinic.url, referer=clinic.url)
+        except Exception:
+            return clinic
+
+        soup = self.soup(response.text)
+
+        official_site = None
+        meta_url = soup.select_one("meta[itemprop='url'][content]")
+        if meta_url:
+            candidate = self.normalize_space(meta_url.get("content"))
+            if candidate and "ydoc.by" not in candidate:
+                official_site = candidate
+
+        address = clinic.address
+        address_meta = soup.select_one("[itemprop='address']")
+        if address_meta:
+            parsed_address = self.normalize_space(address_meta.get_text(" ", strip=True))
+            if parsed_address:
+                address = parsed_address
+
+        return ClinicRecord(
+            source=clinic.source,
+            external_id=clinic.external_id,
+            name=clinic.name,
+            url=response.url,
+            site_url=official_site,
+            source_type="aggregator",
+            is_official=False,
+            source_priority=100,
+            verification_status="unverified",
+            official_verification_notes="official site linked from ydoc clinic page" if official_site else None,
+            address=address,
+            city=clinic.city,
+            source_url=response.url,
+            captured_at=clinic.captured_at,
+        )
+
+    def _build_lpu_url(self, lpu_id: str, translit: str) -> str:
+        slug = translit.strip("-")
+        if slug:
+            prefix = f"{lpu_id}-"
+            if slug.startswith(prefix):
+                return self.absolute_url(f"/minsk/lpu/{slug}/")
+            return self.absolute_url(f"/minsk/lpu/{lpu_id}-{slug}/")
+        return self.absolute_url(f"/minsk/lpu/{lpu_id}/")
 
     def _extract_card_rating(self, card) -> float | None:
         progress = card.select_one(".b-stars-rate__progress")
@@ -283,3 +474,69 @@ class YDocScraper(BaseScraper):
             seen.add(key)
             merged.append(normalized)
         return merged
+
+    def _merge_clinics(
+        self,
+        current: list[ClinicRecord],
+        incoming: list[ClinicRecord],
+    ) -> list[ClinicRecord]:
+        merged: dict[str, ClinicRecord] = {}
+        for clinic in current + incoming:
+            existing = merged.get(clinic.external_id)
+            if not existing:
+                merged[clinic.external_id] = clinic
+                continue
+            merged[clinic.external_id] = ClinicRecord(
+                source=clinic.source,
+                external_id=clinic.external_id,
+                name=clinic.name or existing.name,
+                url=clinic.url or existing.url,
+                site_url=clinic.site_url or existing.site_url,
+                booking_url_official=clinic.booking_url_official or existing.booking_url_official,
+                official_directory_url=clinic.official_directory_url or existing.official_directory_url,
+                official_booking_widget_url=clinic.official_booking_widget_url or existing.official_booking_widget_url,
+                source_type=clinic.source_type or existing.source_type,
+                is_official=clinic.is_official if clinic.is_official is not None else existing.is_official,
+                source_priority=clinic.source_priority or existing.source_priority,
+                verification_status=clinic.verification_status or existing.verification_status,
+                official_last_verified_at=clinic.official_last_verified_at or existing.official_last_verified_at,
+                official_verification_notes=clinic.official_verification_notes or existing.official_verification_notes,
+                address=clinic.address or existing.address,
+                city=clinic.city or existing.city,
+                source_url=clinic.source_url or existing.source_url,
+                captured_at=clinic.captured_at or existing.captured_at,
+            )
+        return list(merged.values())
+
+    def _merge_clinic_links(
+        self,
+        current: list[DoctorClinicLinkRecord],
+        incoming: list[DoctorClinicLinkRecord],
+    ) -> list[DoctorClinicLinkRecord]:
+        merged: dict[str, DoctorClinicLinkRecord] = {}
+        for link in current + incoming:
+            existing = merged.get(link.clinic_external_id)
+            if not existing:
+                merged[link.clinic_external_id] = link
+                continue
+            merged[link.clinic_external_id] = DoctorClinicLinkRecord(
+                clinic_external_id=link.clinic_external_id,
+                relation_source_url=link.relation_source_url or existing.relation_source_url,
+                booking_url=link.booking_url or existing.booking_url,
+                profile_url=link.profile_url or existing.profile_url,
+                official_booking_url=link.official_booking_url or existing.official_booking_url,
+                official_profile_url=link.official_profile_url or existing.official_profile_url,
+                aggregator_booking_url=link.aggregator_booking_url or existing.aggregator_booking_url,
+                aggregator_profile_url=link.aggregator_profile_url or existing.aggregator_profile_url,
+                source_type=link.source_type or existing.source_type,
+                verification_status=link.verification_status or existing.verification_status,
+                verified_on_clinic_site=(
+                    link.verified_on_clinic_site
+                    if link.verified_on_clinic_site is not None
+                    else existing.verified_on_clinic_site
+                ),
+                last_verified_at=link.last_verified_at or existing.last_verified_at,
+                confidence_score=link.confidence_score or existing.confidence_score,
+                position_title=link.position_title or existing.position_title,
+            )
+        return list(merged.values())

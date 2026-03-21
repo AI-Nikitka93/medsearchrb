@@ -7,6 +7,7 @@ import {
 import type { SqlExecutor } from "../lib/db";
 import type {
   ClinicRecord,
+  DoctorClinicLinkRecord,
   DoctorRecord,
   PromotionRecord,
   ReviewSummaryRecord,
@@ -140,6 +141,31 @@ export class IngestService {
     clinic: ClinicRecord,
     counts: BatchRunCounts,
   ): Promise<string> {
+    const sourceType = this.normalizeSourceType(clinic.source_type);
+    const isOfficial = clinic.is_official ?? this.isOfficialSourceType(sourceType);
+    const siteUrl = clinic.site_url ?? (isOfficial ? clinic.url : null);
+    const bookingUrlOfficial =
+      clinic.booking_url_official ??
+      (sourceType === "official_booking_widget" ? clinic.url : null);
+    const officialDirectoryUrl =
+      clinic.official_directory_url ??
+      (sourceType === "official_directory" ? clinic.url : null);
+    const officialBookingWidgetUrl =
+      clinic.official_booking_widget_url ??
+      (sourceType === "official_booking_widget" ? clinic.url : null);
+    const verificationStatus =
+      clinic.verification_status ??
+      (isOfficial ? "official_source" : "unverified");
+    const sourcePriority =
+      clinic.source_priority ??
+      (sourceType === "official_booking_widget"
+        ? 5
+        : sourceType === "official_directory"
+          ? 10
+          : isOfficial
+            ? 20
+            : 100);
+
     const normalizedName = normalizeText(clinic.name);
     const normalizedAddr = normalizeAddress(clinic.address);
     const checksum = await sha256(
@@ -147,6 +173,8 @@ export class IngestService {
         name: clinic.name,
         address: clinic.address,
         url: clinic.url,
+        source_type: sourceType,
+        verification_status: verificationStatus,
       }),
     );
 
@@ -159,8 +187,15 @@ export class IngestService {
         normalizedName,
         normalizedAddress: normalizedAddr || null,
         address: clinic.address ?? null,
-        siteUrl: clinic.url,
-        hasOnlineBooking: clinic.url ? 1 : 0,
+        siteUrl,
+        bookingUrlOfficial,
+        officialDirectoryUrl,
+        officialBookingWidgetUrl,
+        verificationStatus,
+        officialLastVerifiedAt: clinic.official_last_verified_at ?? null,
+        officialVerificationNotes: clinic.official_verification_notes ?? null,
+        isOfficial: isOfficial ? 1 : 0,
+        hasOnlineBooking: bookingUrlOfficial || officialBookingWidgetUrl || clinic.url ? 1 : 0,
         nowIso: clinic.captured_at,
       });
       await this.repo.upsertClinicSource(db, {
@@ -169,6 +204,9 @@ export class IngestService {
         sourceName: clinic.source,
         externalKey: clinic.external_id,
         sourceUrl: clinic.source_url ?? clinic.url,
+        sourceType,
+        isOfficial: isOfficial ? 1 : 0,
+        sourcePriority,
         checksum,
         lastSeenAt: clinic.captured_at,
       });
@@ -192,8 +230,15 @@ export class IngestService {
         normalizedName,
         normalizedAddress: normalizedAddr || null,
         address: clinic.address ?? null,
-        siteUrl: clinic.url,
-        hasOnlineBooking: clinic.url ? 1 : 0,
+        siteUrl,
+        bookingUrlOfficial,
+        officialDirectoryUrl,
+        officialBookingWidgetUrl,
+        verificationStatus,
+        officialLastVerifiedAt: clinic.official_last_verified_at ?? null,
+        officialVerificationNotes: clinic.official_verification_notes ?? null,
+        isOfficial: isOfficial ? 1 : 0,
+        hasOnlineBooking: bookingUrlOfficial || officialBookingWidgetUrl || clinic.url ? 1 : 0,
         nowIso: clinic.captured_at,
       });
       counts.updated += 1;
@@ -208,8 +253,14 @@ export class IngestService {
         normalizedAddress: normalizedAddr || null,
         city: clinic.city,
         address: clinic.address ?? null,
-        siteUrl: clinic.url,
-        hasOnlineBooking: clinic.url ? 1 : 0,
+        siteUrl,
+        bookingUrlOfficial,
+        officialDirectoryUrl,
+        officialBookingWidgetUrl,
+        verificationStatus,
+        officialLastVerifiedAt: clinic.official_last_verified_at ?? null,
+        officialVerificationNotes: clinic.official_verification_notes ?? null,
+        hasOnlineBooking: bookingUrlOfficial || officialBookingWidgetUrl || clinic.url ? 1 : 0,
         suppressionKey: `clinic:${slug}`,
         nowIso: clinic.captured_at,
       });
@@ -222,6 +273,9 @@ export class IngestService {
       sourceName: clinic.source,
       externalKey: clinic.external_id,
       sourceUrl: clinic.source_url ?? clinic.url,
+      sourceType,
+      isOfficial: isOfficial ? 1 : 0,
+      sourcePriority,
       checksum,
       lastSeenAt: clinic.captured_at,
     });
@@ -235,6 +289,23 @@ export class IngestService {
     clinicMap: Map<string, string>,
     counts: BatchRunCounts,
   ): Promise<string> {
+    const sourceType = this.normalizeSourceType(doctor.source_type);
+    const verifiedOnClinicSite =
+      (
+        doctor.verified_on_clinic_site ??
+        Boolean(doctor.official_profile_url || doctor.official_booking_url)
+      ) || this.isOfficialSourceType(sourceType);
+    const verificationStatus =
+      doctor.verification_status ??
+      (verifiedOnClinicSite ? "official_verified" : "aggregator_only");
+    const confidenceScore =
+      doctor.confidence_score ??
+      (verifiedOnClinicSite ? 0.95 : 0.35);
+    const preferredBookingUrl =
+      doctor.official_booking_url ?? doctor.booking_url ?? doctor.url;
+    const preferredProfileUrl =
+      doctor.official_profile_url ?? doctor.profile_url ?? doctor.source_url ?? doctor.url;
+
     const normalizedName = normalizeText(doctor.full_name);
     const checksum = await sha256(
       JSON.stringify({
@@ -242,6 +313,8 @@ export class IngestService {
         specialties: doctor.specialty_names,
         clinics: doctor.clinic_external_ids,
         url: doctor.url,
+        source_type: sourceType,
+        verification_status: verificationStatus,
       }),
     );
 
@@ -265,7 +338,14 @@ export class IngestService {
         sourceName: doctor.source,
         externalKey: doctor.external_id,
         sourceUrl: doctor.source_url ?? doctor.url,
-        bookingUrl: doctor.url,
+        bookingUrl: preferredBookingUrl,
+        profileUrl: preferredProfileUrl,
+        officialProfileUrl: doctor.official_profile_url ?? null,
+        sourceType,
+        verificationStatus,
+        verifiedOnClinicSite: verifiedOnClinicSite ? 1 : 0,
+        lastVerifiedAt: doctor.last_verified_at ?? (verifiedOnClinicSite ? doctor.captured_at : null),
+        confidenceScore,
         checksum,
         lastSeenAt: doctor.captured_at,
       });
@@ -322,7 +402,14 @@ export class IngestService {
         sourceName: doctor.source,
         externalKey: doctor.external_id,
         sourceUrl: doctor.source_url ?? doctor.url,
-        bookingUrl: doctor.url,
+        bookingUrl: preferredBookingUrl,
+        profileUrl: preferredProfileUrl,
+        officialProfileUrl: doctor.official_profile_url ?? null,
+        sourceType,
+        verificationStatus,
+        verifiedOnClinicSite: verifiedOnClinicSite ? 1 : 0,
+        lastVerifiedAt: doctor.last_verified_at ?? (verifiedOnClinicSite ? doctor.captured_at : null),
+        confidenceScore,
         checksum,
         lastSeenAt: doctor.captured_at,
       });
@@ -338,20 +425,35 @@ export class IngestService {
       });
     }
 
-    for (const clinicExternalId of doctor.clinic_external_ids) {
-      const clinicId = clinicMap.get(clinicExternalId);
+    const clinicLinks = this.buildClinicLinks(doctor);
+    for (const clinicLink of clinicLinks) {
+      const clinicId = clinicMap.get(clinicLink.clinic_external_id);
       if (!clinicId) {
         continue;
       }
 
-      const relationKey = await sha256(`${doctorId}|${clinicId}|${doctor.url}`);
+      const relationMeta = this.buildRelationMeta(doctor, clinicLink);
+      const relationKey = await sha256(
+        `${doctorId}|${clinicId}|${relationMeta.relationSourceUrl ?? relationMeta.profileUrl ?? relationMeta.bookingUrl ?? doctor.url}`,
+      );
       await this.repo.upsertDoctorClinic(db, {
         id: crypto.randomUUID(),
         relationKey,
         doctorId,
         clinicId,
-        bookingUrl: doctor.url,
-        profileUrl: doctor.source_url ?? doctor.url,
+        bookingUrl: relationMeta.bookingUrl,
+        profileUrl: relationMeta.profileUrl,
+        positionTitle: relationMeta.positionTitle,
+        sourceType: relationMeta.sourceType,
+        relationSourceUrl: relationMeta.relationSourceUrl,
+        officialProfileUrl: relationMeta.officialProfileUrl,
+        officialBookingUrl: relationMeta.officialBookingUrl,
+        aggregatorProfileUrl: relationMeta.aggregatorProfileUrl,
+        aggregatorBookingUrl: relationMeta.aggregatorBookingUrl,
+        verifiedOnClinicSite: relationMeta.verifiedOnClinicSite ? 1 : 0,
+        verificationStatus: relationMeta.verificationStatus,
+        lastVerifiedAt: relationMeta.lastVerifiedAt,
+        confidenceScore: relationMeta.confidenceScore,
         lastSeenAt: doctor.captured_at,
       });
     }
@@ -481,5 +583,96 @@ export class IngestService {
     const base = slugify(value, prefix);
     const suffix = await shortHash(`${prefix}|${suffixSeed}`);
     return `${base}-${suffix}`;
+  }
+
+  private normalizeSourceType(sourceType: string | undefined) {
+    const normalized = normalizeText(sourceType ?? "").replace(/\s+/g, "_");
+    return normalized || "aggregator";
+  }
+
+  private isOfficialSourceType(sourceType: string) {
+    return sourceType.startsWith("official");
+  }
+
+  private buildClinicLinks(doctor: DoctorRecord): DoctorClinicLinkRecord[] {
+    if (doctor.clinic_links.length > 0) {
+      return doctor.clinic_links;
+    }
+
+    return doctor.clinic_external_ids.map((clinicExternalId) => ({
+      clinic_external_id: clinicExternalId,
+      relation_source_url: doctor.source_url ?? doctor.url,
+      booking_url: doctor.booking_url ?? doctor.url,
+      profile_url: doctor.profile_url ?? doctor.source_url ?? doctor.url,
+      official_booking_url: doctor.official_booking_url ?? null,
+      official_profile_url: doctor.official_profile_url ?? null,
+      aggregator_booking_url: doctor.booking_url ?? doctor.url,
+      aggregator_profile_url: doctor.profile_url ?? doctor.source_url ?? doctor.url,
+      source_type: doctor.source_type ?? "aggregator",
+      verification_status: doctor.verification_status ?? "aggregator_only",
+      verified_on_clinic_site: doctor.verified_on_clinic_site ?? false,
+      last_verified_at: doctor.last_verified_at ?? null,
+      confidence_score: doctor.confidence_score ?? undefined,
+      position_title: null,
+    }));
+  }
+
+  private buildRelationMeta(doctor: DoctorRecord, clinicLink: DoctorClinicLinkRecord) {
+    const sourceType = this.normalizeSourceType(
+      clinicLink.source_type ?? doctor.source_type,
+    );
+    const verifiedOnClinicSite =
+      (
+        clinicLink.verified_on_clinic_site ??
+        doctor.verified_on_clinic_site ??
+        Boolean(clinicLink.official_profile_url || clinicLink.official_booking_url)
+      ) || this.isOfficialSourceType(sourceType);
+    const officialProfileUrl =
+      clinicLink.official_profile_url ?? doctor.official_profile_url ?? null;
+    const officialBookingUrl =
+      clinicLink.official_booking_url ?? doctor.official_booking_url ?? null;
+    const aggregatorProfileUrl =
+      clinicLink.aggregator_profile_url ??
+      clinicLink.profile_url ??
+      doctor.profile_url ??
+      doctor.source_url ??
+      doctor.url;
+    const aggregatorBookingUrl =
+      clinicLink.aggregator_booking_url ??
+      clinicLink.booking_url ??
+      doctor.booking_url ??
+      doctor.url;
+    const verificationStatus =
+      clinicLink.verification_status ??
+      doctor.verification_status ??
+      (verifiedOnClinicSite ? "official_verified" : "aggregator_only");
+    const confidenceScore =
+      clinicLink.confidence_score ??
+      doctor.confidence_score ??
+      (verifiedOnClinicSite ? 0.95 : 0.35);
+
+    return {
+      sourceType,
+      verifiedOnClinicSite,
+      verificationStatus,
+      confidenceScore,
+      officialProfileUrl,
+      officialBookingUrl,
+      aggregatorProfileUrl,
+      aggregatorBookingUrl,
+      profileUrl: officialProfileUrl ?? clinicLink.profile_url ?? doctor.profile_url ?? doctor.source_url ?? doctor.url,
+      bookingUrl: officialBookingUrl ?? clinicLink.booking_url ?? doctor.booking_url ?? doctor.url,
+      relationSourceUrl:
+        clinicLink.relation_source_url ??
+        officialProfileUrl ??
+        clinicLink.profile_url ??
+        doctor.source_url ??
+        doctor.url,
+      lastVerifiedAt:
+        clinicLink.last_verified_at ??
+        doctor.last_verified_at ??
+        (verifiedOnClinicSite ? doctor.captured_at : null),
+      positionTitle: clinicLink.position_title ?? null,
+    };
   }
 }

@@ -165,3 +165,87 @@
 **Сделано:** инициализирован git-репозиторий, создан private repo `AI-Nikitka93/medsearchrb`, запушен production state, записаны Actions secrets `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `INGEST_SHARED_SECRET`, вручную запущен workflow `catalog-sync`; реальный run `23388104740` не стартовал job из-за GitHub billing blocker для private repo (`recent account payments have failed or your spending limit needs to be increased`)  
 **Изменены файлы:** `.gitignore`, `README.md`, `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`, `docs/STATE.md`  
 **Следующий шаг:** либо исправить billing для private GitHub Actions, либо перевести репозиторий в `public`, чтобы cloud-only sync работал бесплатно без участия ПК
+
+## 2026-03-21 23:55 — Mini App Production Recovery via Snapshot Fallback
+**Роль:** Windows Engineering Assistant  
+**Сделано:** подтверждено, что live Turso и read-repository отвечают быстро, а пользовательский сбой вызван медленным доступом к `workers.dev`; добавлен same-origin snapshot pipeline: `apps/miniapp/scripts/generate-catalog-snapshot.mjs` собирает каталог из Turso в `apps/miniapp/public/data/catalog.json`, `apps/miniapp/lib/api.ts` переведен на snapshot-first чтение в production с fallback на Worker, а `db/migrations/0002_read_perf.sql` добавляет read-индексы для doctor list/detail path; после пересборки и реального redeploy на Netlify подтвержден live `catalog.json` с `2162` врачами и headless Edge screenshot, на котором `/list` уже показывает карточки врачей вместо бесконечного loading  
+**Изменены файлы:** `apps/miniapp/package.json`, `apps/miniapp/package-lock.json`, `apps/miniapp/scripts/generate-catalog-snapshot.mjs`, `apps/miniapp/public/data/catalog.json`, `apps/miniapp/lib/api.ts`, `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/components/ui/doctor-card.tsx`, `apps/worker/src/repositories/doctors-read-repository.ts`, `db/migrations/0002_read_perf.sql`, `docs/PROJECT_HISTORY.md`, `docs/STATE.md`  
+**Следующий шаг:** проверить Mini App в реальном Telegram WebView и при следующем cloud sync включить регенерацию snapshot перед очередным Netlify deploy
+
+## 2026-03-22 00:13 — Specialty Switcher UX Fix
+**Роль:** Windows Engineering Assistant  
+**Сделано:** переключение специальностей в Telegram WebView переведено с неудобного горизонтального скролла на двухколоночную сетку с явным текущим состоянием; `PrimaryButton` получил безопасный `truncate`, production Mini App пересобран и заново задеплоен на Netlify, а headless Edge screenshot подтвердил, что `/list` показывает удобный 2x2 selector без обрезанного активного фильтра  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/components/ui/button.tsx`, `apps/miniapp/eslint.config.mjs`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** проверить новый selector в реальном Telegram Mini App и при необходимости сделать следующий шаг — sticky compact filter bar при скролле списка
+
+## 2026-03-22 00:22 — Mini App Menu UX Research
+**Роль:** Product UX Research  
+**Сделано:** выполнен внешний ресерч по Telegram Mini Apps и конкурентам (`YDoc`, `Talon.by`, `Zocdoc`, `Practo`, `103.by`) для построения карты улучшений меню; подтверждено, что текущее меню перегружено равноправными блоками и не имеет ясной иерархии, тогда как сильные паттерны у конкурентов строятся вокруг search-first entry, крупных service modes и secondary specialty navigation  
+**Изменены файлы:** `docs/RESEARCH_LOG.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** на основе этой карты спроектировать новый IA/menu layout для home и list экранов Mini App, а затем внедрить его в `apps/miniapp`
+
+## 2026-03-22 00:36 — Mini App Menu IA Overhaul
+**Роль:** Windows Engineering Assistant  
+**Сделано:** переработано меню Mini App на основе UX-карты: home screen переведен на action-first иерархию (`короткий hero -> search -> quick actions -> popular specialties -> promos`), список врачей получил compact filter bar вместо громоздкого selector-а, а полный выбор специальностей вынесен в bottom sheet с поиском; добавлен `fetchCatalogOverview()` на основе production snapshot, production mini app пересобран и заново задеплоен на Netlify, HTTP 200 и headless screenshot-файлы подтверждают новый UI на `/` и `/list`  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/components/ui/search-input.tsx`, `apps/miniapp/lib/api.ts`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** получить свежий скрин именно из Telegram WebView и при необходимости донастроить micro-spacing, copy и sticky behavior под реальный Telegram viewport
+
+## 2026-03-22 00:44 — Mini App Menu Density Polish
+**Роль:** Windows Engineering Assistant  
+**Сделано:** на основе живых Telegram-скринов выполнен второй UX-pass: hero сокращен и переписан короче, search input уплотнен за счет icon submit button, быстрые сценарии переведены из двух узких колонок в одноколоночный compact list, а explanatory copy на home/list сокращен до более коротких строк; production mini app заново пересобран и задеплоен на Netlify, а headless browser снова подтвердил живой рендер обновленных `/` и `/list`  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/components/ui/search-input.tsx`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** получить новый Telegram screenshot после этого уплотнения и решить, нужен ли еще один проход по hero/stat block и specialty cards
+
+## 2026-03-22 00:50 — Mini App List Bugfix + Compact Polish
+**Роль:** Windows Engineering Assistant  
+**Сделано:** по новому Telegram-скрину устранен UX-баг list screen, при котором skeleton показывался вместе с уже загруженными карточками; loading-state теперь разделен на `initial loading` и `background refresh`, hero statistics на home переведены в компактные inline chips, specialty tiles уменьшены, а filter block на list сокращен до более легкого header + chip row; production mini app пересобран и заново задеплоен на Netlify  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** получить свежий Telegram screenshot после deploy `69bf12301e80d0f84cc24468` и решить, нужен ли еще один проход по doctor card density
+
+## 2026-03-22 01:00 — Detail Screen Link Semantics Fix
+**Роль:** Windows Engineering Assistant  
+**Сделано:** исправлена семантика переходов на detail screen: убрана единая misleading CTA `Записаться на сайте клиники`, которая могла вести на профиль врача в `YDoc`; вместо нее каждая клиника теперь получает собственные честные действия (`Запись через YDoc`, `Клиника на YDoc`, `Сайт клиники`, `Профиль врача`) с дедупликацией совпадающих URL, а header detail screen показывает количество клиник, если врач принимает в нескольких местах; production mini app пересобран и задеплоен на Netlify  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** проверить detail screen врача с несколькими клиниками в Telegram Mini App и затем решить, нужно ли вытягивать прямые clinic booking URLs глубже на scraper level
+
+## 2026-03-22 01:06 — Clinic Verification Architecture
+**Роль:** Windows Engineering Assistant  
+**Сделано:** зафиксирована архитектура clinic-level verification: `doctor -> clinic` связь больше не считается доверенной только по агрегатору; в `docs/DECISIONS.md` добавлено правило приоритета официальных сайтов/booking widgets и будущая модель verification metadata (`source_type`, `verification_status`, `verified_on_clinic_site`, `last_verified_at`, official URLs) для каждой doctor-clinic связи  
+**Изменены файлы:** `docs/DECISIONS.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** спроектировать конкретное расширение схемы Turso и ingest-flow для official clinic verification и внедрить его в scraper/API слой
+
+## 2026-03-22 01:20 — Turso Migration for Clinic Verification
+**Роль:** Database Architect & Data Systems Engineer  
+**Сделано:** добавлена forward-only миграция `db/migrations/0003_clinic_verification.sql` для official clinic verification без ломающих rename/drop: расширены `clinics`, `clinic_sources`, `doctor_sources`, `doctor_clinics`, создана таблица `clinic_verification_runs` и индексы для verification-read paths; migration-runner переведен на `schema_migrations`, чтобы новые `ALTER TABLE` применялись один раз и не ломали повторные запуски `db\\run.bat`  
+**Изменены файлы:** `db/migrations/0003_clinic_verification.sql`, `apps/worker/scripts/apply-migrations.mjs`, `docs/DECISIONS.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** применить миграцию к Turso, проверить новые поля через `PRAGMA table_info`, затем обновить ingest/service слой под official/aggregator merge rules
+
+## 2026-03-22 01:24 — Clinic Verification Migration Applied to Turso
+**Роль:** Database Architect & Data Systems Engineer  
+**Сделано:** миграция `0003_clinic_verification.sql` применена к live Turso; повторный запуск `db\\run.bat` подтвержден как безопасный и пропускает уже записанные миграции через `schema_migrations`; через `PRAGMA table_info` подтверждено появление новых verification-полей в `clinics`, `clinic_sources`, `doctor_sources`, `doctor_clinics` и новой таблицы `clinic_verification_runs`  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** обновить `catalog-write-repository.ts` и `ingest-service.ts`, чтобы official clinic data усиливал relation, а aggregator data больше не затирал verified URLs
+
+## 2026-03-22 01:36 — Verification-Aware Ingest and Read Path
+**Роль:** Database Architect & Data Systems Engineer  
+**Сделано:** `apps/worker/src/types/ingest.ts` расширен optional verification-полями и `clinic_links`, `catalog-write-repository.ts` переведен на verification-aware upsert для `clinics`, `clinic_sources`, `doctor_sources`, `doctor_clinics`, а `ingest-service.ts` теперь строит clinic-scoped relation meta и не дает агрегаторным данным затирать official URLs; `doctors-read-repository.ts` и `doctors-service.ts` начали отдавать preferred URLs и verification metadata в detail API; обновленный Worker задеплоен, а live API подтвержден на production URL  
+**Изменены файлы:** `apps/worker/src/types/ingest.ts`, `apps/worker/src/repositories/catalog-write-repository.ts`, `apps/worker/src/services/ingest-service.ts`, `apps/worker/src/repositories/doctors-read-repository.ts`, `apps/worker/src/services/doctors-service.ts`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** обновить парсеры/clinic verifier, чтобы они начали присылать official `clinic_links` и verification statuses, а затем включить эти статусы в Mini App UI
+
+## 2026-03-22 01:42 — Scraper-Side Clinic Enrichment + Verifier Script
+**Роль:** Database Architect & Data Systems Engineer  
+**Сделано:** Python batch-модели расширены полями verification и `clinic_links`; `medart.py` теперь эмитит official clinic/doctor relations как `official_directory`, а `ydoc.py` научен: 1) ходить в doctor detail page, 2) разбирать `:lpu-address-list`, 3) строить рабочие `YDoc` clinic profile URLs, 4) для clinic page вытягивать официальный сайт через `<meta itemprop=\"url\">`; добавлен `apps/worker/scripts/verify-clinic-sites.ts` и npm script `verify:clinics` для backfill уже загруженных `YDoc` clinic pages в Turso; точечный прогон по `Конфиденс` обновил live `clinics.site_url` до `https://confidence.by/`, и это уже видно в production doctor detail API для Абушовой  
+**Изменены файлы:** `apps/scrapers/models.py`, `apps/scrapers/scrapers/medart.py`, `apps/scrapers/scrapers/ydoc.py`, `apps/worker/scripts/verify-clinic-sites.ts`, `apps/worker/package.json`, `apps/worker/src/repositories/catalog-write-repository.ts`, `docs/RESEARCH_LOG.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** прогнать `verify-clinic-sites.ts` массово по всем `YDoc` clinic pages с missing/generic `site_url`, затем добавить direct official clinic-site scrapers для подтверждения врача на стороне сайта клиники
+
+## 2026-03-22 01:56 — Online Status Check + YDoc Verification Backfill
+**Роль:** Windows Engineering Assistant  
+**Сделано:** подтверждено, что production Worker и Netlify Mini App отвечают онлайн (`/health -> ok:true`, Mini App -> `HTTP 200`), остановлен зависший локальный `python`-scraper после прерванного ручного запуска, а массовый `YDoc` verifier успешно добрал хвост clinic cards: в live Turso подтверждено `402` `YDoc`-клиники, из которых `397` уже имеют не-агрегаторный `site_url`, а `5` остаются без official site или с битым `YDoc` clinic URL; отдельно зафиксировано, что GitHub repo по-прежнему `PRIVATE`, а cloud-only auto-refresh каталога все еще блокируется billing-ограничением private GitHub Actions  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** получить явное разрешение на перевод `AI-Nikitka93/medsearchrb` в `public` или разблокировать private Actions billing, затем перенести scraper/enrichment refresh в cloud-only workflow без зависимости от локального ПК
+
+## 2026-03-22 02:10 — Cloud-Only Verification Architecture
+**Роль:** Database Architect & Data Systems Engineer  
+**Сделано:** зафиксирована целевая online-only схема refresh-пайплайна: `catalog-scrape -> catalog-ingest -> clinic-site-backfill -> doctor-clinic-verify`, где Cloudflare Worker обслуживает 24/7 API и Telegram webhook, Netlify отдает Mini App/snapshot, Turso хранит verification metadata, а тяжелые scrape/verification jobs должны быть вынесены в cloud runner вместо локального ПК; отдельно зафиксирован приоритет CTA: `official_booking_url -> official_profile_url -> site_url -> aggregator URL`  
+**Изменены файлы:** `docs/DECISIONS.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** после разрешения на `public` repo или разблокировки private Actions billing перенести `catalog-scrape` и `doctor-clinic-verify` в GitHub Actions и подтвердить cloud-only refresh без локального запуска

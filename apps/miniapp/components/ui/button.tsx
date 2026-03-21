@@ -44,7 +44,7 @@ export function PrimaryButton({
       {...props}
     >
       {leadingIcon}
-      <span>{children}</span>
+      <span className="truncate">{children}</span>
       {trailingIcon}
     </button>
   );

@@ -4,6 +4,14 @@ Telegram Mini App + бот + Worker API для агрегатора врачей
 
 Создано Nikita (`AI_Nikitka93`).
 
+## License and Usage
+
+This repository is published under a proprietary `All Rights Reserved` license.
+
+- Viewing the source on GitHub is allowed.
+- Production use, copying, redistribution, relicensing, and derivative commercial use are not allowed without explicit written permission from Nikita (`AI_Nikitka93`).
+- Secrets are intentionally excluded from the repository. Public source publication does not include `.env`, cloud tokens, bot tokens, or database credentials.
+
 ## Состав проекта
 
 - `apps/miniapp` — Telegram Mini App на Next.js

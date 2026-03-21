@@ -5,7 +5,7 @@ import re
 
 from bs4 import Tag
 
-from apps.scrapers.models import ClinicRecord, DoctorRecord, PromotionRecord
+from apps.scrapers.models import ClinicRecord, DoctorClinicLinkRecord, DoctorRecord, PromotionRecord
 from apps.scrapers.scrapers.base import BaseScraper
 
 
@@ -61,6 +61,12 @@ class MedArtScraper(BaseScraper):
                     external_id="medart-main",
                     name=payload.get("name", "МедАрт"),
                     url=self.base_url,
+                    site_url=self.base_url,
+                    official_directory_url=self.absolute_url("/spetsialisty/"),
+                    source_type="official_directory",
+                    is_official=True,
+                    source_priority=10,
+                    verification_status="official_source",
                     address=address_text or None,
                     source_url=response.url,
                 )
@@ -71,6 +77,12 @@ class MedArtScraper(BaseScraper):
             external_id="medart-main",
             name=title.split("|")[0].strip(),
             url=self.base_url,
+            site_url=self.base_url,
+            official_directory_url=self.absolute_url("/spetsialisty/"),
+            source_type="official_directory",
+            is_official=True,
+            source_priority=10,
+            verification_status="official_source",
             source_url=response.url,
         )
 
@@ -115,8 +127,28 @@ class MedArtScraper(BaseScraper):
             external_id=external_id,
             full_name=full_name,
             url=url,
+            booking_url=url,
+            profile_url=url,
+            official_profile_url=url,
+            source_type="official_directory",
+            verification_status="official_verified",
+            verified_on_clinic_site=True,
+            confidence_score=0.98,
             specialty_names=specialty_names or ["Не указано"],
             clinic_external_ids=[clinic_external_id] if clinic_external_id else [],
+            clinic_links=[
+                DoctorClinicLinkRecord(
+                    clinic_external_id=clinic_external_id,
+                    relation_source_url=url,
+                    booking_url=url,
+                    profile_url=url,
+                    official_profile_url=url,
+                    source_type="official_directory",
+                    verification_status="official_verified",
+                    verified_on_clinic_site=True,
+                    confidence_score=0.98,
+                )
+            ] if clinic_external_id else [],
             source_url=response.url,
         )
 

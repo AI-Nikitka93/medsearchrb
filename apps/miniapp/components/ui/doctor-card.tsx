@@ -22,6 +22,7 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
   return (
     <button
       type="button"
+      data-testid="doctor-card"
       onClick={() => onSelect(doctor.id)}
       className="surface-card w-full rounded-lg p-3 text-left transition-transform duration-fast ease-standard hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link active:scale-[0.99]"
     >

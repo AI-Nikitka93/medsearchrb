@@ -65,6 +65,26 @@ export class DoctorsService {
         site_url: item.site_url ? String(item.site_url) : null,
         booking_url: item.booking_url ? String(item.booking_url) : null,
         profile_url: item.profile_url ? String(item.profile_url) : null,
+        official_booking_url: item.official_booking_url
+          ? String(item.official_booking_url)
+          : null,
+        official_profile_url: item.official_profile_url
+          ? String(item.official_profile_url)
+          : null,
+        aggregator_booking_url: item.aggregator_booking_url
+          ? String(item.aggregator_booking_url)
+          : null,
+        aggregator_profile_url: item.aggregator_profile_url
+          ? String(item.aggregator_profile_url)
+          : null,
+        verification_status: item.verification_status
+          ? String(item.verification_status)
+          : "aggregator_only",
+        verified_on_clinic_site:
+          Number(item.verified_on_clinic_site ?? 0) === 1,
+        last_verified_at: item.last_verified_at
+          ? String(item.last_verified_at)
+          : null,
       })),
       reviews: reviews.map((item) => ({
         source_name: String(item.source_name),

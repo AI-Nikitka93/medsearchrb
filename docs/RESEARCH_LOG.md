@@ -542,3 +542,88 @@ _Последнее обновление: 2026-03-21 | Роль: Windows Enginee
 - Handoff:
   - Если допустима публикация кода, перевод репозитория в `public` — самый короткий способ получить cloud-only refresh без ПК.
   - Если repo должен остаться private, нужен другой внешний compute/runtime с бесплатным планом или исправление billing в GitHub.
+
+## [ТЕМА: UX меню и навигации для doctor discovery Mini App]
+_Последнее обновление: 2026-03-22 | Роль: Product UX Research_
+Статус: Актуально
+
+- Контекст:
+  - Пользователь пожаловался, что текущее меню Mini App неудобно. Нужно было изучить актуальные паттерны Telegram Mini Apps и конкурентов по doctor discovery, чтобы построить карту улучшений именно для меню/навигации/фильтров.
+- Источники:
+  - https://core.telegram.org/bots/webapps
+  - https://ydoc.by/
+  - https://talon.by/
+  - https://www.zocdoc.com/about/how-search-works/
+  - https://www.zocdoc.com/
+  - https://www.practo.com/
+  - https://info.103.by/ne_app
+- Подтвержденные факты:
+  - Telegram Mini Apps официально требуют mobile-first, native-like поведение компонентов, адаптацию к theme params и уважение `safe area` / `content safe area`.
+  - YDoc на главной в Минске сразу показывает `Все врачи` и популярные специальности с количествами (`Гинеколог`, `Дерматолог`, `Невролог`, `Педиатр`, `Стоматолог`), то есть пользователь с первого экрана понимает breadth каталога и может идти через specialty entry points.
+  - Talon.by строит верхний выбор через крупные service modes (`Талоны`, `Платные услуги`, `Медучреждения`, `Анализы`, `Лекарства`) вместо плотной россыпи равноправных кнопок.
+  - Zocdoc в explainable-search документации делает ставку на единый search-first вход, а потом на patient-centric criteria и фильтры вроде availability, location и doctor attributes.
+  - На главной Zocdoc дополнительно использует `Top-searched specialties`, но они работают как secondary navigation под главным поиском, а не как конкурирующий основной UI-слой.
+  - Practo разделяет `consult online` и `book in-clinic` на отдельные интенты, а specialties подает как browse-секции с понятным описанием сценария, а не просто как набор чипов.
+  - 103.by в мобильном приложении продвигает value props через крупные функциональные разделы и объяснимый поиск (`исправляет ошибки`, `по названию или действующему веществу`, `все на карте`), а не через перегруженный экран кнопок.
+- Выводы для реализации:
+  - Для нашего Mini App главное меню не должно быть “россыпью одинаковых кнопок”. Нужна четкая иерархия: один primary action, 1–2 secondary blocks и только потом specialty shortcuts.
+  - Specialties нельзя держать как единственный и основной навигационный паттерн на первом экране. Они должны стать secondary-entry layer под поиском и популярными интентами.
+  - Экран списка должен иметь compact sticky filter summary вместо повторения большого набора кнопок под search field.
+  - Для MVP под Telegram лучше всего работает navigation model: `hero/search -> quick intents -> popular specialties -> promos`, а не `hero/search -> full filter control panel`.
+- Handoff:
+  - Следующий UX-шаг: перестроить home screen вокруг primary search entry и двух-четырех quick intents.
+  - Следующий implementation step: заменить current specialty block на secondary module и вынести filters на list screen в compact sticky bar / bottom sheet.
+
+## [ТЕМА: YDoc clinic verification and official site extraction]
+_Последнее обновление: 2026-03-22 | Роль: Database Architect & Data Systems Engineer_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было перейти от doctor-level aggregator links к clinic-scoped navigation и понять, можно ли из `YDoc` вытащить clinic page URL и официальный сайт клиники без ручной модерации.
+- Источники:
+  - live `https://ydoc.by/minsk/vrach/45731-staskevich/`
+  - live `https://ydoc.by/minsk/lpu/126-medicinskiy-centr-doktor-tut/`
+  - live `https://ydoc.by/minsk/lpu/211-medicinskiy-centr-konfidens/`
+- Подтвержденные факты:
+  - Doctor detail pages `YDoc` содержат большой JSON-like attribute `:lpu-address-list="..."`, где есть:
+    - `lpu_id`
+    - `lpu.translit`
+    - `lpu.name`
+    - `address`
+  - Рабочий clinic profile URL строится как:
+    - `https://ydoc.by/minsk/lpu/{lpu_id}-{translit}/`
+    - при этом `translit` иногда уже включает id, и это нужно учитывать, иначе получается ложный `211-211-...` и `404`.
+  - На clinic page `YDoc` есть `<meta itemprop="url" content="...">`, и для части клиник это реальный официальный сайт, а не `ydoc.by`.
+  - Пример подтвержденного enrich-case:
+    - `Медицинский центр «Конфиденс»`
+    - YDoc clinic page: `https://ydoc.by/minsk/lpu/211-medicinskiy-centr-konfidens/`
+    - официальный сайт, найденный на странице: `https://confidence.by/`
+- Выводы для реализации:
+  - `YDoc` можно использовать как aggregator-source для связи `doctor -> clinic` и как мост к official clinic site.
+  - Но сам факт наличия official site на `YDoc` clinic page не равен `official_verified` doctor-clinic relation; это только clinic-level enrichment.
+  - Нужен отдельный verifier/backfill step, который обновляет `clinics.site_url` и пишет audit в `clinic_verification_runs`.
+- Handoff:
+  - Не использовать больше generic placeholder `https://ydoc.by/minsk/klinika/` как clinic URL.
+  - Следующий data step: прогнать `verify-clinic-sites.ts` по всем `YDoc` clinic pages с missing/off-platform `site_url`, затем уже строить clinic-site scrapers для direct verification врача на официальном сайте.
+
+## [ТЕМА: Public GitHub repo without exposing secrets]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно перевести `AI-Nikitka93/medsearchrb` в `public`, но не раскрыть секреты и максимально ограничить переиспользование кода.
+- Источники:
+  - GitHub CLI help for `gh repo edit`
+  - repository history/file scan in local git workspace
+- Подтвержденные факты:
+  - В tracked files секреты не найдены; `.env` / `.env.txt` не входят в git history.
+  - В git history есть только `.env.example` и документация с именами переменных, но не реальные токены.
+  - `gh repo edit` требует явного подтверждения последствий для смены visibility.
+  - Для public GitHub repo нельзя технически запретить просмотр и скачивание исходников через саму платформу; максимум — не выдавать open-source лицензию и явно оставить `All Rights Reserved`.
+- Выводы для реализации:
+  - Перед переводом в `public` нужно оставить только placeholder secrets и не пушить `.env*`.
+  - Лучший реалистичный вариант защиты: proprietary `LICENSE` + явное usage notice в `README`.
+  - Публикация репозитория не равна публикации cloud secrets, если secrets уже вынесены в GitHub/Cloudflare/Turso secret stores.
+- Handoff:
+  - Следующий operational step: закоммитить `LICENSE`/README/security cleanup, затем выполнить `gh repo edit --visibility public --accept-visibility-change-consequences`.
+  - После смены visibility повторно проверить `gh run list`/`gh workflow run` для cloud-only refresh.

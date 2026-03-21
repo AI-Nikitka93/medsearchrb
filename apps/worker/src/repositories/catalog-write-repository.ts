@@ -165,6 +165,12 @@ export class CatalogWriteRepository {
       city: string;
       address: string | null;
       siteUrl: string | null;
+      bookingUrlOfficial: string | null;
+      officialDirectoryUrl: string | null;
+      officialBookingWidgetUrl: string | null;
+      verificationStatus: string;
+      officialLastVerifiedAt: string | null;
+      officialVerificationNotes: string | null;
       hasOnlineBooking: number;
       suppressionKey: string;
       nowIso: string;
@@ -174,10 +180,12 @@ export class CatalogWriteRepository {
       sql: `
         INSERT INTO clinics (
           id, slug, name, normalized_name, normalized_address, city, address,
-          site_url, has_online_booking, is_hidden, opt_out, suppression_key,
+          site_url, booking_url_official, official_directory_url, official_booking_widget_url,
+          verification_status, official_last_verified_at, official_verification_notes,
+          has_online_booking, is_hidden, opt_out, suppression_key,
           created_at, updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?, ?)
       `,
       args: [
         args.id,
@@ -188,6 +196,12 @@ export class CatalogWriteRepository {
         args.city,
         args.address,
         args.siteUrl,
+        args.bookingUrlOfficial,
+        args.officialDirectoryUrl,
+        args.officialBookingWidgetUrl,
+        args.verificationStatus,
+        args.officialLastVerifiedAt,
+        args.officialVerificationNotes,
         args.hasOnlineBooking,
         args.suppressionKey,
         args.nowIso,
@@ -205,6 +219,13 @@ export class CatalogWriteRepository {
       normalizedAddress: string | null;
       address: string | null;
       siteUrl: string | null;
+      bookingUrlOfficial: string | null;
+      officialDirectoryUrl: string | null;
+      officialBookingWidgetUrl: string | null;
+      verificationStatus: string;
+      officialLastVerifiedAt: string | null;
+      officialVerificationNotes: string | null;
+      isOfficial: number;
       hasOnlineBooking: number;
       nowIso: string;
     },
@@ -216,7 +237,39 @@ export class CatalogWriteRepository {
             normalized_name = ?,
             normalized_address = ?,
             address = coalesce(?, address),
-            site_url = coalesce(?, site_url),
+            site_url = CASE
+              WHEN ? = 1 THEN coalesce(?, site_url)
+              WHEN site_url IS NULL THEN ?
+              WHEN site_url = 'https://ydoc.by/minsk/klinika/' AND ? IS NOT NULL THEN ?
+              WHEN site_url LIKE 'https://ydoc.by/%' AND ? IS NOT NULL AND ? NOT LIKE 'https://ydoc.by/%' THEN ?
+              ELSE site_url
+            END,
+            booking_url_official = CASE
+              WHEN ? = 1 THEN coalesce(?, booking_url_official)
+              ELSE booking_url_official
+            END,
+            official_directory_url = CASE
+              WHEN ? = 1 THEN coalesce(?, official_directory_url)
+              ELSE official_directory_url
+            END,
+            official_booking_widget_url = CASE
+              WHEN ? = 1 THEN coalesce(?, official_booking_widget_url)
+              ELSE official_booking_widget_url
+            END,
+            verification_status = CASE
+              WHEN ? = 1 AND ? <> 'unverified' THEN ?
+              WHEN verification_status = 'unverified' THEN ?
+              ELSE verification_status
+            END,
+            official_last_verified_at = CASE
+              WHEN ? = 1 THEN coalesce(?, official_last_verified_at)
+              ELSE official_last_verified_at
+            END,
+            official_verification_notes = CASE
+              WHEN ? = 1 THEN coalesce(?, official_verification_notes)
+              WHEN official_verification_notes IS NULL THEN ?
+              ELSE official_verification_notes
+            END,
             has_online_booking = CASE
               WHEN has_online_booking = 1 THEN 1
               ELSE ?
@@ -229,7 +282,29 @@ export class CatalogWriteRepository {
         args.normalizedName,
         args.normalizedAddress,
         args.address,
+        args.isOfficial,
         args.siteUrl,
+        args.siteUrl,
+        args.siteUrl,
+        args.siteUrl,
+        args.siteUrl,
+        args.siteUrl,
+        args.siteUrl,
+        args.isOfficial,
+        args.bookingUrlOfficial,
+        args.isOfficial,
+        args.officialDirectoryUrl,
+        args.isOfficial,
+        args.officialBookingWidgetUrl,
+        args.isOfficial,
+        args.verificationStatus,
+        args.verificationStatus,
+        args.verificationStatus,
+        args.isOfficial,
+        args.officialLastVerifiedAt,
+        args.isOfficial,
+        args.officialVerificationNotes,
+        args.officialVerificationNotes,
         args.hasOnlineBooking,
         args.nowIso,
         args.clinicId,
@@ -245,6 +320,9 @@ export class CatalogWriteRepository {
       sourceName: string;
       externalKey: string;
       sourceUrl: string;
+      sourceType: string;
+      isOfficial: number;
+      sourcePriority: number;
       checksum: string;
       lastSeenAt: string;
     },
@@ -252,12 +330,23 @@ export class CatalogWriteRepository {
     await db.execute({
       sql: `
         INSERT INTO clinic_sources (
-          id, clinic_id, source_name, external_key, source_url, checksum, last_seen_at
+          id, clinic_id, source_name, external_key, source_url,
+          source_type, is_official, source_priority, checksum, last_seen_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(source_name, external_key) DO UPDATE SET
           clinic_id = excluded.clinic_id,
           source_url = excluded.source_url,
+          source_type = excluded.source_type,
+          is_official = CASE
+            WHEN excluded.is_official = 1 THEN 1
+            ELSE clinic_sources.is_official
+          END,
+          source_priority = CASE
+            WHEN excluded.source_priority < clinic_sources.source_priority
+              THEN excluded.source_priority
+            ELSE clinic_sources.source_priority
+          END,
           checksum = excluded.checksum,
           last_seen_at = excluded.last_seen_at
       `,
@@ -267,6 +356,9 @@ export class CatalogWriteRepository {
         args.sourceName,
         args.externalKey,
         args.sourceUrl,
+        args.sourceType,
+        args.isOfficial,
+        args.sourcePriority,
         args.checksum,
         args.lastSeenAt,
       ],
@@ -370,6 +462,13 @@ export class CatalogWriteRepository {
       externalKey: string;
       sourceUrl: string;
       bookingUrl: string | null;
+      profileUrl: string | null;
+      officialProfileUrl: string | null;
+      sourceType: string;
+      verificationStatus: string;
+      verifiedOnClinicSite: number;
+      lastVerifiedAt: string | null;
+      confidenceScore: number;
       checksum: string;
       lastSeenAt: string;
     },
@@ -378,14 +477,41 @@ export class CatalogWriteRepository {
       sql: `
         INSERT INTO doctor_sources (
           id, doctor_id, clinic_id, source_name, external_key,
-          source_url, booking_url, checksum, last_seen_at
+          source_url, booking_url, checksum, last_seen_at, source_type,
+          profile_url, official_profile_url, verification_status,
+          verified_on_clinic_site, last_verified_at, confidence_score
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(source_name, external_key) DO UPDATE SET
           doctor_id = excluded.doctor_id,
           clinic_id = excluded.clinic_id,
           source_url = excluded.source_url,
-          booking_url = excluded.booking_url,
+          booking_url = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN coalesce(excluded.booking_url, doctor_sources.booking_url)
+            ELSE coalesce(doctor_sources.booking_url, excluded.booking_url)
+          END,
+          source_type = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN excluded.source_type
+            ELSE doctor_sources.source_type
+          END,
+          profile_url = coalesce(excluded.profile_url, doctor_sources.profile_url),
+          official_profile_url = coalesce(excluded.official_profile_url, doctor_sources.official_profile_url),
+          verification_status = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN excluded.verification_status
+            WHEN doctor_sources.verified_on_clinic_site = 1 THEN doctor_sources.verification_status
+            ELSE excluded.verification_status
+          END,
+          verified_on_clinic_site = CASE
+            WHEN doctor_sources.verified_on_clinic_site = 1 OR excluded.verified_on_clinic_site = 1
+              THEN 1
+            ELSE 0
+          END,
+          last_verified_at = coalesce(excluded.last_verified_at, doctor_sources.last_verified_at),
+          confidence_score = CASE
+            WHEN excluded.confidence_score > doctor_sources.confidence_score
+              THEN excluded.confidence_score
+            ELSE doctor_sources.confidence_score
+          END,
           checksum = excluded.checksum,
           last_seen_at = excluded.last_seen_at
       `,
@@ -399,6 +525,13 @@ export class CatalogWriteRepository {
         args.bookingUrl,
         args.checksum,
         args.lastSeenAt,
+        args.sourceType,
+        args.profileUrl,
+        args.officialProfileUrl,
+        args.verificationStatus,
+        args.verifiedOnClinicSite,
+        args.lastVerifiedAt,
+        args.confidenceScore,
       ],
     });
   }
@@ -471,6 +604,17 @@ export class CatalogWriteRepository {
       clinicId: string;
       bookingUrl: string | null;
       profileUrl: string | null;
+      positionTitle: string | null;
+      sourceType: string;
+      relationSourceUrl: string | null;
+      officialProfileUrl: string | null;
+      officialBookingUrl: string | null;
+      aggregatorProfileUrl: string | null;
+      aggregatorBookingUrl: string | null;
+      verifiedOnClinicSite: number;
+      verificationStatus: string;
+      lastVerifiedAt: string | null;
+      confidenceScore: number;
       lastSeenAt: string;
     },
   ) {
@@ -478,13 +622,48 @@ export class CatalogWriteRepository {
       sql: `
         INSERT INTO doctor_clinics (
           id, relation_key, doctor_id, clinic_id, booking_url, profile_url,
-          position_title, is_active, last_seen_at, created_at, updated_at
+          position_title, is_active, last_seen_at, created_at, updated_at,
+          source_type, relation_source_url, official_profile_url, official_booking_url,
+          aggregator_profile_url, aggregator_booking_url, verified_on_clinic_site,
+          verification_status, last_verified_at, confidence_score
         )
-        VALUES (?, ?, ?, ?, ?, ?, NULL, 1, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(relation_key) DO UPDATE SET
-          booking_url = excluded.booking_url,
-          profile_url = excluded.profile_url,
+          booking_url = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN coalesce(excluded.official_booking_url, excluded.booking_url, doctor_clinics.booking_url)
+            ELSE coalesce(doctor_clinics.booking_url, excluded.booking_url, excluded.aggregator_booking_url)
+          END,
+          profile_url = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN coalesce(excluded.official_profile_url, excluded.profile_url, doctor_clinics.profile_url)
+            ELSE coalesce(doctor_clinics.profile_url, excluded.profile_url, excluded.aggregator_profile_url)
+          END,
+          position_title = coalesce(excluded.position_title, doctor_clinics.position_title),
           is_active = 1,
+          source_type = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN excluded.source_type
+            ELSE doctor_clinics.source_type
+          END,
+          relation_source_url = coalesce(excluded.relation_source_url, doctor_clinics.relation_source_url),
+          official_profile_url = coalesce(excluded.official_profile_url, doctor_clinics.official_profile_url),
+          official_booking_url = coalesce(excluded.official_booking_url, doctor_clinics.official_booking_url),
+          aggregator_profile_url = coalesce(excluded.aggregator_profile_url, doctor_clinics.aggregator_profile_url),
+          aggregator_booking_url = coalesce(excluded.aggregator_booking_url, doctor_clinics.aggregator_booking_url),
+          verified_on_clinic_site = CASE
+            WHEN doctor_clinics.verified_on_clinic_site = 1 OR excluded.verified_on_clinic_site = 1
+              THEN 1
+            ELSE 0
+          END,
+          verification_status = CASE
+            WHEN excluded.verified_on_clinic_site = 1 THEN excluded.verification_status
+            WHEN doctor_clinics.verified_on_clinic_site = 1 THEN doctor_clinics.verification_status
+            ELSE excluded.verification_status
+          END,
+          last_verified_at = coalesce(excluded.last_verified_at, doctor_clinics.last_verified_at),
+          confidence_score = CASE
+            WHEN excluded.confidence_score > doctor_clinics.confidence_score
+              THEN excluded.confidence_score
+            ELSE doctor_clinics.confidence_score
+          END,
           last_seen_at = excluded.last_seen_at,
           updated_at = excluded.updated_at
       `,
@@ -495,9 +674,20 @@ export class CatalogWriteRepository {
         args.clinicId,
         args.bookingUrl,
         args.profileUrl,
+        args.positionTitle,
         args.lastSeenAt,
         args.lastSeenAt,
         args.lastSeenAt,
+        args.sourceType,
+        args.relationSourceUrl,
+        args.officialProfileUrl,
+        args.officialBookingUrl,
+        args.aggregatorProfileUrl,
+        args.aggregatorBookingUrl,
+        args.verifiedOnClinicSite,
+        args.verificationStatus,
+        args.lastVerifiedAt,
+        args.confidenceScore,
       ],
     });
   }

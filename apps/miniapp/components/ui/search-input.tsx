@@ -8,6 +8,7 @@ type SearchInputProps = {
   onChange: (nextValue: string) => void;
   onSubmit?: () => void;
   placeholder?: string;
+  inputId?: string;
 };
 
 function SearchIcon() {
@@ -25,11 +26,27 @@ function SearchIcon() {
   );
 }
 
+function SubmitIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4 stroke-current"
+      fill="none"
+      strokeWidth="1.8"
+    >
+      <path d="M4.75 10h9.5" />
+      <path d="m10.75 4.75 4.5 5.25-4.5 5.25" />
+    </svg>
+  );
+}
+
 export function SearchInput({
   value,
   onChange,
   onSubmit,
-  placeholder = "Специальность, врач или клиника",
+  placeholder = "Врач, специальность или клиника",
+  inputId = "catalog-search",
 }: SearchInputProps) {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,11 +59,12 @@ export function SearchInput({
       className="flex items-center gap-2 rounded-lg bg-surface p-2 shadow-soft"
       role="search"
     >
-      <div className="flex flex-1 items-center gap-2 px-2 text-hint">
+      <div className="flex min-w-0 flex-1 items-center gap-2 px-2 text-hint">
         <SearchIcon />
         <input
+          id={inputId}
           aria-label="Поиск врача, специальности или клиники"
-          className="w-full bg-transparent text-sm text-text outline-none placeholder:text-hint"
+          className="w-full min-w-0 bg-transparent text-sm text-text outline-none placeholder:text-hint"
           value={value}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             onChange(event.target.value)
@@ -54,8 +72,13 @@ export function SearchInput({
           placeholder={placeholder}
         />
       </div>
-      <PrimaryButton type="submit" style="primary">
-        Найти
+      <PrimaryButton
+        aria-label="Запустить поиск"
+        className="size-11 shrink-0 px-0"
+        type="submit"
+        style="primary"
+      >
+        <SubmitIcon />
       </PrimaryButton>
     </form>
   );
