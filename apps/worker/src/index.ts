@@ -5,8 +5,10 @@ import type { WorkerBindings } from "./env";
 import api from "./routes/api";
 import internal from "./routes/internal";
 import telegram from "./routes/telegram";
+import { PromotionChannelService } from "./services/promotion-channel-service";
 
 const app = new Hono<{ Bindings: WorkerBindings }>();
+const promotionChannelService = new PromotionChannelService();
 
 function allowedOrigins(env: WorkerBindings): string[] {
   const raw =
@@ -79,4 +81,13 @@ app.onError((error, c) => {
   );
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  scheduled(_controller: ScheduledController, env: WorkerBindings, ctx: ExecutionContext) {
+    ctx.waitUntil(
+      promotionChannelService.dispatchPending(env).catch((error) => {
+        console.error("promotion_channel_cron_error", error);
+      }),
+    );
+  },
+};

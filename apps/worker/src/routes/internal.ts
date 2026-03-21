@@ -3,11 +3,13 @@ import { Hono } from "hono";
 import type { WorkerBindings } from "../env";
 import { ensureDbReady } from "../lib/db";
 import { IngestService } from "../services/ingest-service";
+import { PromotionChannelService } from "../services/promotion-channel-service";
 import { sourceBatchEnvelopeSchema } from "../types/ingest";
 import { errorJson } from "../utils/http";
 
 const internal = new Hono<{ Bindings: WorkerBindings }>();
 const ingestService = new IngestService();
+const promotionChannelService = new PromotionChannelService();
 
 function isAuthorized(
   secret: string,
@@ -46,6 +48,26 @@ internal.post("/ingest/source-batch", async (c) => {
   const result = await ingestService.ingest(client, parsed.data, {
     githubRunId: c.req.header("x-github-run-id") ?? null,
   });
+
+  return c.json({
+    ok: true,
+    result,
+  });
+});
+
+internal.post("/notifications/promotions/flush", async (c) => {
+  if (
+    !isAuthorized(
+      c.env.INGEST_SHARED_SECRET,
+      c.req.header("authorization"),
+      c.req.header("x-ingest-token"),
+    )
+  ) {
+    return errorJson(c, 401, "UNAUTHORIZED", "ingest token is invalid", false);
+  }
+
+  const client = await ensureDbReady(c.env);
+  const result = await promotionChannelService.dispatchPendingWithClient(client, c.env);
 
   return c.json({
     ok: true,

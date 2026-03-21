@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 01:56
-Статус: BLOCKED
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК, но cloud-only future refresh jobs по-прежнему заблокированы политикой GitHub Actions для private repo на текущем аккаунте. Repo `AI-Nikitka93/medsearchrb` существует и привязан как `origin`, однако workflow `catalog-sync` не стартует на GitHub-hosted runner из-за аннотации billing: `recent account payments have failed or your spending limit needs to be increased`.
+Дата и время: 2026-03-22 02:26
+Статус: IN_PROGRESS
+Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже переведен в `PUBLIC`, billing blocker private Actions снят, и workflow `catalog-sync #2` (`23390834435`) реально исполняется в GitHub Actions. Текущий активный этап — долгий cloud `scrape` без лимита по врачам, поэтому cloud-only refresh уже запущен, но еще не завершен.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -24,10 +24,12 @@
 - Тестовый POST в webhook route с корректным secret header вернул `{"ok":true}`
 - Массовый `YDoc` clinic verification показал `402` clinic cards в Turso, из них `397` уже имеют не-агрегаторный `site_url`
 - Остановлен зависший локальный `python`-scraper после прерванного ручного запуска, чтобы не создавать ложное ощущение зависимости production-контура от ПК
+- Worker получил online promotion-posting pipeline: protected endpoint `/internal/notifications/promotions/flush`, cron `*/20 * * * *`, и live-тест подтвердил `claimed=1`, `sent=1` с переводом `notification_outbox` в статус `sent`
 Что осталось:
-- Либо исправить billing/private Actions на аккаунте GitHub, либо перевести repo в `public`
-- После этого повторно запустить workflow `catalog-sync`
-- После разблокировки workflow перенести scraper/enrichment refresh полностью в облако
+- Дождаться завершения текущего `catalog-sync #2`
+- Запушить свежий код promotion-posting pipeline в public repo, чтобы следующие cloud runs использовали новый flush-step из workflow
+- При необходимости разрезать pipeline на более короткие cloud jobs
+- После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 Следующий шаг:
-- Разблокировать GitHub-hosted runner для `catalog-sync`, затем подтвердить, что scraper + ingest + clinic verification идут полностью без локального ПК
+- Закоммитить и запушить promotion-posting изменения, затем дождаться финального статуса `catalog-sync #2` и подтвердить, что scraper + ingest + promo channel posting идут полностью без локального ПК

@@ -30,9 +30,10 @@ type TelegramMessageUpdate = {
 };
 
 type SendMessageParams = {
-  chat_id: number;
+  chat_id: number | string;
   text: string;
   reply_markup?: TelegramInlineKeyboard;
+  disable_web_page_preview?: boolean;
 };
 
 function normalizeChannelUsername(rawValue?: string) {
@@ -203,11 +204,27 @@ function buildPrivacyText(env: WorkerBindings) {
   );
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 export class TelegramBotService {
   constructor(private readonly env: WorkerBindings) {}
 
   webhookSecret() {
     return this.env.TELEGRAM_WEBHOOK_SECRET?.trim() || this.env.INGEST_SHARED_SECRET;
+  }
+
+  channelTarget() {
+    const channelId = this.env.TELEGRAM_CHANNEL_ID?.trim();
+    if (channelId) {
+      return channelId;
+    }
+
+    return normalizeChannelUsername(this.env.TELEGRAM_CHANNEL_USERNAME);
   }
 
   async handleUpdate(update: TelegramMessageUpdate) {
@@ -295,7 +312,83 @@ export class TelegramBotService {
     await this.callTelegram("sendMessage", {
       ...payload,
       parse_mode: "HTML",
-      disable_web_page_preview: false,
+      disable_web_page_preview: payload.disable_web_page_preview ?? false,
+    });
+  }
+
+  async sendPromotionToChannel(args: {
+    title: string;
+    clinicName: string;
+    sourceName: string;
+    sourceUrl: string;
+    clinicSiteUrl: string | null;
+    endsAt: string | null;
+  }) {
+    const chatId = this.channelTarget();
+    if (!chatId) {
+      throw new Error("Missing TELEGRAM_CHANNEL_ID or TELEGRAM_CHANNEL_USERNAME");
+    }
+
+    const deadline = args.endsAt
+      ? new Intl.DateTimeFormat("ru-BY", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          timeZone: "Europe/Minsk",
+        }).format(new Date(args.endsAt))
+      : null;
+
+    const lines = [
+      "🔥 <b>Новая акция медцентра в Минске</b>",
+      "",
+      `<b>${escapeHtml(args.title)}</b>`,
+      `Клиника: ${escapeHtml(args.clinicName)}`,
+      `Источник: ${escapeHtml(args.sourceName)}`,
+    ];
+
+    if (deadline) {
+      lines.push(`Действует до: ${escapeHtml(deadline)}`);
+    }
+
+    lines.push(
+      "",
+      "Проверьте условия акции перед записью и переходите по ссылкам ниже.",
+      "",
+      "Создано @AI_Nikitka93",
+    );
+
+    const buttons: TelegramInlineKeyboard["inline_keyboard"] = [
+      [
+        {
+          text: "Открыть акцию",
+          url: args.sourceUrl,
+        },
+      ],
+    ];
+
+    if (args.clinicSiteUrl && args.clinicSiteUrl !== args.sourceUrl) {
+      buttons.push([
+        {
+          text: "Сайт клиники",
+          url: args.clinicSiteUrl,
+        },
+      ]);
+    }
+
+    if (this.env.WEBAPP_URL?.trim()) {
+      buttons.push([
+        {
+          text: "Открыть каталог врачей",
+          url: this.env.WEBAPP_URL.trim(),
+        },
+      ]);
+    }
+
+    await this.sendMessage({
+      chat_id: chatId,
+      text: lines.join("\n"),
+      reply_markup: { inline_keyboard: buttons },
+      disable_web_page_preview: true,
     });
   }
 

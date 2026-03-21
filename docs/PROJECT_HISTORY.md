@@ -249,3 +249,15 @@
 **Сделано:** зафиксирована целевая online-only схема refresh-пайплайна: `catalog-scrape -> catalog-ingest -> clinic-site-backfill -> doctor-clinic-verify`, где Cloudflare Worker обслуживает 24/7 API и Telegram webhook, Netlify отдает Mini App/snapshot, Turso хранит verification metadata, а тяжелые scrape/verification jobs должны быть вынесены в cloud runner вместо локального ПК; отдельно зафиксирован приоритет CTA: `official_booking_url -> official_profile_url -> site_url -> aggregator URL`  
 **Изменены файлы:** `docs/DECISIONS.md`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** после разрешения на `public` repo или разблокировки private Actions billing перенести `catalog-scrape` и `doctor-clinic-verify` в GitHub Actions и подтвердить cloud-only refresh без локального запуска
+
+## 2026-03-22 02:26 — Public Repo Switch + Cloud Sync Runner Started
+**Роль:** Windows Engineering Assistant  
+**Сделано:** репозиторий `AI-Nikitka93/medsearchrb` переведен из `PRIVATE` в `PUBLIC` после проверки git history и tracked files на отсутствие секретов; добавлены `LICENSE` (`All Rights Reserved`) и usage-ограничение в `README`; новый workflow run `catalog-sync #2` (`23390834435`) больше не блокируется billing и реально стартовал в GitHub Actions, где job `scrape` сейчас выполняет полный cloud scrape без участия локального ПК  
+**Изменены файлы:** `LICENSE`, `README.md`, `docs/RESEARCH_LOG.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** дождаться завершения `catalog-sync #2`, затем при необходимости разрезать pipeline на более короткие cloud jobs (`scrape`, `backfill`, `verify`) для снижения latency первой синхронизации
+
+## 2026-03-22 02:42 — Promotion Channel Posting Pipeline
+**Роль:** Windows Engineering Assistant  
+**Сделано:** promotion pipeline расширен до online-posting в Telegram-канал: добавлены `NotificationOutboxRepository` и `PromotionChannelService`, Worker получил protected endpoint `/internal/notifications/promotions/flush` и cron trigger `*/20 * * * *`, `deploy_worker.ps1` начал синхронизировать `TELEGRAM_CHANNEL_ID`, а workflow `catalog-sync` теперь после backfill вызывает flush endpoint; live-тест подтвердил реальную отправку pending promo event (`claimed=1`, `sent=1`), после чего `notification_outbox` в Turso перешел в статус `sent`  
+**Изменены файлы:** `.github/workflows/scraper.yml`, `apps/worker/deploy_worker.ps1`, `apps/worker/src/env.ts`, `apps/worker/src/index.ts`, `apps/worker/src/routes/internal.ts`, `apps/worker/src/services/telegram-bot-service.ts`, `apps/worker/src/services/promotion-channel-service.ts`, `apps/worker/src/repositories/notification-outbox-repository.ts`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить и запушить promotion-posting изменения, затем дождаться следующего cloud ingest/backfill и подтвердить, что новые акции публикуются в канал уже без ручного flush

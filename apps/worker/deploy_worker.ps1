@@ -90,6 +90,7 @@ try {
   Put-WorkerSecret -Pairs $pairs -SecretName "TURSO_AUTH_TOKEN" -EnvKey "TURSO_AUTH_TOKEN"
   Put-WorkerSecret -Pairs $pairs -SecretName "INGEST_SHARED_SECRET" -EnvKey "INGEST_SHARED_SECRET"
   Put-WorkerSecret -Pairs $pairs -SecretName "BOT_TOKEN" -EnvKey "BOT_TOKEN"
+  Put-WorkerSecret -Pairs $pairs -SecretName "TELEGRAM_CHANNEL_ID" -EnvKey "TELEGRAM_CHANNEL_ID"
   Put-WorkerSecret -Pairs $pairs -SecretName "WEBAPP_URL" -EnvKey "WEBAPP_URL"
   Put-WorkerSecret -Pairs $pairs -SecretName "PRIVACY_URL" -EnvKey "PRIVACY_URL"
   Put-WorkerSecret -Pairs $pairs -SecretName "SUPPORT_USERNAME" -EnvKey "SUPPORT_USERNAME"
