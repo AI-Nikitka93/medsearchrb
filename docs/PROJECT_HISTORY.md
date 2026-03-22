@@ -297,3 +297,9 @@
 **Сделано:** найден корень “часового зависания” GitHub Actions: весь online refresh был собран как один monolithic job, где `Run scrapers` держал внутри полный `ydoc` scrape и блокировал быстрые promo sources; workflow `.github/workflows/scraper.yml` перестроен на две параллельные job-и — `promo-sync` и `ydoc-catalog` — с разными timeout, отдельными batch artifact-ами и `concurrency.cancel-in-progress=true`, чтобы новые ручные rerun-ы автоматически останавливали старые зависшие cloud runs; локальная YAML-проверка подтвердила новую структуру jobs  
 **Изменены файлы:** `.github/workflows/scraper.yml`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** закоммитить и запушить новый workflow, затем запустить fresh cloud run и убедиться, что promo sources завершаются быстро, а долгий `ydoc` идет отдельно и больше не маскирует прогресс всего pipeline
+
+## 2026-03-22 03:24 — Promo Sync Split Into Dedicated Frequent Workflow
+**Роль:** Windows Engineering Assistant  
+**Сделано:** окончательно развел online-пайплайны: `.github/workflows/scraper.yml` теперь отвечает только за `doctor-catalog-sync` (`ydoc` daily), а новый `.github/workflows/promo-sync.yml` отвечает только за акции и запускается отдельным cron `*/15 * * * *`; локальная YAML-проверка подтвердила, что теперь есть два самостоятельных workflow-а — `doctor-catalog-sync` и `promo-sync`, что устраняет главный UX-баг GitHub Actions: быстрые акции больше не должны ждать тяжелый doctor crawl  
+**Изменены файлы:** `.github/workflows/scraper.yml`, `.github/workflows/promo-sync.yml`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** запушить split-workflow в GitHub, вручную запустить новый `promo-sync` и подтвердить, что online refresh акций идет независимо от `ydoc`-каталога

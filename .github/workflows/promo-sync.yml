@@ -1,21 +1,21 @@
-name: doctor-catalog-sync
+name: promo-sync
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 1 * * *"
+    - cron: "*/15 * * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: medsearchrb-doctor-catalog-sync
+  group: medsearchrb-promo-sync
   cancel-in-progress: true
 
 jobs:
-  ydoc-catalog:
+  promo-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -39,16 +39,16 @@ jobs:
           python -m pip install -r requirements.txt
           npm --prefix apps/worker ci
 
-      - name: Run YDoc catalog scraper
+      - name: Run promo sources to batch file
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
         run: >
           python -m apps.scrapers.main
-          --sources ydoc
+          --sources kravira lighthouse lode medart
           --output-mode file
           --log-level INFO
 
-      - name: Backfill YDoc batch to Turso
+      - name: Backfill promo batch to Turso
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
@@ -56,25 +56,50 @@ jobs:
         run: >
           npm --prefix apps/worker run catalog:backfill --
           --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
-          --chunk-size 100
+          --chunk-size 50
 
-      - name: Verify live doctor total
+      - name: Flush promotion posts to Telegram channel
+        env:
+          INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          request = urllib.request.Request(
+              "https://medsearchrb-api.aiomdurman.workers.dev/internal/notifications/promotions/flush",
+              method="POST",
+              headers={
+                  "Authorization": f"Bearer {os.environ['INGEST_SHARED_SECRET']}",
+                  "Content-Type": "application/json",
+                  "User-Agent": "MedsearchRB-GitHubActions/1.0",
+              },
+              data=b"{}",
+          )
+
+          with urllib.request.urlopen(request, timeout=120) as response:
+              payload = json.loads(response.read().decode("utf-8"))
+              print(json.dumps(payload, ensure_ascii=False))
+          PY
+
+      - name: Verify live promo total
         run: |
           python - <<'PY'
           import json
           import urllib.request
 
           with urllib.request.urlopen(
-              "https://medsearchrb-api.aiomdurman.workers.dev/api/v1/doctors?page=1&per_page=1",
+              "https://medsearchrb-api.aiomdurman.workers.dev/api/v1/promotions?page=1&per_page=1",
               timeout=60,
           ) as response:
               payload = json.loads(response.read().decode("utf-8"))
               print(json.dumps({"total": payload["total"]}, ensure_ascii=False))
           PY
 
-      - name: Upload YDoc batch artifact
+      - name: Upload promo batch artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ydoc-source-batch
+          name: promo-source-batch
           path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
           if-no-files-found: warn
