@@ -1,6 +1,6 @@
 # MedsearchRB Execution Backlog
 
-_Последнее обновление: 2026-03-22 23:41 | Роль: Windows Engineering Assistant_
+_Последнее обновление: 2026-03-22 23:59 | Роль: Windows Engineering Assistant_
 
 ## Must
 
@@ -15,6 +15,16 @@ _Последнее обновление: 2026-03-22 23:41 | Роль: Windows E
     - каждый run укладывается в предсказуемое время и не маскирует прогресс других источников.
   - Сложность: M
   - Риск блокера: средний, нужен аккуратный баланс между скоростью и respectful crawl.
+
+- [ ] Mini App Freshness P0 — триггерить Netlify rebuild из data workflows
+  - Цель: чтобы public `catalog.json` перестал отставать от live Worker после cloud updates.
+  - Вход: созданный `NETLIFY_BUILD_HOOK_URL` в GitHub secrets.
+  - Definition of Done:
+    - `promo-sync`, `review-sync-*`, `doctor-catalog-sync` дергают Netlify build hook после успешного verify-step;
+    - build hook использует только минимально опасный secret, без широкого Netlify token;
+    - Mini App freshness больше не зависит от ручного redeploy.
+  - Сложность: S
+  - Риск блокера: низкий.
 
 - [ ] Review Layer P1 — добавить `103.by` и `doktora.by` как production doctor-review sources
   - Цель: перейти от single-source YDoc к реальному multi-source reputation layer для врачей.
@@ -86,5 +96,5 @@ _Последнее обновление: 2026-03-22 23:41 | Роль: Windows E
 ## Current Focus
 
 - [ ] Активный трек: `Review Pipeline Hardening P0 (split 103.by / doktora.by + bounded cloud windows)`
-- [ ] Параллельный блокер: `Mini App snapshot freshness still lags live Worker because GitHub repo has no Netlify deploy secrets`
+- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub build hook -> Netlify snapshot rebuild)`
 - [ ] Следующий после него: `Clinic Verification P1 + review matching coverage + 2doc.by`

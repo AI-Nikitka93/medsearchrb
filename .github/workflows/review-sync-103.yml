@@ -143,6 +143,31 @@ jobs:
           });
           "
 
+      - name: Trigger Mini App snapshot rebuild
+        env:
+          NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          hook_url = os.environ.get("NETLIFY_BUILD_HOOK_URL", "").strip()
+          if not hook_url:
+              print(json.dumps({"skipped": "NETLIFY_BUILD_HOOK_URL missing"}, ensure_ascii=False))
+              raise SystemExit(0)
+
+          request = urllib.request.Request(
+              hook_url,
+              method="POST",
+              headers={"User-Agent": "MedsearchRB-GitHubActions/1.0"},
+              data=b"{}",
+          )
+
+          with urllib.request.urlopen(request, timeout=60) as response:
+              print(json.dumps({"status": response.status, "triggered": True}, ensure_ascii=False))
+          PY
+
       - name: Upload 103.by review batch artifact
         uses: actions/upload-artifact@v4
         with:

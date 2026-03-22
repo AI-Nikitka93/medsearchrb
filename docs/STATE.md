@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 23:41
+Дата и время: 2026-03-22 23:59
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), но главный bottleneck сместился в review-layer. Старый scheduled `review-sync` был архитектурно перегружен: он пытался в одном giant-run проходить `103.by` full sitemap и медленный respectful crawl `doktora.by`, из-за чего progress выглядел “зависшим”. В этом шаге pipeline разрезан на отдельные bounded workflows `review-sync-103` и `review-sync-doktora`, а старый `review-sync` переведен в manual smoke-only режим. Дополнительный blocker по Mini App freshness пока остается: в GitHub нет Netlify deploy secrets, поэтому public `catalog.json` все еще может отставать от live Worker API между ручными deploy.
+Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Второй важный blocker по Mini App freshness тоже снят: создан Netlify build hook и записан `NETLIFY_BUILD_HOOK_URL` в GitHub secrets. Теперь следующий live шаг — убедиться, что `promo-sync`, `review-sync-*` и `doctor-catalog-sync` после verify-step реально триггерят Netlify rebuild и убирают lag между Worker API и public `catalog.json`.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`

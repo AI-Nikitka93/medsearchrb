@@ -131,8 +131,11 @@
 ## 2026-03-22 — Mini App Snapshot Freshness Needs A Separate Delivery Path
 - Same-origin snapshot is still the best fast path for Telegram WebView rendering.
 - But snapshot freshness must not depend on manual local redeploys.
-- Current blocker:
-  - GitHub repo has no Netlify deployment secrets, so Actions cannot yet redeploy the Mini App automatically after data workflows.
-- Until secrets exist, product assumptions must stay honest:
-  - live Worker API can move ahead of the public `catalog.json`;
-  - UX changes should avoid claiming instant freshness if the Mini App still serves the older snapshot.
+- Delivery decision:
+  - use a dedicated Netlify build hook URL stored as `NETLIFY_BUILD_HOOK_URL` in GitHub secrets;
+  - do not grant GitHub Actions a broad Netlify personal token if a build hook is enough.
+- Workflow decision:
+  - `promo-sync`, `review-sync-*`, and `doctor-catalog-sync` may trigger the build hook after successful verify-steps;
+  - this is acceptable even if some builds are redundant, because the security surface is still narrower than a full Netlify auth token.
+- Remaining caveat:
+  - public `catalog.json` can still lag until those updated workflows complete at least once on the new configuration.
