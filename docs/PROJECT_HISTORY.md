@@ -351,3 +351,51 @@
 **Сделано:** внедрен первый online-слой очистки битых и закрытых клиник: добавлена миграция `0004_clinic_site_health.sql` с health-полями на `clinics`, создан script `apps/worker/scripts/clinic-site-health-sync.ts` для проверки официальных `site_url`, записи результатов в `clinic_verification_runs` и suppression явно невалидных клиник после повторных провалов; `verify-clinic-sites.ts` переведен на `env-first` для GitHub Actions, а новый workflow `.github/workflows/clinic-site-sync.yml` запускает `db:migrate -> verify:clinics -> clinics:health` полностью в облаке; локальный smoke-test подтвердил первый проход (`healthy=4`, `fetch_failed=1`, `hidden=0`)  
 **Изменены файлы:** `.github/workflows/clinic-site-sync.yml`, `apps/worker/package.json`, `apps/worker/scripts/clinic-site-health-sync.ts`, `apps/worker/scripts/verify-clinic-sites.ts`, `db/migrations/0004_clinic_site_health.sql`, `docs/PROJECT_HISTORY.md`, `docs/STATE.md`  
 **Следующий шаг:** закоммитить и запушить новый health-layer, вручную прогнать первый `clinic-site-sync` run в GitHub и подтвердить, что suppression битых `site_url` работает online без локального ПК
+
+## 2026-03-22 11:03 — First Cloud Clinic Health Run In Progress
+**Роль:** Windows Engineering Assistant  
+**Сделано:** первый cloud run `clinic-site-sync` (`23401254824`) запущен и дошел до online health-check; шаг `Backfill official clinic sites from YDoc clinic pages` уже завершился `success` и за текущий прогон в `clinic_verification_runs` появилось `402` записей `linked_official_site`, `21` `fetch_failed`, `6` `no_official_site`; шаг `Audit official clinic sites and suppress broken ones` уже начал писать live health-статусы в `clinics`: на момент фиксации `healthy=247`, `blocked=12`, `fetch_failed=12`, `redirected_external=4`, `unknown=135`, при этом `is_hidden=1` еще ни для одной клиники не выставлен, потому что это только первый накопительный проход (`site_failure_count=1`)  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** дождаться завершения run `23401254824`, затем проверить итоговую сводку `site_health_status`, `is_hidden` и решить, нужно ли отдельно обрабатывать Instagram-only clinic URLs как низкодоверенные источники
+
+## 2026-03-22 14:12 — Review Aggregation Strategy Researched
+**Роль:** Windows Engineering Assistant  
+**Сделано:** проведен targeted research по слою отзывов врачей: подтверждено, что multi-source review aggregation нельзя строить как бесконтрольный перенос полных текстов, особенно для Google Places reviews из-за display/caching/attribution requirements; зафиксирована безопасная стратегия для проекта — хранить source-level summary-метрики (`rating_avg`, `review_count`, `source_url`, `last_seen_at`, sentiment summary), считать итоговую оценку как взвешенную, но обязательно показывать разбивку по источникам, чтобы противоречивые площадки были видны честно  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`  
+**Следующий шаг:** спроектировать review-schema и product-слой `Репутация по источникам`, затем подключать источники отзывов по одному с учетом их display restrictions и attribution rules
+
+## 2026-03-22 14:20 — Minsk / Belarus Review Sources Inventory
+**Роль:** Windows Engineering Assistant  
+**Сделано:** собран inventory площадок Минска/РБ с отзывами о врачах и клиниках; подтверждено, что для doctor-first reputation самыми важными локальными площадками являются `YDoc.by` и `103.by`, тогда как `2GIS`, `Google Maps` и `Yandex Maps` дают в первую очередь clinic/service reputation, а official clinic websites являются self-published low-trust источником; вывод зафиксирован в `docs/RESEARCH_LOG.md` как основа для будущего review-layer проекта  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`  
+**Следующий шаг:** разделить будущий review pipeline на `doctor-first` и `clinic-first` и проектировать UI так, чтобы пользователь видел отдельно репутацию врача и репутацию клиники
+
+## 2026-03-22 14:25 — doktora.by and 2doc.by Classified
+**Роль:** Windows Engineering Assistant  
+**Сделано:** отдельно проверены `doktora.by` и `2doc.by` как возможные источники для reputation/discovery layer; подтверждено, что `doktora.by` живой и выглядит как doctor-first source (`HTTP 200`, homepage `Врачи Беларуси`, robots с `Crawl-delay: 10`), а `2doc.by` живой и сильнее похож на doctor-search / online booking source (`HTTP 200`, robots `Allow: /`, sitemap опубликован), чем на главный review-source; вывод зафиксирован в `docs/RESEARCH_LOG.md`  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`  
+**Следующий шаг:** отдельно разобрать detail-page schema на `doktora.by` и `2doc.by`, чтобы решить, что из них идет в review-layer, а что — в discovery/availability layer
+
+## 2026-03-22 14:32 — doktora.by and 2doc.by Detail Signals Confirmed
+**Роль:** Windows Engineering Assistant  
+**Сделано:** проверены реальные doctor detail pages и sitemap-структура `doktora.by` / `2doc.by`; подтверждено, что `doktora.by` — полноценный review-first doctor source (title/meta `Отзывы о враче`, отдельный paginated review section `/otzyvy-o-vrachah-belarusi?page=N`), а `2doc.by` — hybrid doctor source с review+booking сигналом (open `sitemap-doctor.xml`, doctor pages с `отзывы, записаться на прием` в title/meta)  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`  
+**Следующий шаг:** перейти от classification к implementation prep: выделить стабильные detail-page markers и затем добавить scrapers для `doktora.by` и `2doc.by`
+
+## 2026-03-22 14:40 — Review Source Contract Fixed in Decisions
+**Роль:** Windows Engineering Assistant  
+**Сделано:** после detail-page проверки зафиксирован implementation-contract для review/discovery layer: `doktora.by` закреплен как doctor-review source, `2doc.by` — как hybrid discovery/booking source, а doctor reputation и clinic reputation формально разведены по разным semantic classes; field contract для будущих parser-ов добавлен в `docs/DECISIONS.md`  
+**Изменены файлы:** `docs/DECISIONS.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** переходить к реальной реализации: сначала выбрать один source для первого parser-а (`doktora.by` логичнее первым), затем внедрять source summary в существующий `reviews_summary`
+
+## 2026-03-22 14:48 — Unified Improvement Backlog Added
+**Роль:** Windows Engineering Assistant  
+**Сделано:** создан единый execution backlog в `docs/TODO.md`, чтобы вести проект по одной карте улучшений; в backlog разделены `Must / Should / Could`, выделены активные треки `Clinic Verification P1` и `Review Layer P1 (doktora.by)`, а `docs/STATE.md` синхронизирован с новым режимом работы от единого TODO вместо разрозненных задач  
+**Изменены файлы:** `docs/TODO.md`, `docs/STATE.md`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** идти по backlog сверху вниз: сначала дождаться и зафиксировать итог `clinic-site-sync`, затем начинать реализацию `doktora.by` scraper-а как первого doctor-review source
+
+## 2026-03-22 14:54 — clinic-site-sync Summary Step Fixed
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден и исправлен точный blocker первого cloud run `clinic-site-sync`: сам health-check и clinic-site backfill завершились успешно, но workflow упал на последнем шаге `Summarize clinic health` из-за `top-level await` в `tsx -e`; summary-step переписан на async IIFE, чтобы GitHub Actions завершал run `success`, а не `failure` при уже обработанных клиниках  
+**Изменены файлы:** `.github/workflows/clinic-site-sync.yml`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** запушить fix и перезапустить `clinic-site-sync`, чтобы получить первый полностью зеленый run для clinic health-layer

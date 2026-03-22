@@ -46,6 +46,7 @@
 - Локальный smoke-test `clinics:health -- --limit 5 --all` подтвердил первый проход: `healthy=4`, `fetch_failed=1`, `hidden=0`
 - Добавлен отдельный cloud workflow `.github/workflows/clinic-site-sync.yml` c шагами `db:migrate -> verify:clinics -> clinics:health`
 Что осталось:
+- Зафиксировать единый execution backlog в `docs/TODO.md` и вести работу от него, а не от разрозненных сообщений
 - Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
 - Продолжить разрезание и ускорение `doctor-catalog-sync`, если `ydoc` остается слишком длинным
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
@@ -53,4 +54,4 @@
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 - Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
 Следующий шаг:
-- Запушить `clinic-site-sync`, вручную прогнать первый cloud run и убедиться, что health-check клиник и suppression битых `site_url` работают online без локального ПК
+- Держать backlog в `docs/TODO.md` как единый план выполнения; ближайшие активные задачи: завершить `clinic-site-sync`, затем внедрять `doktora.by` как первый doctor-review source

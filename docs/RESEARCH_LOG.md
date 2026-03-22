@@ -703,3 +703,130 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
 - Handoff:
   - `Kravira` и `LODE` уже реализованы и живо ingested.
   - Следующий source-expansion step: `Nordin`, затем inventory остальных официальных promo/news pages по крупным медцентрам Минска.
+
+## [ТЕМА: Review aggregation policy and source strategy]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно понять, как собирать отзывы о врачах с нескольких источников и безопасно выводить агрегированную оценку в Mini App.
+- Источники:
+  - live `https://ydoc.by/robots.txt`
+  - live `https://www.103.by/robots.txt`
+  - official `https://developers.google.com/maps/documentation/places/web-service/policies`
+- Подтвержденные факты:
+  - Для Google Places reviews действуют строгие правила отображения: нужны атрибуции, авторы и ограничения по хранению/отображению review content; это не просто “свободный scrape и перепечатка”.
+  - Для review-layer безопаснее хранить не полные тексты отзывов как основной кэш, а summary-метрики и source-level attribution.
+  - Уже действующая content policy проекта и текущая схема лучше всего сочетаются с моделью `rating_count / rating_avg / source_count / last_seen_at`, а не с массовой репликацией полных текстов отзывов.
+- Выводы для реализации:
+  - Делать multi-source review aggregation нужно через нормализованные source-level summaries:
+    - `source_name`
+    - `rating_avg`
+    - `review_count`
+    - `review_sentiment_summary`
+    - `last_seen_at`
+    - `source_url`
+  - Итоговую “среднюю” оценку лучше считать как взвешенную по количеству отзывов, но показывать рядом разбивку по источникам, чтобы не скрывать конфликт между площадками.
+  - Для источников с жесткими display/caching restrictions лучше ограничиться ссылкой на источник, атрибуцией и summary, а не полным переносом текста отзывов.
+- Handoff:
+  - Следующий data step: спроектировать таблицы `review_sources` / `doctor_review_sources` / `doctor_review_snapshots` и выводить в Mini App блок `Репутация по источникам`.
+  - Следующий product step: в detail-screen врача показывать не “одну абсолютную оценку”, а `Итоговый рейтинг` + `По источникам`, чтобы противоречивые площадки были видны честно.
+
+## [ТЕМА: Minsk / Belarus doctor review sites inventory]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно понять, какие сайты в Минске/РБ реально формируют слой отзывов о врачах и клиниках, и какие из них подходят для продукта как source-of-truth или secondary reputation signals.
+- Источники:
+  - live `https://info.103.by/otzyvy`
+  - live `https://developers.google.com/maps/documentation/places/web-service/policies`
+  - live `https://2gis.by/minsk`
+  - search results по `ydoc.by`, `103.by`, `2gis.by`, `Google Maps`, `Yandex Maps`
+- Подтвержденные факты:
+  - `YDoc.by` — doctor-first площадка для Беларуси/Минска, у которой отзывы и рейтинг являются центральной частью doctor card; по вспомогательным материалам YDoc видно, что портал активно работает с отзывами и рейтингами врачей.
+  - `103.by` — важный локальный RB-source, но у него сильная модерация отзывов и правила публикации; площадка подходит как значимый local signal, но требует аккуратного отношения к отзывам и происхождению рейтинга.
+  - `2GIS` в Минске дает рабочий слой отзывов в основном по клиникам/медцентрам, а не по отдельным врачам; полезен как clinic/service reputation source.
+  - `Google Maps` потенциально ценен для clinic reputation, но у Places API есть строгие attribution/caching/display rules для reviews.
+  - `Yandex Maps` и аналогичные map/listing-сервисы полезны прежде всего как clinic-level репутационный сигнал, а не как doctor-first source.
+  - Официальные сайты клиник тоже могут содержать отзывы, но это низкодоверенный self-published источник и его нельзя смешивать с независимыми площадками как равный сигнал.
+- Выводы для реализации:
+  - Источники надо делить на 3 класса:
+    1. `doctor-first`: `YDoc.by`, `103.by`
+    2. `clinic-first`: `2GIS`, `Google Maps`, `Yandex Maps`
+    3. `self-published`: отзывы на сайтах самих клиник
+  - Для Mini App честный reputation layer должен быть multi-source:
+    - doctor trust лучше строить на `YDoc + 103.by`
+    - clinic/service trust лучше строить на `2GIS + maps sources`
+    - official clinic site reviews можно показывать только как secondary signal
+  - Для Google нельзя полагаться на произвольный scrape review content; нужен официальный API path с атрибуцией или отказ от полного переноса текстов.
+  - Для first production slice самый практичный стек review-sources выглядит так:
+    - `YDoc.by`
+    - `103.by`
+    - `2GIS`
+    - позже `Google Maps`
+- Handoff:
+  - Следующий data step: спроектировать `review_sources` и привязать doctor-level и clinic-level review pipelines отдельно.
+  - Следующий product step: в detail-screen врача развести `Отзывы о враче` и `Отзывы о клинике`, чтобы не смешивать doctor reputation и clinic service reputation в одну цифру.
+
+## [ТЕМА: doktora.by и 2doc.by как review / discovery sources]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Пользователь отдельно указал `https://doktora.by` и `https://2doc.by/` как кандидатов в review/discovery inventory.
+- Источники:
+  - live `https://doktora.by/`
+  - live `https://doktora.by/robots.txt`
+  - live `https://2doc.by/`
+  - live `https://2doc.by/robots.txt`
+- Подтвержденные факты:
+  - `doktora.by` живой (`HTTP 200`) и явно позиционируется как `Врачи Беларуси`; по homepage и контентным маркерам это doctor-first площадка с doctor/review-oriented моделью.
+  - `doktora.by/robots.txt` не запрещает весь публичный сайт целиком, но задает `Crawl-delay: 10` и стандартные запреты на admin/search/auth paths.
+  - `2doc.by` живой (`HTTP 200`) и явно позиционируется как `сервис поиска врачей` / online booking.
+  - `2doc.by/robots.txt` максимально открытый (`Allow: /`), sitemap опубликован.
+  - По доступным публичным сигналам `2doc.by` сейчас выглядит сильнее как doctor-discovery / appointment source, чем как мощный самостоятельный review-source.
+- Выводы для реализации:
+  - `doktora.by` стоит добавить в shortlist doctor-first sources рядом с `YDoc.by` и `103.by`.
+  - `2doc.by` стоит рассматривать сначала как discovery / availability / booking source, а не как основной слой отзывов.
+  - Для review-layer приоритет по этим двум источникам:
+    - `doktora.by` — потенциальный doctor-review source
+    - `2doc.by` — потенциальный doctor discovery / booking source
+- Handoff:
+  - Следующий data step: отдельно проверить структуру doctor detail pages на `doktora.by` и наличие стабильных review-count / rating markers.
+  - Для `2doc.by` следующий шаг — проверить detail-page schema на наличие отзывов; если review-layer слабый, использовать его не для рейтинга, а для availability/discovery signals.
+
+## [ТЕМА: doktora.by / 2doc.by detail page signals]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было понять, что именно реально есть на doctor detail pages `doktora.by` и `2doc.by`: только discovery, или и review/rating тоже.
+- Источники:
+  - live `https://doktora.by/otzyvy/hirurg-v-minske-alekseev-sergey-alekseevich`
+  - live `https://2doc.by/doctor/Lysenok-alexandr-yurievich`
+  - live `https://2doc.by/sitemap-doctor.xml`
+  - live `https://doktora.by/otzyvy-o-vrachah-belarusi`
+- Подтвержденные факты:
+  - `doktora.by` doctor detail pages уже в title/meta выглядят как review-first doctor pages:
+    - title: `Отзывы о враче ...`
+    - meta description содержит звездную оценку, specialty, clinic and review-oriented text.
+  - `doktora.by` имеет отдельный большой paginated раздел `/otzyvy-o-vrachah-belarusi?page=N`, что делает его системным review-source, а не случайным каталогом.
+  - `2doc.by` имеет открытый `sitemap-doctor.xml` с большим списком doctor detail pages.
+  - `2doc.by` doctor pages в title/meta уже явно содержат:
+    - `отзывы`
+    - `записаться на прием`
+    - specialty / full name врача
+  - По raw HTML `2doc.by` сейчас выглядит как hybrid source: doctor reviews + booking/discovery.
+- Выводы для реализации:
+  - `doktora.by` можно считать полноценным doctor review source для roadmap-а рядом с `YDoc.by` и `103.by`.
+  - `2doc.by` надо считать hybrid source:
+    - review signal
+    - booking / appointment signal
+    - discovery signal
+  - Для parser design:
+    - `doktora.by` сначала worth parsing for `rating / review_count / doctor page / clinic mention`
+    - `2doc.by` worth parsing for `rating / review_count / doctor page / booking availability / clinic relation`
+- Handoff:
+  - Следующий implementation step: взять по 3-5 карточек и выделить стабильные CSS/JSON-LD markers для `rating_avg`, `review_count`, `clinic_name`, `booking CTA`.
+  - После этого добавить два новых scrapers: `doktora_reviews` и `2doc_doctors`.

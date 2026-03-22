@@ -62,16 +62,21 @@ jobs:
         run: |
           npm --prefix apps/worker exec -- tsx -e "
           import { createClient } from '@libsql/client';
-          const client = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
-          const result = await client.execute(\`
-            SELECT
-              site_health_status,
-              COUNT(*) AS total
-            FROM clinics
-            WHERE site_url IS NOT NULL
-              AND site_url <> ''
-            GROUP BY site_health_status
-            ORDER BY total DESC
-          \`);
-          console.log(JSON.stringify(result.rows, null, 2));
+          (async () => {
+            const client = createClient({ url: process.env.TURSO_DATABASE_URL, authToken: process.env.TURSO_AUTH_TOKEN });
+            const result = await client.execute(\`
+              SELECT
+                site_health_status,
+                COUNT(*) AS total
+              FROM clinics
+              WHERE site_url IS NOT NULL
+                AND site_url <> ''
+              GROUP BY site_health_status
+              ORDER BY total DESC
+            \`);
+            console.log(JSON.stringify(result.rows, null, 2));
+          })().catch((error) => {
+            console.error(error instanceof Error ? error.stack ?? error.message : error);
+            process.exit(1);
+          });
           "

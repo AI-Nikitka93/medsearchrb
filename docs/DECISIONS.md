@@ -68,3 +68,29 @@
 - Operational split for future automation:
   - short interval jobs: read-only health checks and lightweight backfills;
   - long interval jobs: full scrape/re-ingest, because official clinic-site verification is slower and should be batched separately.
+
+## 2026-03-22 — Review / Discovery Source Classification for Belarus
+- Review and discovery sources must be split by semantic role instead of being mixed into one “rating”.
+- Source classes:
+  1. `doctor_review_source`
+     - examples: `YDoc.by`, `103.by`, `doktora.by`
+     - primary payload: `doctor identity`, `rating_avg`, `review_count`, `source_page_url`, `last_seen_at`
+  2. `doctor_discovery_booking_source`
+     - examples: `2doc.by`, `YDoc.by`
+     - primary payload: `doctor identity`, `clinic relation`, `booking CTA`, `source_page_url`, optionally `rating/review_count`
+  3. `clinic_reputation_source`
+     - examples: `2GIS`, `Google Maps`, `Yandex Maps`
+     - primary payload: `clinic identity`, `rating_avg`, `review_count`, `source_page_url`, `last_seen_at`
+  4. `self_published_source`
+     - official clinic websites with testimonials
+     - may be shown as low-trust secondary content, never as a primary independent rating signal
+- Product rule:
+  - doctor reputation and clinic reputation must be shown separately in Mini App;
+  - one merged “single truth” rating is not allowed unless the UI also exposes the source breakdown.
+- Implementation rule:
+  - `doktora.by` enters the roadmap as a doctor-review source;
+  - `2doc.by` enters the roadmap as a hybrid discovery/booking source with optional review fields when available.
+- Field contract for upcoming parsers:
+  - `doctor_id candidate fields`: full name, specialty, city, clinic mentions, source slug
+  - `review summary fields`: `rating_avg`, `review_count`, `source_name`, `source_page_url`, `captured_at`
+  - `booking/discovery fields`: `clinic_name`, `clinic_slug`, `booking_url`, `source_page_url`
