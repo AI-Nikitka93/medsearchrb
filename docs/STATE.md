@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 02:26
+Дата и время: 2026-03-22 02:53
 Статус: IN_PROGRESS
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже переведен в `PUBLIC`, billing blocker private Actions снят, и workflow `catalog-sync #2` (`23390834435`) реально исполняется в GitHub Actions. Текущий активный этап — долгий cloud `scrape` без лимита по врачам, поэтому cloud-only refresh уже запущен, но еще не завершен.
+Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже переведен в `PUBLIC`, billing blocker private Actions снят, и cloud workflow уже может исполняться. Дополнительно новый promo source `Lighthouse` уже вручную добавлен в live Turso и начал поститься в канал, но код источника еще нужно запушить и прогнать отдельным cloud run, чтобы future refresh/promotions publishing тоже шли полностью online.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -25,11 +25,15 @@
 - Массовый `YDoc` clinic verification показал `402` clinic cards в Turso, из них `397` уже имеют не-агрегаторный `site_url`
 - Остановлен зависший локальный `python`-scraper после прерванного ручного запуска, чтобы не создавать ложное ощущение зависимости production-контура от ПК
 - Worker получил online promotion-posting pipeline: protected endpoint `/internal/notifications/promotions/flush`, cron `*/20 * * * *`, и live-тест подтвердил `claimed=1`, `sent=1` с переводом `notification_outbox` в статус `sent`
+- Добавлен новый official promo source `lighthouse`; локальный scrape подтвердил `17` promotions и clinic record `Маяк Здоровья`
+- `Lighthouse` batch успешно прогнан через live Turso backfill (`inserted=18`, `errors=0`)
+- Production Worker API `/api/v1/promotions` теперь отдает `18` акций, включая `Диагностика варикоза по выгодной стоимости`
+- Promotion outbox для `Lighthouse` акций реально отправлен в Telegram channel через live flush (`sent=10`, затем `sent=7`, затем очередь опустела)
 Что осталось:
-- Дождаться завершения текущего `catalog-sync #2`
-- Запушить свежий код promotion-posting pipeline в public repo, чтобы следующие cloud runs использовали новый flush-step из workflow
+- Запушить свежий код `Lighthouse` + promotion-posting pipeline в public repo
+- Запустить новый `catalog-sync` cloud run уже с `lighthouse` в списке источников
 - При необходимости разрезать pipeline на более короткие cloud jobs
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 Следующий шаг:
-- Закоммитить и запушить promotion-posting изменения, затем дождаться финального статуса `catalog-sync #2` и подтвердить, что scraper + ingest + promo channel posting идут полностью без локального ПК
+- Закоммитить и запушить `Lighthouse` source, затем вручную запустить новый `catalog-sync` run и подтвердить, что scrape + backfill + promo channel posting для `Lighthouse` уже идут полностью в облаке без локального ПК

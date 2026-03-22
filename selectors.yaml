@@ -1,3 +1,8 @@
+lighthouse:
+  promotions:
+    primary:
+      - "a[href*='/promotions/']"
+
 medart:
   doctor_links:
     primary:

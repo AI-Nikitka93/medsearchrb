@@ -627,3 +627,51 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
 - Handoff:
   - Следующий operational step: закоммитить `LICENSE`/README/security cleanup, затем выполнить `gh repo edit --visibility public --accept-visibility-change-consequences`.
   - После смены visibility повторно проверить `gh run list`/`gh workflow run` для cloud-only refresh.
+
+## [ТЕМА: Lighthouse promotions coverage gap]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было проверить, попадает ли реальная акция Lighthouse в текущий production promotion-pipeline.
+- Источники:
+  - live `https://lighthouse.by/promotions/diagnostika-varikoza-po-vygodnoj-stoimosti/`
+  - live `https://medsearchrb-api.aiomdurman.workers.dev/api/v1/promotions?page=1&per_page=20`
+  - локальный grep по репозиторию
+- Подтвержденные факты:
+  - Страница акции Lighthouse доступна (`HTTP 200`) и заголовок страницы совпадает: `Диагностика варикоза по выгодной стоимости`.
+  - По локальному коду `lighthouse.by` вообще не фигурирует как scraper/source.
+  - В live Turso нет promotions с `source_url LIKE '%lighthouse.by%'` и нет title по `варикоз`.
+  - Live promotions API сейчас отдает только одну акцию `MedАrt`.
+- Выводы для реализации:
+  - Текущий production-pipeline акций покрывает не все медцентры Минска.
+  - `Lighthouse` — реальный пропуск в source coverage, а не UI-баг и не проблема ingest.
+  - Для закрытия этого класса дыр нужно расширять promotion-source coverage clinic-by-clinic и включать новые источники в cloud scrape/backfill.
+- Handoff:
+  - Следующий data step: добавить `Lighthouse` как promotion scraper source.
+  - После добавления — проверить, что новая акция доходит до `promotions`, затем в `notification_outbox`, затем в Telegram channel posting.
+
+## [ТЕМА: Lighthouse promotions source structure]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - После подтверждения coverage gap нужно было понять, можно ли быстро встроить `Lighthouse` как официальный источник акций без doctor catalog.
+- Источники:
+  - live `https://lighthouse.by/robots.txt`
+  - live `https://lighthouse.by/`
+  - live `https://lighthouse.by/promotions/`
+  - live `https://lighthouse.by/promotions/diagnostika-varikoza-po-vygodnoj-stoimosti/`
+- Подтвержденные факты:
+  - `robots.txt` не запрещает чтение публичного архива `/promotions/`.
+  - Архив `https://lighthouse.by/promotions/` сейчас содержит `17` уникальных promo URLs.
+  - Detail pages стабильно отдают promo title в `h1`, а основной текст акции лежит в `.entry-content`.
+  - В raw homepage HTML стабильно встречается адрес `г. Минск, ул. К. Туровского, 14`.
+  - JSON-LD homepage дает стабильный бренд-маркер `«Маяк Здоровья»`, но не полноценный `MedicalOrganization`.
+- Выводы для реализации:
+  - `Lighthouse` подходит как promo-only official source.
+  - Для clinic record надежнее использовать canonical name `Маяк Здоровья` и адрес из raw HTML, чем SEO title страницы.
+  - Для первичного live ingest достаточно official archive + detail pages; doctor scraping можно отложить.
+- Handoff:
+  - Источник уже реализован в `apps/scrapers/scrapers/lighthouse.py`.
+  - Следующий operational step: запушить код и включить `lighthouse` в следующий cloud `catalog-sync`.

@@ -261,3 +261,21 @@
 **Сделано:** promotion pipeline расширен до online-posting в Telegram-канал: добавлены `NotificationOutboxRepository` и `PromotionChannelService`, Worker получил protected endpoint `/internal/notifications/promotions/flush` и cron trigger `*/20 * * * *`, `deploy_worker.ps1` начал синхронизировать `TELEGRAM_CHANNEL_ID`, а workflow `catalog-sync` теперь после backfill вызывает flush endpoint; live-тест подтвердил реальную отправку pending promo event (`claimed=1`, `sent=1`), после чего `notification_outbox` в Turso перешел в статус `sent`  
 **Изменены файлы:** `.github/workflows/scraper.yml`, `apps/worker/deploy_worker.ps1`, `apps/worker/src/env.ts`, `apps/worker/src/index.ts`, `apps/worker/src/routes/internal.ts`, `apps/worker/src/services/telegram-bot-service.ts`, `apps/worker/src/services/promotion-channel-service.ts`, `apps/worker/src/repositories/notification-outbox-repository.ts`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** закоммитить и запушить promotion-posting изменения, затем дождаться следующего cloud ingest/backfill и подтвердить, что новые акции публикуются в канал уже без ручного flush
+
+## 2026-03-22 02:37 — Promotion Coverage Check: Lighthouse
+**Роль:** Windows Engineering Assistant  
+**Сделано:** проверена реальная акция `https://lighthouse.by/promotions/diagnostika-varikoza-po-vygodnoj-stoimosti/`; страница доступна (`HTTP 200`, заголовок совпадает), но ни в репозитории/parsers, ни в live Turso/Worker promotions она не найдена; live API `/api/v1/promotions` сейчас возвращает только `1` акцию из `MedArt`, что подтверждает отсутствие `Lighthouse` как promotion-source в текущем production-пайплайне  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** добавить `Lighthouse` в promotion-source coverage и встроить его акции в cloud scrape/backfill pipeline
+
+## 2026-03-22 02:53 — Lighthouse Promo Source Added and Published Live
+**Роль:** Windows Engineering Assistant  
+**Сделано:** добавлен новый promo-only scraper source `lighthouse`; архив `https://lighthouse.by/promotions/` теперь разбирается официальным scraper-ом, который отдает `1` clinic record `Маяк Здоровья` и `17` promotions, включая целевую акцию `Диагностика варикоза по выгодной стоимости`; источник зарегистрирован в `SCRAPER_REGISTRY`, включен в `config.yaml`, `selectors.yaml` и future cloud workflow; batch успешно прогнан через live Turso backfill (`inserted=18`, `errors=0`), после чего production Worker API начал отдавать `18` акций, а promotion outbox реально допубликовал новые акции в Telegram channel (`sent=10`, затем `sent=7`, затем очередь опустела)  
+**Изменены файлы:** `.github/workflows/scraper.yml`, `apps/scrapers/scrapers/__init__.py`, `apps/scrapers/scrapers/lighthouse.py`, `config.yaml`, `selectors.yaml`, `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`, `docs/STATE.md`  
+**Следующий шаг:** закоммитить и запушить `Lighthouse` source в public repo, затем запустить новый `catalog-sync` cloud run и подтвердить, что future scrape/backfill/promo-posting идут полностью online без локального ПК
+
+## 2026-03-22 03:02 — Direct Ingest Transport Fix
+**Роль:** Windows Engineering Assistant  
+**Сделано:** исправлен direct ingest path в `apps/scrapers/output.py`: `urllib` теперь отправляет `User-Agent`, из-за чего live Worker перестал отвечать `403` на `output_mode=ingest`; повторный production smoke-test `python -m apps.scrapers.main --sources lighthouse --output-mode ingest` завершился успешно и подтвердил прямой POST в `https://medsearchrb-api.aiomdurman.workers.dev/internal/ingest/source-batch` со статусом `200`  
+**Изменены файлы:** `apps/scrapers/output.py`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить и запушить `Lighthouse` + direct-ingest fix, затем запустить cloud `catalog-sync`, чтобы следующий online refresh уже использовал новый источник и исправленный ingest transport

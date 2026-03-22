@@ -30,7 +30,10 @@ def post_batch(ingest_url: str, token: str | None, batches: list[SourceBatch], t
         ensure_ascii=False,
     ).encode("utf-8")
 
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "MedsearchRB-Scraper/1.0",
+    }
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
