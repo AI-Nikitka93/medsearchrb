@@ -56,9 +56,9 @@
 Следующий шаг:
 - Держать backlog в `docs/TODO.md` как единый план выполнения; ближайшие активные задачи: завершить `clinic-site-sync`, затем внедрять `doktora.by` как первый doctor-review source
 
-Дата и время: 2026-03-22 15:58
+Дата и время: 2026-03-22 16:06
 Статус: IN_PROGRESS
-Причина: Активный трек смещен на `Review Layer P1 (103.by + doktora.by)`. Реализованы два новых production review-source, bounded scrape/backfill уже подтвердил запись новых summary-отзывов в live `reviews_summary`, Worker и Mini App пересобраны и перевыкатаны, а отдельный cloud workflow `review-sync` подготовлен для online-refresh без ПК. `Clinic Verification P1` не потерян, но временно отошел на второй план.
+Причина: Активный трек `Review Layer P1 (103.by + doktora.by)` уже переведен в online execution: код запушен в `origin/main` коммитом `1b2fc0c`, а первый cloud run `review-sync` (`23403673638`) создан и реально стартовал в GitHub Actions. Локальный bounded scrape/backfill уже подтвердил live `reviews_summary`, Worker и Mini App пересобраны и перевыкатаны, а теперь нужно дождаться первого полного cloud run и оценить performance/coverage полного crawl.
 Что уже сделано:
 - Реализован scraper `apps/scrapers/scrapers/by103.py`:
   - source `103.by`
@@ -104,10 +104,9 @@
 - Live Turso после cloud health-pass показывает накопленное распределение `site_health_status`: `healthy=378`, `fetch_failed=15`, `blocked=6`, `redirected_external=5`, `invalid_http=2`, `unknown=4`
 - Подтверждено, что `hidden_total=0`, поэтому пользовательских визуальных изменений в Mini App пока почти нет
 Что осталось:
-- Закоммитить и запушить review-layer changes в `origin/main`
-- Запустить первый cloud `review-sync` run уже с новыми scrapers
+- Дождаться завершения первого cloud `review-sync` run `23403673638`
 - Проверить, сколько врачей из `103.by + doktora.by` реально матчится к текущему каталогу, а сколько приходит как новые карточки
 - При необходимости усилить matching между review-sources и существующим doctor catalog
 - Вернуться к `Clinic Verification P1` после первого зеленого `review-sync`
 Следующий шаг:
-- Закоммитить multi-source review-layer, запушить в `origin/main` и вручную запустить новый `review-sync`, чтобы `103.by + doktora.by` начали работать полностью online, а не только через bounded local smoke-run
+- Снять финальный статус `23403673638`; если run зеленый, зафиксировать `review-sync` как рабочий online pipeline и перейти к следующему треку: matching/coverage или `2doc.by`
