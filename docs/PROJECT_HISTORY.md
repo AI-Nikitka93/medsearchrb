@@ -331,5 +331,5 @@
 ## 2026-03-22 04:02 — Mini App Links Now Prefer Clinic Sites
 **Роль:** Windows Engineering Assistant  
 **Сделано:** исправлен приоритет ссылок в карточке врача Mini App: detail fetch теперь идет `worker-first`, snapshot расширен verification-полями (`official_*`, `aggregator_*`, `verification_status`), а `buildClinicActions()` больше не ставит агрегаторный `booking_url` выше официального `site_url`; production Mini App перевыкатан на Netlify deploy `69bf3db9215bcc4eb9afd043`, а новый snapshot для врача `staskevich-regina-nikolaevna-af73b96d43` подтверждает прямые сайты клиник `https://e-clinic.by/` и `https://doctortut.by/`  
-**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/lib/api.ts`, `apps/miniapp/scripts/generate-catalog-snapshot.mjs`, `docs/PROJECT_HISTORY.md`  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/lib/api.ts`, `apps/miniapp/scripts/generate-catalog-snapshot.mjs`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** проверить Telegram WebView новым скрином и затем уже добивать следующий data-layer: official booking URLs по clinic verification
