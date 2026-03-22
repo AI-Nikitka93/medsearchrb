@@ -31,20 +31,21 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
           {doctor.initials}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="truncate font-display text-base font-bold text-text">
-                {doctor.name}
-              </div>
-              <div className="mt-1 text-sm text-subtle">
-                {doctor.specialty} • {doctor.clinic}
-              </div>
+          <div className="min-w-0">
+            <div className="font-display text-[17px] font-bold leading-[1.2] text-text">
+              {doctor.name}
             </div>
-            <HaloRating
-              rating={doctor.rating}
-              reviewCount={doctor.reviewCount}
-              compact
-            />
+            <div className="mt-2">
+              <HaloRating
+                rating={doctor.rating}
+                reviewCount={doctor.reviewCount}
+                compact
+              />
+            </div>
+            <div className="mt-2 text-sm leading-6 text-subtle">
+              <div>{doctor.specialty}</div>
+              <div>{doctor.clinic}</div>
+            </div>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="rounded-pill bg-section px-2 py-1 text-xs font-medium text-link">
