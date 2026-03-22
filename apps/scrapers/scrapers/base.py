@@ -4,9 +4,11 @@ from datetime import date, datetime
 import logging
 import os
 import re
+import ssl
 import time
 import urllib.parse
 import urllib.robotparser
+import urllib.request
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 
@@ -201,7 +203,19 @@ class BaseScraper(ABC):
         parser = urllib.robotparser.RobotFileParser()
         parser.set_url(self.absolute_url("/robots.txt"))
         try:
-            parser.read()
+            if self.source_settings.get("insecure_tls"):
+                request = urllib.request.Request(
+                    self.absolute_url("/robots.txt"),
+                    headers={"User-Agent": self.config.user_agent},
+                )
+                context = ssl.create_default_context()
+                context.check_hostname = False
+                context.verify_mode = ssl.CERT_NONE
+                with urllib.request.urlopen(request, context=context, timeout=self.config.request_timeout_seconds) as response:
+                    content = response.read().decode("utf-8", "ignore")
+                parser.parse(content.splitlines())
+            else:
+                parser.read()
         except Exception as exc:  # noqa: BLE001
             self.report.notes.append(f"robots_read_failed:{exc}")
             return False
