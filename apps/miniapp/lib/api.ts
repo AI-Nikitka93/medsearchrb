@@ -163,7 +163,7 @@ function resolveSourceOrder(): DataSourcePreference[] {
 }
 
 function resolveDoctorDetailSourceOrder(): DataSourcePreference[] {
-  return ["worker", "snapshot"];
+  return resolveSourceOrder();
 }
 
 function withQuery(path: string, query: Record<string, QueryValue>) {

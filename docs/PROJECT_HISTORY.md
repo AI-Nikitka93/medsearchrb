@@ -411,3 +411,9 @@
 **Сделано:** найден и исправлен конкретный UI-дефект списка врачей в Mini App: полное ФИО врача обрезалось из-за `truncate` в `DoctorCard`; карточка перестроена под узкий Telegram WebView так, чтобы имя занимало несколько строк, рейтинг ушел под имя, а specialty/clinic остались читаемыми; дополнительно подтверждено, что фото врача сейчас не выводится не из-за “лишней нагрузки”, а потому что в live API и snapshot нет `photo_url/avatar_url` полей вообще; production Mini App перевыкатан на Netlify deploy `69bfdf596f2ab0827cde4c4c`, live `/list` отвечает `200`
 **Изменены файлы:** `apps/miniapp/components/ui/doctor-card.tsx`, `docs/PROJECT_HISTORY.md`
 **Следующий шаг:** при желании добавить отдельный data-layer для фото врачей: сначала научиться собирать `photo_url/avatar_url` в scrapers/API, потом выводить изображения с fallback на initials и lazy loading
+
+## 2026-03-22 15:17 — Detail Screen Switched To Snapshot-First
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден и исправлен наиболее вероятный источник зависания detail-screen в Telegram WebView: список врачей в production уже работал по `snapshot-first`, а `fetchDoctorDetail()` оставался `worker-first`, из-за чего подвисающий запрос к Worker мог держать пользователя на экране `Загружаем карточку врача`; `apps/miniapp/lib/api.ts` переведен на единый production-safe порядок источников через `resolveSourceOrder()` и detail теперь тоже читает сначала live snapshot, а Worker остается fallback; production Mini App перевыкатан на Netlify deploy `69bfe03d8510b685c5dc434b`, live `/list` отвечает `200`
+**Изменены файлы:** `apps/miniapp/lib/api.ts`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** получить новый скрин из Telegram WebView именно с карточкой врача после этого деплоя и убедиться, что зависание ушло не только в браузере, но и в реальном Mini App runtime
