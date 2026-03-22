@@ -21,6 +21,25 @@ function allowedOrigins(env: WorkerBindings): string[] {
     .filter(Boolean);
 }
 
+function isAllowedOrigin(origin: string, env: WorkerBindings): boolean {
+  try {
+    const parsed = new URL(origin);
+    const host = parsed.hostname.toLowerCase();
+
+    if (host === "medsearch-minsk-miniapp.pages.dev") {
+      return true;
+    }
+
+    if (host.endsWith(".medsearch-minsk-miniapp.pages.dev")) {
+      return true;
+    }
+
+    return allowedOrigins(env).includes(origin);
+  } catch {
+    return allowedOrigins(env).includes(origin);
+  }
+}
+
 app.use(
   "*",
   cors({
@@ -29,7 +48,7 @@ app.use(
         return null;
       }
 
-      return allowedOrigins(c.env).includes(origin) ? origin : null;
+      return isAllowedOrigin(origin, c.env) ? origin : null;
     },
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "X-Ingest-Token", "X-GitHub-Run-Id"],
