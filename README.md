@@ -22,7 +22,7 @@ This repository is published under a proprietary `All Rights Reserved` license.
 
 ## Production URLs
 
-- Mini App: `https://medsearch-minsk-miniapp.netlify.app`
+- Mini App: `https://medsearch-minsk-miniapp.pages.dev`
 - Worker API: `https://medsearchrb-api.aiomdurman.workers.dev`
 
 ## Cloud Sync

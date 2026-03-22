@@ -15,7 +15,7 @@
 - Добавлена миграция `db/migrations/0002_read_perf.sql` с read-индексами для doctor list/detail path
 - Добавлен same-origin snapshot pipeline `apps/miniapp/scripts/generate-catalog-snapshot.mjs`
 - `apps/miniapp/lib/api.ts` переведен на snapshot-first чтение в production с fallback на Worker
-- Live `https://medsearch-minsk-miniapp.netlify.app/data/catalog.json` подтвержден с `2162` врачами и `1` акцией
+- Live `https://medsearch-minsk-miniapp.pages.dev` является текущим Mini App host; Netlify URL исторически сохраняется, но больше не должен использоваться как primary entrypoint
 - Headless Edge screenshot подтвердил, что `/list` в production показывает карточки врачей, а не бесконечный loading
 - Добавлены `telegram/webhook` и `telegram/health` routes в Worker
 - `deploy_worker.bat` переведен на PowerShell-backed deploy + Telegram sync
@@ -46,7 +46,7 @@
 - Локальный smoke-test `clinics:health -- --limit 5 --all` подтвердил первый проход: `healthy=4`, `fetch_failed=1`, `hidden=0`
 - Добавлен отдельный cloud workflow `.github/workflows/clinic-site-sync.yml` c шагами `db:migrate -> verify:clinics -> clinics:health`
 - `apps/miniapp/lib/api.ts` переведен на production-safe `worker-first` для doctors/promotions/detail path; snapshot теперь только fallback
-- Production snapshot заново собран и задеплоен: `https://medsearch-minsk-miniapp.netlify.app/data/catalog.json` уже отдает `2271` врачей и `59` акций
+- Production snapshot теперь публикуется через Cloudflare Pages deploy path; текущий Mini App host — `https://medsearch-minsk-miniapp.pages.dev`
 - Добавлены новые official promo sources `nordin`, `medavenu`, `smartmedical`, `supramed`
 - Общий local live backfill новых promo sources завершился `processed_batches=4`, `inserted=43`, `errors=0`
 - Cloudflare Pages project `medsearch-minsk-miniapp` подтвержден рабочим: прямой `wrangler pages deploy` создает production deployment, а run `review-sync` `23413937432` дошел до `Deploy Mini App to Cloudflare Pages` и завершился успешно
@@ -101,7 +101,7 @@
   - `reviews_summary source_name='doktora.by' -> 2 rows`
 - Production deploy выполнен:
   - Worker: `https://medsearchrb-api.aiomdurman.workers.dev`
-  - Mini App: `https://medsearch-minsk-miniapp.netlify.app`
+  - Mini App: `https://medsearch-minsk-miniapp.pages.dev`
 - Единый backlog добавлен в `docs/TODO.md` и принят как основной execution plan
 - Создан commit `645a0a4` с roadmap+workflow fix и успешно запушен в `origin/main`
 - Запущен новый cloud run `clinic-site-sync` (`23402446176`) на свежем `head_sha=645a0a4`

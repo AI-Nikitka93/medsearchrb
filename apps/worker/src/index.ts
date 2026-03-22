@@ -13,7 +13,7 @@ const promotionChannelService = new PromotionChannelService();
 function allowedOrigins(env: WorkerBindings): string[] {
   const raw =
     env.ALLOWED_ORIGINS ??
-    "https://medsearch-minsk-miniapp.netlify.app,http://localhost:3000,http://127.0.0.1:3000";
+    "https://medsearch-minsk-miniapp.pages.dev,http://localhost:3000,http://127.0.0.1:3000";
 
   return raw
     .split(",")

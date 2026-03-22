@@ -556,6 +556,12 @@
 **Изменены файлы:** `docs/STATE.md`, `docs/TODO.md`, `docs/PROJECT_HISTORY.md`
 **Следующий шаг:** держать Cloudflare Pages deploy path под наблюдением и дальше фокусироваться на review coverage, clinic verification depth и source matching
 
+## 2026-03-23 02:00 — Telegram Mini App URL Migrated From Netlify To Cloudflare Pages
+**Роль:** Windows Engineering Assistant
+**Сделано:** по свежему Telegram-скрину найдено, что Mini App по-прежнему открывался по старому Netlify URL и показывал `Site not available`. Исправлен production entrypoint: в `apps/worker/wrangler.jsonc` allowlist переведен на `https://medsearch-minsk-miniapp.pages.dev`, а текущий Mini App host в `docs/STATE.md` обновлен на Cloudflare Pages URL. Следующий live шаг — синхронизировать `WEBAPP_URL` и `PRIVACY_URL` в worker secrets и перепривязать Telegram menu button к `pages.dev`, чтобы бот больше не уводил в paused Netlify site.
+**Изменены файлы:** `apps/worker/wrangler.jsonc`, `docs/STATE.md`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** обновить live worker secrets `WEBAPP_URL` / `PRIVACY_URL` на `https://medsearch-minsk-miniapp.pages.dev` и заново прогнать worker deploy, чтобы Telegram menu button начал открывать Cloudflare Pages Mini App
+
 ## 2026-03-23 01:48 — 2doc.by Added As Bounded Hybrid Review/Discovery Source
 **Роль:** Windows Engineering Assistant
 **Сделано:** добавлен новый scraper `2doc.by` как bounded hybrid review/discovery source. В `apps/scrapers/scrapers/twodoc.py` подключен TL;DR parser для doctor sitemap + inline payload, в `apps/scrapers/scrapers/__init__.py` добавлен registry key `2doc`, в `config.yaml` source получил `insecure_tls: true`, а в `apps/scrapers/scrapers/base.py` robots-check для `insecure_tls` hosts научился читать robots.txt с unverified TLS context, не ломая policy глобально. После этого новый bounded workflow `.github/workflows/review-sync-2doc.yml` дважды успешно прошел в GitHub Actions: первый run подтвердил сам pipeline и Cloudflare Pages deploy, а второй run `23414212650` завершился `success`, дал `doctors_found=25`, `clinics_found=18`, `review_summaries_found=25`, и `Verify 2doc review coverage` показал `source_name='2doc.by' -> 25 rows` в live Turso. Cloudflare Pages также получил свежий production deploy `56946859-79cf-40ed-95d2-56d9a0149c78`.
