@@ -309,3 +309,9 @@
 **Сделано:** найден и исправлен реальный cloud blocker для `promo-sync`: job завершал scrape за ~4 минуты, но падал на `Backfill promo batch to Turso`, потому что `apps/worker/scripts/backfill-from-batch.ts` требовал локальный `.env.txt/.env` вместо GitHub Actions environment; скрипт переведен на `env-first` загрузку (`process.env` с fallback на root env file), после чего локальная TypeScript-проверка и YAML-валидация прошли успешно  
 **Изменены файлы:** `apps/worker/scripts/backfill-from-batch.ts`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** закоммитить и запушить fix, затем заново запустить `promo-sync` в GitHub и подтвердить cloud backfill/flush без зависимости от локальных env-файлов
+
+## 2026-03-22 03:39 — Workflow Verification 403 Fix
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден и исправлен последний хвост cloud-run: `promo-sync` уже успешно проходил scrape, backfill и Telegram flush, но падал на финальном `Verify live promo total` из-за `HTTP 403` без `User-Agent`; в `.github/workflows/promo-sync.yml` и `.github/workflows/scraper.yml` добавлен явный `User-Agent: MedsearchRB-GitHubActions/1.0` для финальных live-проверок, а ручной smoke-test к production API с тем же заголовком подтвердил ответ `200` и `total=21`  
+**Изменены файлы:** `.github/workflows/promo-sync.yml`, `.github/workflows/scraper.yml`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить и запушить verification fix, затем перезапустить `promo-sync` и получить первый полностью зеленый cloud run без локального ПК

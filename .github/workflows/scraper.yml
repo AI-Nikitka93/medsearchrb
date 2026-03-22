@@ -66,10 +66,12 @@ jobs:
           import json
           import urllib.request
 
-          with urllib.request.urlopen(
+          request = urllib.request.Request(
               "https://medsearchrb-api.aiomdurman.workers.dev/api/v1/doctors?page=1&per_page=1",
-              timeout=60,
-          ) as response:
+              headers={"User-Agent": "MedsearchRB-GitHubActions/1.0"},
+          )
+
+          with urllib.request.urlopen(request, timeout=60) as response:
               payload = json.loads(response.read().decode("utf-8"))
               print(json.dumps({"total": payload["total"]}, ensure_ascii=False))
           PY
