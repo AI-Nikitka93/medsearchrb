@@ -6,7 +6,7 @@ on:
     - cron: "40 * * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: medsearchrb-review-sync-doktora
@@ -139,19 +139,13 @@ jobs:
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          NEXT_PUBLIC_BASE_PATH: /medsearchrb
         run: |
           npm --prefix apps/miniapp run build
 
-      - name: Deploy Mini App to Cloudflare Pages
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: >
-          npm --prefix apps/miniapp exec wrangler -- pages deploy
-          apps/miniapp/out
-          --project-name medsearch-minsk-miniapp
-          --branch main
-          --commit-hash "${{ github.sha }}"
-          --commit-message "review-sync-doktora snapshot refresh"
+      - name: Publish Mini App to GitHub Pages
+        run: |
+          bash ./scripts/publish-miniapp-gh-pages.sh
 
       - name: Upload doktora.by review batch artifact
         uses: actions/upload-artifact@v4
