@@ -17,6 +17,13 @@ type DoctorClinic = {
   site_url: string | null;
   booking_url: string | null;
   profile_url: string | null;
+  official_booking_url?: string | null;
+  official_profile_url?: string | null;
+  aggregator_booking_url?: string | null;
+  aggregator_profile_url?: string | null;
+  verification_status?: string | null;
+  verified_on_clinic_site?: boolean;
+  last_verified_at?: string | null;
 };
 
 type DoctorReview = {
@@ -153,6 +160,10 @@ function isLocalHost() {
 
 function resolveSourceOrder(): DataSourcePreference[] {
   return isLocalHost() ? ["worker", "snapshot"] : ["snapshot", "worker"];
+}
+
+function resolveDoctorDetailSourceOrder(): DataSourcePreference[] {
+  return ["worker", "snapshot"];
 }
 
 function withQuery(path: string, query: Record<string, QueryValue>) {
@@ -480,9 +491,9 @@ export async function fetchDoctors(params: {
 export async function fetchDoctorDetail(doctorId: string, signal?: AbortSignal) {
   let lastError: unknown = null;
 
-  for (const source of resolveSourceOrder()) {
+  for (const source of resolveDoctorDetailSourceOrder()) {
     try {
-        if (source === "snapshot") {
+      if (source === "snapshot") {
         return await fetchDoctorDetailFromSnapshot(doctorId);
       }
 

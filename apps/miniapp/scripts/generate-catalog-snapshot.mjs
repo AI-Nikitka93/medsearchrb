@@ -100,8 +100,15 @@ const clinicsResult = await client.execute(`
     c.name AS clinic_name,
     c.address,
     c.site_url,
-    dc.booking_url,
-    dc.profile_url
+    COALESCE(dc.official_booking_url, dc.booking_url, dc.aggregator_booking_url) AS booking_url,
+    COALESCE(dc.official_profile_url, dc.profile_url, dc.aggregator_profile_url) AS profile_url,
+    dc.official_booking_url,
+    dc.official_profile_url,
+    dc.aggregator_booking_url,
+    dc.aggregator_profile_url,
+    dc.verification_status,
+    dc.verified_on_clinic_site,
+    dc.last_verified_at
   FROM doctor_clinics dc
   INNER JOIN clinics c ON c.id = dc.clinic_id
   INNER JOIN doctors d ON d.id = dc.doctor_id
@@ -202,6 +209,23 @@ for (const row of clinicsResult.rows) {
     site_url: row.site_url ? String(row.site_url) : null,
     booking_url: row.booking_url ? String(row.booking_url) : null,
     profile_url: row.profile_url ? String(row.profile_url) : null,
+    official_booking_url: row.official_booking_url
+      ? String(row.official_booking_url)
+      : null,
+    official_profile_url: row.official_profile_url
+      ? String(row.official_profile_url)
+      : null,
+    aggregator_booking_url: row.aggregator_booking_url
+      ? String(row.aggregator_booking_url)
+      : null,
+    aggregator_profile_url: row.aggregator_profile_url
+      ? String(row.aggregator_profile_url)
+      : null,
+    verification_status: row.verification_status
+      ? String(row.verification_status)
+      : "aggregator_only",
+    verified_on_clinic_site: Number(row.verified_on_clinic_site ?? 0) === 1,
+    last_verified_at: row.last_verified_at ? String(row.last_verified_at) : null,
   });
   clinicsByDoctorId.set(doctorId, current);
 }

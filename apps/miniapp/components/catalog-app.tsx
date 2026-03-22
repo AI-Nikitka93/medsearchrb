@@ -43,6 +43,13 @@ type DoctorDetailRecord = {
     site_url: string | null;
     booking_url: string | null;
     profile_url: string | null;
+    official_booking_url?: string | null;
+    official_profile_url?: string | null;
+    aggregator_booking_url?: string | null;
+    aggregator_profile_url?: string | null;
+    verification_status?: string | null;
+    verified_on_clinic_site?: boolean;
+    last_verified_at?: string | null;
   }>;
   promotions: Array<{
     id: string;
@@ -226,6 +233,10 @@ function buildClinicActions(clinic: {
   site_url: string | null;
   booking_url: string | null;
   profile_url: string | null;
+  official_booking_url?: string | null;
+  official_profile_url?: string | null;
+  aggregator_booking_url?: string | null;
+  aggregator_profile_url?: string | null;
 }) {
   const actions: ClinicLinkAction[] = [];
   const seen = new Set<string>();
@@ -248,32 +259,63 @@ function buildClinicActions(clinic: {
     });
   };
 
-  const bookingHost = getHostname(clinic.booking_url);
   const siteHost = getHostname(clinic.site_url);
+  const bookingHost = getHostname(clinic.booking_url);
   const profileHost = getHostname(clinic.profile_url);
+  const officialBookingHost = getHostname(clinic.official_booking_url ?? null);
+  const officialProfileHost = getHostname(clinic.official_profile_url ?? null);
+  const hasOfficialClinicSite = clinic.site_url && !isAggregatorHost(siteHost);
 
-  if (clinic.booking_url) {
+  if (clinic.official_booking_url) {
     register(
-      clinic.booking_url,
-      isAggregatorHost(bookingHost) ? "Запись через YDoc" : "Записаться",
+      clinic.official_booking_url,
+      isAggregatorHost(officialBookingHost) ? "Запись через YDoc" : "Записаться в клинике",
       "primary",
     );
   }
 
-  if (clinic.site_url) {
+  if (clinic.official_profile_url) {
     register(
-      clinic.site_url,
-      isAggregatorHost(siteHost) ? "Клиника на YDoc" : "Сайт клиники",
-      clinic.booking_url ? "secondary" : "primary",
+      clinic.official_profile_url,
+      isAggregatorHost(officialProfileHost) ? "Карточка на YDoc" : "Страница врача",
+      actions.length === 0 ? "primary" : "secondary",
     );
   }
 
-  if (clinic.profile_url) {
+  if (hasOfficialClinicSite) {
     register(
-      clinic.profile_url,
-      isAggregatorHost(profileHost) ? "Карточка на YDoc" : "Профиль врача",
+      clinic.site_url,
+      "Сайт клиники",
       actions.length === 0 ? "primary" : "secondary",
     );
+  }
+
+  if (clinic.booking_url && !isAggregatorHost(bookingHost)) {
+    register(clinic.booking_url, "Записаться", actions.length === 0 ? "primary" : "secondary");
+  }
+
+  if (clinic.profile_url && !isAggregatorHost(profileHost)) {
+    register(clinic.profile_url, "Профиль врача", actions.length === 0 ? "primary" : "secondary");
+  }
+
+  if (clinic.aggregator_booking_url) {
+    register(clinic.aggregator_booking_url, "Запись через YDoc", "secondary");
+  }
+
+  if (clinic.booking_url && isAggregatorHost(bookingHost)) {
+    register(clinic.booking_url, "Запись через YDoc", "secondary");
+  }
+
+  if (clinic.aggregator_profile_url) {
+    register(clinic.aggregator_profile_url, "Карточка на YDoc", "secondary");
+  }
+
+  if (clinic.profile_url && isAggregatorHost(profileHost)) {
+    register(clinic.profile_url, "Карточка на YDoc", "secondary");
+  }
+
+  if (clinic.site_url && isAggregatorHost(siteHost)) {
+    register(clinic.site_url, "Клиника на YDoc", "secondary");
   }
 
   return actions;

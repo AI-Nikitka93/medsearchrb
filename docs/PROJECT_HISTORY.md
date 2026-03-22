@@ -321,3 +321,15 @@
 **Сделано:** получен первый полностью успешный cloud run `promo-sync` без локального ПК: GitHub Actions run `23392262386` завершился `success` за `4m16s`, прошел все этапы `scrape -> backfill -> Telegram flush -> live verify -> artifact upload`; production promotions API после run подтверждает `total=21`, а артефакт `promo-source-batch` сохранен в Actions  
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** расширять source coverage по остальным клиникам Минска и отдельно довести `doctor-catalog-sync`, чтобы весь pipeline был online, а не только promo-layer
+
+## 2026-03-22 03:50 — Doctor Catalog Sync Restarted on Fresh Workflow
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найдено, что пользователь видел не “сломанный” doctor parser, а устаревший long-running run `23391948549` на старом workflow/commit; этот run был отменен, после чего запущен новый `doctor-catalog-sync` run `23392415836` уже на свежем `main` (`head_sha=637bcd6`) и новой doctor-only конфигурации без встроенного promo job; повторная проверка через GitHub API подтвердила прохождение setup/install и переход на шаг `Run YDoc catalog scraper`  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** дождаться завершения `23392415836` и, если он упрется не в stale workflow, уже чинить конкретный runtime/blocker самого `YDoc` scrape step
+
+## 2026-03-22 04:02 — Mini App Links Now Prefer Clinic Sites
+**Роль:** Windows Engineering Assistant  
+**Сделано:** исправлен приоритет ссылок в карточке врача Mini App: detail fetch теперь идет `worker-first`, snapshot расширен verification-полями (`official_*`, `aggregator_*`, `verification_status`), а `buildClinicActions()` больше не ставит агрегаторный `booking_url` выше официального `site_url`; production Mini App перевыкатан на Netlify deploy `69bf3db9215bcc4eb9afd043`, а новый snapshot для врача `staskevich-regina-nikolaevna-af73b96d43` подтверждает прямые сайты клиник `https://e-clinic.by/` и `https://doctortut.by/`  
+**Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/lib/api.ts`, `apps/miniapp/scripts/generate-catalog-snapshot.mjs`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** проверить Telegram WebView новым скрином и затем уже добивать следующий data-layer: official booking URLs по clinic verification
