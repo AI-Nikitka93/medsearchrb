@@ -285,3 +285,9 @@
 **Сделано:** coverage расширен с одного official source до нескольких клиник: добавлены `Kravira` и `LODE` как новые promo sources, источник `lighthouse` сохранен; workflow `.github/workflows/scraper.yml` теперь готов запускать `kravira lighthouse lode medart ydoc`; локальный scrape подтвердил `Kravira=4` promo pages и `LODE=3` promo/news pages, затем direct ingest в live Worker прошел со статусом `200`; production promotions API вырос до `21` акций, а ручной flush outbox отправил новые записи в канал (`claimed=7`, `sent=3`, `skipped=4`)  
 **Изменены файлы:** `.github/workflows/scraper.yml`, `apps/scrapers/scrapers/__init__.py`, `apps/scrapers/scrapers/kravira.py`, `apps/scrapers/scrapers/lode.py`, `config.yaml`, `selectors.yaml`, `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`, `docs/STATE.md`  
 **Следующий шаг:** запушить multi-clinic promo expansion и сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска, чтобы coverage двигался от “несколько ключевых клиник” к действительно широкому catalog-wide охвату
+
+## 2026-03-22 03:16 — Cloud Sync Relaunch on Latest Multi-Clinic Main
+**Роль:** Windows Engineering Assistant  
+**Сделано:** после push коммита `bfab24c` предыдущий cloud run `23391706996` был отменен, потому что стартовал до multi-clinic expansion; вместо него запущен новый workflow run `23391902340`, уже с актуального `main`, чтобы future cloud scrape/backfill/promotions posting использовали `kravira lighthouse lode medart ydoc`, а не более старую конфигурацию  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** дождаться перехода нового run `23391902340` в `in_progress/completed` и затем проверить, что cloud refresh подтверждает multi-clinic promo coverage без локального вмешательства
