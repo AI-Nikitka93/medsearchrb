@@ -158,7 +158,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: >
-          npx --prefix apps/miniapp netlify deploy
+          npx --yes netlify-cli@24.4.0 deploy
           --site "$NETLIFY_SITE_ID"
           --auth "$NETLIFY_AUTH_TOKEN"
           --prod
