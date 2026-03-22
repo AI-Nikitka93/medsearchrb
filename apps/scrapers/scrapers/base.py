@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime
 import logging
 import os
+import random
 import re
 import ssl
 import time
@@ -110,6 +111,14 @@ class BaseScraper(ABC):
         crawl_delay_seconds = self.source_settings.get("crawl_delay_seconds")
         if isinstance(crawl_delay_seconds, (int, float)) and crawl_delay_seconds > 0:
             time.sleep(float(crawl_delay_seconds))
+            return
+
+        min_delay_seconds = self.source_settings.get("min_delay_seconds")
+        max_delay_seconds = self.source_settings.get("max_delay_seconds")
+        if isinstance(min_delay_seconds, (int, float)) and isinstance(max_delay_seconds, (int, float)):
+            low = max(0.0, float(min_delay_seconds))
+            high = max(low, float(max_delay_seconds))
+            time.sleep(high if low == high else random.uniform(low, high))
             return
 
         self.client.sleep_with_jitter()

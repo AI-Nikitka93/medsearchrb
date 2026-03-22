@@ -3,7 +3,7 @@ name: review-sync-103
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 * * * *"
+    - cron: "5,35 * * * *"
 
 permissions:
   contents: read
@@ -47,7 +47,7 @@ jobs:
       - name: Compute 103.by chunk window
         id: chunk
         env:
-          CHUNK_SIZE: "2500"
+          CHUNK_SIZE: "500"
         run: |
           python - <<'PY'
           import gzip
