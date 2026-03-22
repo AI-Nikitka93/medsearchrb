@@ -479,6 +479,12 @@
 **Следующий шаг:** закоммитить и запушить эти cloud-fixes в `origin/main`, затем повторно запустить `clinic-site-sync` и `review-sync`, чтобы подтвердить зеленые runs уже в GitHub Actions
 
 ## 2026-03-22 20:18 — Cloud Pipeline Fixes Pushed And Re-runs Started
+## 2026-03-23 00:45 — Netlify Deploy Step Hardened With --no-build
+**Роль:** Windows Engineering Assistant
+**Сделано:** direct production deploy path дошел до Netlify в cloud smoke-run `23413162996` и впервые создал новый deploy object `69c062da865a3f0560482612`, но run упал в deploy-step из-за того, что Netlify CLI пытался сам запускать site build и наткнулся на `hugo: command not found`. Это оказалось поведением Netlify deploy, а не проблемой Mini App. Все workflow deploy-команды обновлены на `--no-build`, потому что `apps/miniapp` уже собирается отдельным шагом `npm --prefix apps/miniapp run build` до вызова CLI.
+**Изменены файлы:** `.github/workflows/promo-sync.yml`, `.github/workflows/review-sync.yml`, `.github/workflows/review-sync-103.yml`, `.github/workflows/review-sync-doktora.yml`, `.github/workflows/scraper.yml`, `.github/workflows/clinic-site-sync.yml`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** закоммитить `--no-build` hardening, запушить в `origin/main`, затем повторно прогнать bounded `review-sync` и подтвердить уже fully successful Netlify production deploy
+
 ## 2026-03-23 00:36 — Netlify CLI Removed From Mini App Dependencies For Linux CI
 **Роль:** Windows Engineering Assistant  
 **Сделано:** после перевода workflows на прямой Netlify deploy выявлен новый cloud-blocker: `review-sync` run `23413041471` уже шел на свежем commit `418dee2`, но падал в шаге `Install dependencies` на `npm --prefix apps/miniapp ci` из-за `netlify-cli` в `apps/miniapp/package-lock.json`. Ошибка была platform-specific (`EBADPLATFORM` на `@rollup/rollup-android-arm-eabi`) и не относилась к самому Mini App. Для устранения blocker-а `netlify-cli` убран из `apps/miniapp` devDependencies, а workflow deploy-команды переведены на `npx --yes netlify-cli@24.4.0 deploy`, чтобы CLI ставился отдельно от product dependencies и не ломал Linux CI сборку Mini App.  

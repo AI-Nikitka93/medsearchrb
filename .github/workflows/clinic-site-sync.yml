@@ -101,6 +101,7 @@ jobs:
           npx --yes netlify-cli@24.4.0 deploy
           --site "$NETLIFY_SITE_ID"
           --auth "$NETLIFY_AUTH_TOKEN"
+          --no-build
           --prod
           --dir apps/miniapp/out
           --message "clinic-site-sync snapshot refresh"
