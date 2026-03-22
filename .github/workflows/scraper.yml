@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -37,7 +39,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          npm --prefix apps/worker ci
+          npm --prefix apps/worker ci --no-audit --prefer-offline
 
       - name: Run YDoc catalog scraper
         env:

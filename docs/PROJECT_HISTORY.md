@@ -303,3 +303,9 @@
 **Сделано:** окончательно развел online-пайплайны: `.github/workflows/scraper.yml` теперь отвечает только за `doctor-catalog-sync` (`ydoc` daily), а новый `.github/workflows/promo-sync.yml` отвечает только за акции и запускается отдельным cron `*/15 * * * *`; локальная YAML-проверка подтвердила, что теперь есть два самостоятельных workflow-а — `doctor-catalog-sync` и `promo-sync`, что устраняет главный UX-баг GitHub Actions: быстрые акции больше не должны ждать тяжелый doctor crawl  
 **Изменены файлы:** `.github/workflows/scraper.yml`, `.github/workflows/promo-sync.yml`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** запушить split-workflow в GitHub, вручную запустить новый `promo-sync` и подтвердить, что online refresh акций идет независимо от `ydoc`-каталога
+
+## 2026-03-22 03:34 — Promo Sync Backfill Fixed for Cloud Secrets
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден и исправлен реальный cloud blocker для `promo-sync`: job завершал scrape за ~4 минуты, но падал на `Backfill promo batch to Turso`, потому что `apps/worker/scripts/backfill-from-batch.ts` требовал локальный `.env.txt/.env` вместо GitHub Actions environment; скрипт переведен на `env-first` загрузку (`process.env` с fallback на root env file), после чего локальная TypeScript-проверка и YAML-валидация прошли успешно  
+**Изменены файлы:** `apps/worker/scripts/backfill-from-batch.ts`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить и запушить fix, затем заново запустить `promo-sync` в GitHub и подтвердить cloud backfill/flush без зависимости от локальных env-файлов

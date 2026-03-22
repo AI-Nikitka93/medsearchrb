@@ -69,28 +69,40 @@ function loadRootEnv(): RuntimeEnv {
   const root = path.resolve(scriptDir, "../../..");
   const candidatePaths = [path.join(root, ".env.txt"), path.join(root, ".env")];
   const envPath = candidatePaths.find((candidate) => fs.existsSync(candidate));
+  const fileEnv = envPath
+    ? (Object.fromEntries(
+        fs
+          .readFileSync(envPath, "utf8")
+          .split(/\r?\n/u)
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith("#") && line.includes("="))
+          .map((line) => {
+            const delimiter = line.indexOf("=");
+            return [
+              line.slice(0, delimiter).trim(),
+              line.slice(delimiter + 1).trim().replace(/^"|"$/gu, ""),
+            ];
+          }),
+      ) as Partial<RuntimeEnv>)
+    : {};
 
-  if (!envPath) {
-    throw new Error("Cannot find .env.txt or .env in project root");
+  const env = {
+    ...fileEnv,
+    TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? fileEnv.TURSO_DATABASE_URL,
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? fileEnv.TURSO_AUTH_TOKEN,
+    INGEST_SHARED_SECRET: process.env.INGEST_SHARED_SECRET ?? fileEnv.INGEST_SHARED_SECRET,
+  } satisfies Partial<RuntimeEnv>;
+
+  if (!env.TURSO_DATABASE_URL || !env.TURSO_AUTH_TOKEN) {
+    throw new Error(
+      "Missing Turso bindings. Provide TURSO_DATABASE_URL and TURSO_AUTH_TOKEN via environment or root .env.txt/.env",
+    );
   }
 
-  const data = fs.readFileSync(envPath, "utf8");
-  const env = Object.fromEntries(
-    data
-      .split(/\r?\n/u)
-      .map((line) => line.trim())
-      .filter((line) => line && !line.startsWith("#") && line.includes("="))
-      .map((line) => {
-        const delimiter = line.indexOf("=");
-        return [
-          line.slice(0, delimiter).trim(),
-          line.slice(delimiter + 1).trim().replace(/^"|"$/gu, ""),
-        ];
-      }),
-  ) as Partial<RuntimeEnv>;
-
-  if (!env.TURSO_DATABASE_URL || !env.TURSO_AUTH_TOKEN || !env.INGEST_SHARED_SECRET) {
-    throw new Error("Missing Turso bindings in root env file");
+  if (!env.INGEST_SHARED_SECRET) {
+    throw new Error(
+      "Missing INGEST_SHARED_SECRET. Provide it via environment or root .env.txt/.env",
+    );
   }
 
   return env as RuntimeEnv;
