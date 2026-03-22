@@ -258,7 +258,7 @@ function buildCatalogOverview(snapshot: CatalogSnapshot): CatalogOverview {
 async function loadCatalogSnapshot() {
   if (!catalogSnapshotPromise) {
     catalogSnapshotPromise = fetch(SNAPSHOT_PATH, {
-      cache: "force-cache",
+      cache: "no-store",
       headers: {
         Accept: "application/json",
       },

@@ -417,3 +417,9 @@
 **Сделано:** найден и исправлен наиболее вероятный источник зависания detail-screen в Telegram WebView: список врачей в production уже работал по `snapshot-first`, а `fetchDoctorDetail()` оставался `worker-first`, из-за чего подвисающий запрос к Worker мог держать пользователя на экране `Загружаем карточку врача`; `apps/miniapp/lib/api.ts` переведен на единый production-safe порядок источников через `resolveSourceOrder()` и detail теперь тоже читает сначала live snapshot, а Worker остается fallback; production Mini App перевыкатан на Netlify deploy `69bfe03d8510b685c5dc434b`, live `/list` отвечает `200`
 **Изменены файлы:** `apps/miniapp/lib/api.ts`, `docs/PROJECT_HISTORY.md`
 **Следующий шаг:** получить новый скрин из Telegram WebView именно с карточкой врача после этого деплоя и убедиться, что зависание ушло не только в браузере, но и в реальном Mini App runtime
+
+## 2026-03-22 15:24 — Clinic Site Link Detail Freshness Fix Deployed
+**Роль:** Windows Engineering Assistant  
+**Сделано:** после пользовательского скрина с `Супрамедом` найдено, что detail-card надо усиливать по двум направлениям: production snapshot читался через `force-cache`, что могло дольше держать старую версию `catalog.json` в Telegram WebView, а client-side маппинг detail-screen выбрасывал `official_*`, `aggregator_*` и verification-поля клиники; `apps/miniapp/lib/api.ts` переведен на `cache: \"no-store\"` для snapshot, а `apps/miniapp/components/catalog-app.tsx` теперь сохраняет clinic verification fields в локальное состояние detail-screen; production Mini App перевыкатан на Netlify deploy `69bfe12c1e80d0b3f7c24453`, live `/list` отвечает `200`
+**Изменены файлы:** `apps/miniapp/lib/api.ts`, `apps/miniapp/components/catalog-app.tsx`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** получить новый скрин карточки врача в Telegram WebView именно после deploy `69bfe12c1e80d0b3f7c24453` и проверить, появилась ли у `Супрамеда` прямая ссылка на `https://supramed.by/`

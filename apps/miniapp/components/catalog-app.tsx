@@ -798,6 +798,13 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
               site_url: clinic.site_url,
               booking_url: clinic.booking_url,
               profile_url: clinic.profile_url,
+              official_booking_url: clinic.official_booking_url ?? null,
+              official_profile_url: clinic.official_profile_url ?? null,
+              aggregator_booking_url: clinic.aggregator_booking_url ?? null,
+              aggregator_profile_url: clinic.aggregator_profile_url ?? null,
+              verification_status: clinic.verification_status ?? null,
+              verified_on_clinic_site: clinic.verified_on_clinic_site ?? false,
+              last_verified_at: clinic.last_verified_at ?? null,
             })),
             promotions: response.item.promotions.map((promotion) => ({
               id: promotion.id,
