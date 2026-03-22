@@ -399,3 +399,9 @@
 **Сделано:** найден и исправлен точный blocker первого cloud run `clinic-site-sync`: сам health-check и clinic-site backfill завершились успешно, но workflow упал на последнем шаге `Summarize clinic health` из-за `top-level await` в `tsx -e`; summary-step переписан на async IIFE, чтобы GitHub Actions завершал run `success`, а не `failure` при уже обработанных клиниках  
 **Изменены файлы:** `.github/workflows/clinic-site-sync.yml`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** запушить fix и перезапустить `clinic-site-sync`, чтобы получить первый полностью зеленый run для clinic health-layer
+
+## 2026-03-22 14:58 — Roadmap Activated And clinic-site-sync Rerun Started
+**Роль:** Windows Engineering Assistant  
+**Сделано:** backlog из `docs/TODO.md` переведен в исполнение: создан commit `645a0a4` с roadmap+CI fix, изменения запушены в `origin/main`, после чего вручную запущен новый cloud run `clinic-site-sync` (`23402446176`) уже на свежем `head_sha=645a0a4`; run дошел до шагов `Backfill official clinic sites from YDoc clinic pages` и `Audit official clinic sites and suppress broken ones`; отдельная проверка live Turso подтвердила накопленный прогресс после cloud health-pass: `healthy=378`, `fetch_failed=15`, `blocked=6`, `redirected_external=5`, `invalid_http=2`, `unknown=4`, но `is_hidden=1` пока остается `0`, поэтому пользовательских визуальных изменений в Mini App почти нет — suppression policy ждет повторных провалов, а UI пока не показывает `site_health_status`
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/STATE.md`
+**Следующий шаг:** дождаться завершения `23402446176`, затем решить один из двух путей: либо ускорять suppression для явно мертвых сайтов, либо начать выводить health/verification сигналы прямо в Mini App, чтобы backend quality work стал виден пользователю до массового `is_hidden`
