@@ -110,6 +110,9 @@ class NordinScraper(BaseScraper):
             content_text = self.normalize_space(soup.get_text(" ", strip=True))
             if not any(keyword in content_text.lower() for keyword in PROMO_KEYWORDS):
                 continue
+            valid_until = self._find_deadline(content_text)
+            if not self.promotion_is_active(title, content_text, valid_until):
+                continue
             promotions.append(
                 PromotionRecord(
                     source=self.source_name,
@@ -117,7 +120,7 @@ class NordinScraper(BaseScraper):
                     title=title,
                     url=promo_url,
                     clinic_external_id=clinic_external_id,
-                    valid_until=self._find_deadline(content_text),
+                    valid_until=valid_until,
                     source_url=response.url,
                 )
             )

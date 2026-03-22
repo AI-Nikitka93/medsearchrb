@@ -103,6 +103,8 @@ class LighthouseScraper(BaseScraper):
             content = promo_soup.select_one(".entry-content")
             content_text = self.normalize_space(content.get_text(" ", strip=True) if content else promo_soup.get_text(" ", strip=True))
             valid_until = self._find_deadline(content_text)
+            if not self.promotion_is_active(title, content_text, valid_until):
+                continue
 
             promotions.append(
                 PromotionRecord(

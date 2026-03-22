@@ -15,6 +15,7 @@ import type {
 } from "../types/ingest";
 import { sha256, shortHash } from "../utils/hash";
 import { normalizeAddress, normalizeText, slugify } from "../utils/normalize";
+import { promotionIsActive } from "../utils/promotion-status";
 
 type IngestMeta = {
   githubRunId: string | null;
@@ -538,8 +539,12 @@ export class IngestService {
     );
 
     const existing = await this.repo.findPromotionByFingerprint(db, fingerprintHash);
-    const isActive =
-      !promotion.valid_until || promotion.valid_until >= new Date().toISOString() ? 1 : 0;
+    const isActive = promotionIsActive({
+      title: promotion.title,
+      endsAt: promotion.valid_until ?? null,
+    })
+      ? 1
+      : 0;
 
     const promotionId = existing ? String(existing.id) : crypto.randomUUID();
     await this.repo.upsertPromotion(db, {

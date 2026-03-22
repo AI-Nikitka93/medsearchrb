@@ -91,11 +91,20 @@ export class NotificationOutboxRepository {
         WHERE p.id = ?
           AND p.is_active = 1
           AND p.is_hidden = 0
+          AND (p.ends_at IS NULL OR p.ends_at >= ?)
+          AND p.title NOT LIKE '%АКЦИЯ ЗАВЕРШЕНА%'
+          AND p.title NOT LIKE '%акция завершена%'
+          AND p.title NOT LIKE '%АКЦИЯ ЗАВЕРШИЛАСЬ%'
+          AND p.title NOT LIKE '%акция завершилась%'
+          AND p.title NOT LIKE '%АКЦИЯ ОКОНЧЕНА%'
+          AND p.title NOT LIKE '%акция окончена%'
+          AND p.title NOT LIKE '%НЕ ДЕЙСТВУЕТ%'
+          AND p.title NOT LIKE '%не действует%'
           AND c.is_hidden = 0
           AND c.opt_out = 0
         LIMIT 1
       `,
-      args: [promotionId],
+      args: [promotionId, new Date().toISOString()],
     });
 
     return ((result.rows[0] as unknown) as PromotionChannelPayload | undefined) ?? null;
@@ -123,6 +132,22 @@ export class NotificationOutboxRepository {
         WHERE id = ?
       `,
       args: [errorMessage.slice(0, 500), outboxId],
+    });
+  }
+
+  async deactivatePromotion(
+    db: SqlExecutor,
+    promotionId: string,
+    updatedAt: string,
+  ) {
+    await db.execute({
+      sql: `
+        UPDATE promotions
+        SET is_active = 0,
+            updated_at = ?
+        WHERE id = ?
+      `,
+      args: [updatedAt, promotionId],
     });
   }
 }

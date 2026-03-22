@@ -57,6 +57,8 @@ class SupraMedScraper(BaseScraper):
 
         promotions: list[PromotionRecord] = []
         for promo_url, title in self._unique_candidates(promo_candidates):
+            if not self.promotion_is_active(title, None, None):
+                continue
             promotions.append(
                 PromotionRecord(
                     source=self.source_name,

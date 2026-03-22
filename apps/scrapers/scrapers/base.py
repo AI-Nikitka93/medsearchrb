@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, datetime
 import logging
 import re
 import time
@@ -16,6 +17,22 @@ from apps.scrapers.models import ScrapeReport, SourceBatch, utc_now_iso
 
 
 LOGGER = logging.getLogger(__name__)
+
+PROMOTION_ENDED_MARKERS = (
+    "акция завершена",
+    "акция завершилась",
+    "акция завершен",
+    "предложение завершено",
+    "предложение завершилась",
+    "предложение завершено",
+    "предложение не действует",
+    "акция не действует",
+    "скидка не действует",
+    "предложение более не действует",
+    "акция более не действует",
+    "акция окончена",
+    "акция окончилась",
+)
 
 
 class BaseScraper(ABC):
@@ -99,6 +116,56 @@ class BaseScraper(ABC):
         if limit > 0:
             return urls[:limit]
         return urls
+
+    def promotion_has_end_marker(self, *values: str | None) -> bool:
+        haystack = " ".join(self.normalize_space(value).lower() for value in values if value)
+        if not haystack:
+            return False
+        return any(marker in haystack for marker in PROMOTION_ENDED_MARKERS)
+
+    def parse_promotion_date(self, value: str | None) -> date | None:
+        normalized = self.normalize_space(value)
+        if not normalized:
+            return None
+
+        iso_match = re.match(r"^(\d{4})-(\d{2})-(\d{2})", normalized)
+        if iso_match:
+            return date(
+                int(iso_match.group(1)),
+                int(iso_match.group(2)),
+                int(iso_match.group(3)),
+            )
+
+        dotted_match = re.match(r"^(\d{2})\.(\d{2})\.(\d{4})$", normalized)
+        if dotted_match:
+            return date(
+                int(dotted_match.group(3)),
+                int(dotted_match.group(2)),
+                int(dotted_match.group(1)),
+            )
+
+        try:
+            return datetime.fromisoformat(normalized.replace("Z", "+00:00")).date()
+        except ValueError:
+            return None
+
+    def promotion_is_expired(self, valid_until: str | None) -> bool:
+        parsed = self.parse_promotion_date(valid_until)
+        if not parsed:
+            return False
+        return parsed < date.today()
+
+    def promotion_is_active(
+        self,
+        title: str | None,
+        content_text: str | None = None,
+        valid_until: str | None = None,
+    ) -> bool:
+        if self.promotion_has_end_marker(title, content_text):
+            return False
+        if self.promotion_is_expired(valid_until):
+            return False
+        return True
 
     def _robots_allow(self) -> bool:
         parser = urllib.robotparser.RobotFileParser()

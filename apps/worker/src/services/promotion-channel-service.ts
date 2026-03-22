@@ -4,6 +4,7 @@ import type { WorkerBindings } from "../env";
 import { ensureDbReady } from "../lib/db";
 import { NotificationOutboxRepository } from "../repositories/notification-outbox-repository";
 import { TelegramBotService } from "./telegram-bot-service";
+import { promotionHasEndMarker, promotionIsActive } from "../utils/promotion-status";
 
 export type PromotionDispatchResult = {
   claimed: number;
@@ -50,6 +51,18 @@ export class PromotionChannelService {
           continue;
         }
 
+        const recheck = await this.recheckPromotionSource(payload.source_url, payload.title, payload.ends_at);
+        if (!recheck.isActive) {
+          await this.repo.deactivatePromotion(client, payload.promotion_id, new Date().toISOString());
+          await this.repo.markFailed(
+            client,
+            event.id,
+            recheck.reason ?? "Promotion no longer active after live recheck",
+          );
+          result.skipped += 1;
+          continue;
+        }
+
         await telegram.sendPromotionToChannel({
           title: payload.title,
           clinicName: payload.clinic_name,
@@ -72,5 +85,42 @@ export class PromotionChannelService {
     }
 
     return result;
+  }
+
+  private async recheckPromotionSource(
+    sourceUrl: string,
+    title: string,
+    endsAt: string | null,
+  ): Promise<{ isActive: boolean; reason?: string }> {
+    if (!promotionIsActive({ title, endsAt })) {
+      return {
+        isActive: false,
+        reason: "Promotion already marked inactive by title/date",
+      };
+    }
+
+    const response = await fetch(sourceUrl, {
+      redirect: "follow",
+      headers: {
+        "User-Agent": "MedsearchRB-Worker/1.0",
+      },
+    });
+
+    if (!response.ok) {
+      return {
+        isActive: false,
+        reason: `Promotion source returned HTTP ${response.status}`,
+      };
+    }
+
+    const pageText = (await response.text()).slice(0, 200_000);
+    if (promotionHasEndMarker(title, pageText)) {
+      return {
+        isActive: false,
+        reason: "Promotion page contains ended marker",
+      };
+    }
+
+    return { isActive: true };
   }
 }
