@@ -46,6 +46,7 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
     - scraper читает structured payload `2doc.by`;
     - в ingest попадают `rating`, `comment_count`, clinic relation и booking/discovery signals;
     - doctor detail API хранит source breakdown без конфликта с YDoc.
+  - Подтверждение: bounded local run `2doc` дал `doctors_found=5`, `clinics_found=5`, `review_summaries_found=5`, а cloud run `review-sync-2doc` `23414212650` завершился `success` и залил `25` `reviews_summary` rows в live Turso.
   - Сложность: M
   - Риск блокера: низкий-средний, возможна смена inline payload формата.
 

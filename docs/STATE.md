@@ -50,11 +50,13 @@
 - Добавлены новые official promo sources `nordin`, `medavenu`, `smartmedical`, `supramed`
 - Общий local live backfill новых promo sources завершился `processed_batches=4`, `inserted=43`, `errors=0`
 - Cloudflare Pages project `medsearch-minsk-miniapp` подтвержден рабочим: прямой `wrangler pages deploy` создает production deployment, а run `review-sync` `23413937432` дошел до `Deploy Mini App to Cloudflare Pages` и завершился успешно
+- Added `2doc.by` as a bounded hybrid review/discovery source: `review-sync-2doc` `23414212650` завершился `success`, bounded run дал `doctors_found=25`, `clinics_found=18`, `review_summaries_found=25`, а live Turso verify показал `source_name='2doc.by' -> 25 rows`
 Что осталось:
 - Добить review coverage: `103.by`, `doktora.by` и `2doc.by` должны заметно увеличить multi-source doctors
 - После стабилизации текущих runs вынести `doctor-clinic-verify` в отдельный cloud step
 - Продолжить улучшение matching между врачами и clinic pages, чтобы CTA и source breakdown были полнее
 - Держать Cloudflare Pages deploy path под наблюдением и убедиться, что он стабильно срабатывает после каждого успешного data-run
+- Усилить `2doc.by` matching, если появятся дополнительные doctor pages за пределами первого bounded chunk
 - Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
 Следующий шаг:
 - Закоммитить и запушить promo-source expansion + Mini App live data path fix, затем вручную прогнать `promo-sync` уже в облаке и убедиться, что future updates видны без локального redeploy
