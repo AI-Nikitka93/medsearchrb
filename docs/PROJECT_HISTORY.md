@@ -333,3 +333,9 @@
 **Сделано:** исправлен приоритет ссылок в карточке врача Mini App: detail fetch теперь идет `worker-first`, snapshot расширен verification-полями (`official_*`, `aggregator_*`, `verification_status`), а `buildClinicActions()` больше не ставит агрегаторный `booking_url` выше официального `site_url`; production Mini App перевыкатан на Netlify deploy `69bf3db9215bcc4eb9afd043`, а новый snapshot для врача `staskevich-regina-nikolaevna-af73b96d43` подтверждает прямые сайты клиник `https://e-clinic.by/` и `https://doctortut.by/`  
 **Изменены файлы:** `apps/miniapp/components/catalog-app.tsx`, `apps/miniapp/lib/api.ts`, `apps/miniapp/scripts/generate-catalog-snapshot.mjs`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** проверить Telegram WebView новым скрином и затем уже добивать следующий data-layer: official booking URLs по clinic verification
+
+## 2026-03-22 10:00 — Overnight Parser Audit
+**Роль:** Windows Engineering Assistant  
+**Сделано:** проведен аудит ночных cloud runs и текущего scraper coverage; подтверждено, что `promo-sync` всю ночь работал online по cron `*/15 * * * *` и многократно завершался `success`, а последний завершенный run `23399948455` показал `claimed=0, sent=0`, то есть новых промо для канала не было; одновременно `doctor-catalog-sync` по расписанию завершился `success` в run `23395048832` за `3h48m43s`, обработал `22` chunk batch, дал `inserted=22`, `updated=5729`, `errors=0`, но live total врачей остался `2162`, что означает сильный dedup/update-overwrite, а не рост каталога; текущая фактическая source coverage по коду: `ydoc`, `medart`, `lighthouse`, `kravira`, `lode`  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** расширять promo coverage на новые клиники Минска и отдельно диагностировать, почему полный `YDoc` nightly run дает много `updated`, но не увеличивает live total врачей

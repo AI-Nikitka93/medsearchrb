@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 03:44
+Дата и время: 2026-03-22 10:00
 Статус: IN_PROGRESS
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже `PUBLIC`; получен первый полностью успешный cloud run `promo-sync` (`23392262386`, `success`, `4m16s`) для `MedArt`/`Lighthouse`/`Kravira`/`LODE`. Однако это еще не “все клиники Минска”: online promo-pipeline уже работает, но source inventory по остальным официальным promo/news pages еще не завершен, а `doctor-catalog-sync` все еще длинный.
+Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; `promo-sync` уже стабильно работает ночью по cron и многократно завершался `success`, но новых promo-posts в канал не было, потому что последние successful flush-пуски возвращали `claimed=0, sent=0`; `doctor-catalog-sync` тоже подтвердил overnight success (`23395048832`, `3h48m43s`), однако полный `YDoc` nightly run дает в основном `updated`, а не рост итогового live total врачей.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -36,10 +36,15 @@
 - `promo-sync` окончательно отвязан от локального `.env.txt`: backfill использует GitHub secrets напрямую
 - Финальная live-проверка в GitHub Actions исправлена через `User-Agent: MedsearchRB-GitHubActions/1.0`
 - Получен первый полностью успешный online run `promo-sync` (`23392262386`), включая `scrape -> backfill -> Telegram flush -> live verify -> artifact upload`
+- Ночные scheduled runs `promo-sync` подтверждены как рабочие (`23394796220`, `23396230359`, `23397058481`, `23397973431`, `23398602564`, `23399367494`, `23399948455` — все `success`)
+- Последний завершенный `promo-sync` (`23399948455`) показал `claimed=0`, `sent=0`, поэтому новых новостей в Telegram-канале не было
+- Ночной `doctor-catalog-sync` (`23395048832`) завершился `success` за `3h48m43s`, обработал `22` batch chunks и дал итог `inserted=22`, `updated=5729`, `errors=0`
+- Live totals на момент аудита: `doctors_total=2162`, `promotions_total=21`
 Что осталось:
 - Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
 - Продолжить разрезание и ускорение `doctor-catalog-sync`, если `ydoc` остается слишком длинным
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
+- Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
 Следующий шаг:
 - Продолжить source-by-source подключение остальных клиник Минска в `promo-sync` и отдельно довести `doctor-catalog-sync`, чтобы весь refresh pipeline был онлайн, а не только promotions
