@@ -291,3 +291,9 @@
 **Сделано:** после push коммита `bfab24c` предыдущий cloud run `23391706996` был отменен, потому что стартовал до multi-clinic expansion; вместо него запущен новый workflow run `23391902340`, уже с актуального `main`, чтобы future cloud scrape/backfill/promotions posting использовали `kravira lighthouse lode medart ydoc`, а не более старую конфигурацию  
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** дождаться перехода нового run `23391902340` в `in_progress/completed` и затем проверить, что cloud refresh подтверждает multi-clinic promo coverage без локального вмешательства
+
+## 2026-03-22 03:20 — Cloud Workflow Split for Online Sync
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден корень “часового зависания” GitHub Actions: весь online refresh был собран как один monolithic job, где `Run scrapers` держал внутри полный `ydoc` scrape и блокировал быстрые promo sources; workflow `.github/workflows/scraper.yml` перестроен на две параллельные job-и — `promo-sync` и `ydoc-catalog` — с разными timeout, отдельными batch artifact-ами и `concurrency.cancel-in-progress=true`, чтобы новые ручные rerun-ы автоматически останавливали старые зависшие cloud runs; локальная YAML-проверка подтвердила новую структуру jobs  
+**Изменены файлы:** `.github/workflows/scraper.yml`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить и запушить новый workflow, затем запустить fresh cloud run и убедиться, что promo sources завершаются быстро, а долгий `ydoc` идет отдельно и больше не маскирует прогресс всего pipeline

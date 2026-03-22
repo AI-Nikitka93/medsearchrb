@@ -10,12 +10,12 @@ permissions:
 
 concurrency:
   group: medsearchrb-catalog-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  scrape:
+  promo-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -39,12 +39,16 @@ jobs:
           python -m pip install -r requirements.txt
           npm --prefix apps/worker ci
 
-      - name: Run scrapers
+      - name: Run promo sources to batch file
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
-        run: python -m apps.scrapers.main --sources kravira lighthouse lode medart ydoc --output-mode file --log-level INFO
+        run: >
+          python -m apps.scrapers.main
+          --sources kravira lighthouse lode medart
+          --output-mode file
+          --log-level INFO
 
-      - name: Backfill Turso from batch
+      - name: Backfill promo batch to Turso
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
@@ -52,7 +56,7 @@ jobs:
         run: >
           npm --prefix apps/worker run catalog:backfill --
           --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
-          --chunk-size 100
+          --chunk-size 50
 
       - name: Flush promotion posts to Telegram channel
         env:
@@ -69,6 +73,7 @@ jobs:
               headers={
                   "Authorization": f"Bearer {os.environ['INGEST_SHARED_SECRET']}",
                   "Content-Type": "application/json",
+                  "User-Agent": "MedsearchRB-GitHubActions/1.0",
               },
               data=b"{}",
           )
@@ -78,20 +83,88 @@ jobs:
               print(json.dumps(payload, ensure_ascii=False))
           PY
 
-      - name: Verify live API total
+      - name: Upload promo batch artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: promo-source-batch
+          path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
+          if-no-files-found: warn
+
+  ydoc-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/worker/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          npm --prefix apps/worker ci
+
+      - name: Run YDoc catalog scraper
+        env:
+          MAX_DOCTORS_PER_SOURCE: "0"
+        run: >
+          python -m apps.scrapers.main
+          --sources ydoc
+          --output-mode file
+          --log-level INFO
+
+      - name: Backfill YDoc batch to Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
+        run: >
+          npm --prefix apps/worker run catalog:backfill --
+          --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
+          --chunk-size 100
+
+      - name: Verify live doctor total
         run: |
           python - <<'PY'
           import json
           import urllib.request
 
-          with urllib.request.urlopen("https://medsearchrb-api.aiomdurman.workers.dev/api/v1/doctors?page=1&per_page=1", timeout=60) as response:
+          with urllib.request.urlopen(
+              "https://medsearchrb-api.aiomdurman.workers.dev/api/v1/doctors?page=1&per_page=1",
+              timeout=60,
+          ) as response:
               payload = json.loads(response.read().decode("utf-8"))
               print(json.dumps({"total": payload["total"]}, ensure_ascii=False))
           PY
 
-      - name: Upload batch artifact
+      - name: Upload YDoc batch artifact
         uses: actions/upload-artifact@v4
         with:
-          name: source-batch
+          name: ydoc-source-batch
           path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
           if-no-files-found: warn
+
+  workflow-summary:
+    runs-on: ubuntu-latest
+    needs:
+      - promo-sync
+      - ydoc-catalog
+    if: ${{ always() }}
+
+    steps:
+      - name: Print workflow summary
+        run: |
+          echo "promo-sync=${{ needs.promo-sync.result }}"
+          echo "ydoc-catalog=${{ needs.ydoc-catalog.result }}"
