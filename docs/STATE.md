@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 23:59
+Дата и время: 2026-03-23 00:27
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Второй важный blocker по Mini App freshness тоже снят: создан Netlify build hook и записан `NETLIFY_BUILD_HOOK_URL` в GitHub secrets. Теперь следующий live шаг — убедиться, что `promo-sync`, `review-sync-*` и `doctor-catalog-sync` после verify-step реально триггерят Netlify rebuild и убирают lag между Worker API и public `catalog.json`.
+Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Но build hook оказался ложным решением для Mini App freshness: hook отвечает `200`, однако текущий Netlify site не build-connected и новый deploy не создается. Поэтому активный трек теперь — прямой `netlify deploy --prod` из GitHub Actions после успешных data-runs.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`

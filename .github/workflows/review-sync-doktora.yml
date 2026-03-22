@@ -33,13 +33,16 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: apps/worker/package-lock.json
+          cache-dependency-path: |
+            apps/worker/package-lock.json
+            apps/miniapp/package-lock.json
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           npm --prefix apps/worker ci --no-audit --prefer-offline
+          npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Compute doktora.by page window
         id: chunk
@@ -132,30 +135,25 @@ jobs:
           });
           "
 
-      - name: Trigger Mini App snapshot rebuild
+      - name: Build Mini App snapshot
         env:
-          NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: |
-          python - <<'PY'
-          import json
-          import os
-          import urllib.request
+          npm --prefix apps/miniapp run build
 
-          hook_url = os.environ.get("NETLIFY_BUILD_HOOK_URL", "").strip()
-          if not hook_url:
-              print(json.dumps({"skipped": "NETLIFY_BUILD_HOOK_URL missing"}, ensure_ascii=False))
-              raise SystemExit(0)
-
-          request = urllib.request.Request(
-              hook_url,
-              method="POST",
-              headers={"User-Agent": "MedsearchRB-GitHubActions/1.0"},
-              data=b"{}",
-          )
-
-          with urllib.request.urlopen(request, timeout=60) as response:
-              print(json.dumps({"status": response.status, "triggered": True}, ensure_ascii=False))
-          PY
+      - name: Deploy Mini App to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: >
+          npx --prefix apps/miniapp netlify deploy
+          --site "$NETLIFY_SITE_ID"
+          --auth "$NETLIFY_AUTH_TOKEN"
+          --prod
+          --dir apps/miniapp/out
+          --message "review-sync-doktora snapshot refresh"
+          --json
 
       - name: Upload doktora.by review batch artifact
         uses: actions/upload-artifact@v4

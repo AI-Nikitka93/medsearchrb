@@ -1,6 +1,6 @@
 # MedsearchRB Execution Backlog
 
-_Последнее обновление: 2026-03-22 23:59 | Роль: Windows Engineering Assistant_
+_Последнее обновление: 2026-03-23 00:27 | Роль: Windows Engineering Assistant_
 
 ## Must
 
@@ -16,15 +16,16 @@ _Последнее обновление: 2026-03-22 23:59 | Роль: Windows E
   - Сложность: M
   - Риск блокера: средний, нужен аккуратный баланс между скоростью и respectful crawl.
 
-- [ ] Mini App Freshness P0 — триггерить Netlify rebuild из data workflows
+- [ ] Mini App Freshness P0 — делать прямой Netlify production deploy из data workflows
   - Цель: чтобы public `catalog.json` перестал отставать от live Worker после cloud updates.
-  - Вход: созданный `NETLIFY_BUILD_HOOK_URL` в GitHub secrets.
+  - Вход: добавленные `NETLIFY_AUTH_TOKEN` и `NETLIFY_SITE_ID` в GitHub secrets; build hook признан недостаточным.
   - Definition of Done:
-    - `promo-sync`, `review-sync-*`, `doctor-catalog-sync` дергают Netlify build hook после успешного verify-step;
-    - build hook использует только минимально опасный secret, без широкого Netlify token;
+    - `promo-sync`, `review-sync-*`, `doctor-catalog-sync`, `clinic-site-sync` после verify-step собирают `apps/miniapp`;
+    - workflow выполняет `npx netlify deploy --prod --dir apps/miniapp/out`;
+    - после успешного data-run в Netlify появляется новый production deploy;
     - Mini App freshness больше не зависит от ручного redeploy.
-  - Сложность: S
-  - Риск блокера: низкий.
+  - Сложность: M
+  - Риск блокера: низкий-средний.
 
 - [ ] Review Layer P1 — добавить `103.by` и `doktora.by` как production doctor-review sources
   - Цель: перейти от single-source YDoc к реальному multi-source reputation layer для врачей.

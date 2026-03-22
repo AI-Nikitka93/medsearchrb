@@ -26,10 +26,14 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: apps/worker/package-lock.json
+          cache-dependency-path: |
+            apps/worker/package-lock.json
+            apps/miniapp/package-lock.json
 
-      - name: Install worker dependencies
-        run: npm --prefix apps/worker ci --no-audit --prefer-offline
+      - name: Install dependencies
+        run: |
+          npm --prefix apps/worker ci --no-audit --prefer-offline
+          npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Apply database migrations
         env:
@@ -81,3 +85,23 @@ jobs:
             process.exit(1);
           });
           "
+
+      - name: Build Mini App snapshot
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          npm --prefix apps/miniapp run build
+
+      - name: Deploy Mini App to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: >
+          npx --prefix apps/miniapp netlify deploy
+          --site "$NETLIFY_SITE_ID"
+          --auth "$NETLIFY_AUTH_TOKEN"
+          --prod
+          --dir apps/miniapp/out
+          --message "clinic-site-sync snapshot refresh"
+          --json

@@ -139,3 +139,19 @@
   - this is acceptable even if some builds are redundant, because the security surface is still narrower than a full Netlify auth token.
 - Remaining caveat:
   - public `catalog.json` can still lag until those updated workflows complete at least once on the new configuration.
+
+## 2026-03-23 — Netlify Build Hook Is Insufficient For The Current Mini App Site
+- End-to-end verification showed:
+  - GitHub Actions can reach the build hook and gets `HTTP 200`;
+  - the Netlify site `medsearch-minsk-miniapp` does not create a new deploy afterwards.
+- Root cause:
+  - the current site is effectively a manual deploy target with empty `build_id` / `build_settings`;
+  - build hooks are therefore not enough to refresh production.
+- New operational decision:
+  - data workflows must build `apps/miniapp` directly and run `npx netlify deploy --prod --dir apps/miniapp/out`;
+  - GitHub secrets must include:
+    - `NETLIFY_AUTH_TOKEN`
+    - `NETLIFY_SITE_ID`
+- Security rule:
+  - the token is allowed only in GitHub Actions secrets;
+  - it must never be echoed, persisted to artifacts, or written into repo files.
