@@ -13,7 +13,7 @@ const promotionChannelService = new PromotionChannelService();
 function allowedOrigins(env: WorkerBindings): string[] {
   const raw =
     env.ALLOWED_ORIGINS ??
-    "https://medsearch-minsk-miniapp.pages.dev,http://localhost:3000,http://127.0.0.1:3000";
+    "https://ai-nikitka93.github.io,https://medsearch-minsk-miniapp.pages.dev,http://localhost:3000,http://127.0.0.1:3000";
 
   return raw
     .split(",")
@@ -31,6 +31,10 @@ function isAllowedOrigin(origin: string, env: WorkerBindings): boolean {
     }
 
     if (host.endsWith(".medsearch-minsk-miniapp.pages.dev")) {
+      return true;
+    }
+
+    if (host === "ai-nikitka93.github.io") {
       return true;
     }
 

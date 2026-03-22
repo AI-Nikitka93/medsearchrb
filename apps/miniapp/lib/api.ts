@@ -1,6 +1,6 @@
 const LOCAL_API_BASE_URL = "http://127.0.0.1:8787";
 const DEFAULT_API_BASE_URL = "https://medsearchrb-api.aiomdurman.workers.dev";
-const SNAPSHOT_PATH = "/data/catalog.json";
+const SNAPSHOT_PATH = `${process.env.NEXT_PUBLIC_BASE_PATH?.trim() || ""}/data/catalog.json`;
 
 type DoctorSpecialty = {
   id: string;

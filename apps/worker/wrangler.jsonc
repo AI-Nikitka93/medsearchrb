@@ -6,7 +6,7 @@
   "vars": {
     "APP_ENV": "production",
     "API_VERSION": "v1",
-    "ALLOWED_ORIGINS": "https://medsearch-minsk-miniapp.pages.dev,https://medsearch-minsk-miniapp.netlify.app,http://localhost:3000,http://127.0.0.1:3000"
+    "ALLOWED_ORIGINS": "https://ai-nikitka93.github.io,https://medsearch-minsk-miniapp.pages.dev,https://medsearch-minsk-miniapp.netlify.app,http://localhost:3000,http://127.0.0.1:3000"
   },
   "observability": {
     "enabled": true
