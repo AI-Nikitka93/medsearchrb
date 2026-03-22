@@ -1,6 +1,6 @@
-Дата и время: 2026-03-23 00:27
+Дата и время: 2026-03-23 01:21
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Но build hook оказался ложным решением для Mini App freshness: hook отвечает `200`, однако текущий Netlify site не build-connected и новый deploy не создается. Поэтому активный трек теперь — прямой `netlify deploy --prod` из GitHub Actions после успешных data-runs.
+Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Netlify оказался тупиковым для freshness: текущий account hit credit limit, а build hook не давал новых production deploy. Поэтому активный трек теперь — Cloudflare Pages direct deploy из GitHub Actions после успешных data-runs.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`

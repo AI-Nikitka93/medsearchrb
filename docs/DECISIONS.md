@@ -45,7 +45,7 @@
 ## 2026-03-22 — Cloud-Only Refresh Pipeline for Doctor to Clinic Verification
 - Production serving path remains split and online-first:
   - `Cloudflare Worker` serves read API, ingest API and Telegram webhook 24/7;
-  - `Netlify` serves the Mini App and same-origin snapshot for fast list rendering;
+  - `Cloudflare Pages` serves the Mini App and same-origin snapshot for fast list rendering;
   - `Turso` remains the system of record for doctors, clinics, promotions and verification metadata.
 - Data refresh must be staged, not monolithic:
   1. `catalog-scrape` — collect source batches from aggregator and official sources;
@@ -62,7 +62,7 @@
   3. `site_url`
   4. aggregator URLs with explicit aggregator labels
 - To keep the system online-only, heavy refresh jobs must run outside the user laptop:
-  - preferred free path: `GitHub Actions` on a `public` repo;
+  - preferred free path: `GitHub Actions` on a `public` repo + `Cloudflare Pages` for the Mini App;
   - fallback path: another cloud runner with cron support and persisted secrets;
   - local PC execution is allowed only for manual recovery, never as the main production refresh strategy.
 - Operational split for future automation:
@@ -132,26 +132,23 @@
 - Same-origin snapshot is still the best fast path for Telegram WebView rendering.
 - But snapshot freshness must not depend on manual local redeploys.
 - Delivery decision:
-  - use a dedicated Netlify build hook URL stored as `NETLIFY_BUILD_HOOK_URL` in GitHub secrets;
-  - do not grant GitHub Actions a broad Netlify personal token if a build hook is enough.
+  - use a dedicated Cloudflare Pages deployment path stored as `CLOUDFLARE_API_TOKEN` in GitHub secrets;
+  - keep GitHub Actions scoped to the Pages project, not a broad hosting token.
 - Workflow decision:
-  - `promo-sync`, `review-sync-*`, and `doctor-catalog-sync` may trigger the build hook after successful verify-steps;
-  - this is acceptable even if some builds are redundant, because the security surface is still narrower than a full Netlify auth token.
+  - `promo-sync`, `review-sync-*`, `doctor-catalog-sync`, and `clinic-site-sync` may trigger a direct Pages deploy after successful verify-steps;
+  - this is acceptable even if some deploys are redundant, because the security surface stays limited to the Pages project.
 - Remaining caveat:
   - public `catalog.json` can still lag until those updated workflows complete at least once on the new configuration.
 
-## 2026-03-23 — Netlify Build Hook Is Insufficient For The Current Mini App Site
+## 2026-03-23 — Cloudflare Pages Replaces Netlify For Mini App Freshness
 - End-to-end verification showed:
-  - GitHub Actions can reach the build hook and gets `HTTP 200`;
-  - the Netlify site `medsearch-minsk-miniapp` does not create a new deploy afterwards.
-- Root cause:
-  - the current site is effectively a manual deploy target with empty `build_id` / `build_settings`;
-  - build hooks are therefore not enough to refresh production.
+  - Netlify deploys are blocked for this account because `Account credit usage exceeded`;
+  - the Cloudflare Pages project `medsearch-minsk-miniapp` exists and accepts direct `wrangler pages deploy` uploads;
+  - a local direct upload succeeds and creates a Pages production deployment.
 - New operational decision:
-  - data workflows must build `apps/miniapp` directly and run `npx netlify deploy --prod --dir apps/miniapp/out`;
+  - data workflows must build `apps/miniapp` directly and run `npm --prefix apps/miniapp exec wrangler -- pages deploy apps/miniapp/out --project-name medsearch-minsk-miniapp --branch main`;
   - GitHub secrets must include:
-    - `NETLIFY_AUTH_TOKEN`
-    - `NETLIFY_SITE_ID`
+    - `CLOUDFLARE_API_TOKEN`
 - Security rule:
   - the token is allowed only in GitHub Actions secrets;
   - it must never be echoed, persisted to artifacts, or written into repo files.

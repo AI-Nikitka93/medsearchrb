@@ -16,13 +16,13 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
   - Сложность: M
   - Риск блокера: средний, нужен аккуратный баланс между скоростью и respectful crawl.
 
-- [ ] Mini App Freshness P0 — делать прямой Netlify production deploy из data workflows
-  - Цель: чтобы public `catalog.json` перестал отставать от live Worker после cloud updates.
-  - Вход: добавленные `NETLIFY_AUTH_TOKEN` и `NETLIFY_SITE_ID` в GitHub secrets; build hook признан недостаточным.
+- [ ] Mini App Freshness P0 — делать прямой Cloudflare Pages production deploy из data workflows
+  - Цель: чтобы public `catalog.json` перестал отставать от live Worker после cloud-обновлений.
+  - Вход: созданный Cloudflare Pages project `medsearch-minsk-miniapp` и GitHub secret `CLOUDFLARE_API_TOKEN`.
   - Definition of Done:
     - `promo-sync`, `review-sync-*`, `doctor-catalog-sync`, `clinic-site-sync` после verify-step собирают `apps/miniapp`;
-    - workflow выполняет `npx netlify deploy --prod --dir apps/miniapp/out`;
-    - после успешного data-run в Netlify появляется новый production deploy;
+    - workflow выполняет `npm --prefix apps/miniapp exec wrangler -- pages deploy apps/miniapp/out --project-name medsearch-minsk-miniapp --branch main`;
+    - после успешного data-run в Cloudflare Pages появляется новый production deployment;
     - Mini App freshness больше не зависит от ручного redeploy.
   - Сложность: M
   - Риск блокера: низкий-средний.
@@ -97,5 +97,5 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
 ## Current Focus
 
 - [ ] Активный трек: `Review Pipeline Hardening P0 (split 103.by / doktora.by + bounded cloud windows)`
-- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub build hook -> Netlify snapshot rebuild)`
+- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub Actions -> Cloudflare Pages deploy)`
 - [ ] Следующий после него: `Clinic Verification P1 + review matching coverage + 2doc.by`

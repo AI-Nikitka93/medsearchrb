@@ -142,19 +142,16 @@ jobs:
         run: |
           npm --prefix apps/miniapp run build
 
-      - name: Deploy Mini App to Netlify
+      - name: Deploy Mini App to Cloudflare Pages
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: >
-          npx --yes netlify-cli@24.4.0 deploy
-          --site "$NETLIFY_SITE_ID"
-          --auth "$NETLIFY_AUTH_TOKEN"
-          --no-build
-          --prod
-          --dir apps/miniapp/out
-          --message "review-sync-doktora snapshot refresh"
-          --json
+          npm --prefix apps/miniapp exec wrangler -- pages deploy
+          apps/miniapp/out
+          --project-name medsearch-minsk-miniapp
+          --branch main
+          --commit-hash "${{ github.sha }}"
+          --commit-message "review-sync-doktora snapshot refresh"
 
       - name: Upload doktora.by review batch artifact
         uses: actions/upload-artifact@v4
