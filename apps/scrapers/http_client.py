@@ -22,6 +22,7 @@ class ResponseSnapshot:
     url: str
     status_code: int
     text: str
+    content: bytes
     headers: dict[str, str]
 
 
@@ -81,6 +82,7 @@ class HttpClient:
                 url=str(response.url),
                 status_code=status_code,
                 text=response.text,
+                content=bytes(response.content),
                 headers=dict(response.headers),
             )
 

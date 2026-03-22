@@ -46,11 +46,51 @@ export class DoctorsService {
       this.repo.getPromotions(client, doctorId),
     ]);
 
+    const aggregatedReview = reviews.reduce(
+      (acc, item) => {
+        const reviewsCount = Number(item.reviews_count ?? 0);
+        const ratingAvg =
+          item.rating_avg === null || item.rating_avg === undefined
+            ? null
+            : Number(item.rating_avg);
+
+        acc.reviewsCount += reviewsCount;
+        if (ratingAvg !== null && reviewsCount > 0) {
+          acc.weightedScore += ratingAvg * reviewsCount;
+          acc.weightedCount += reviewsCount;
+        } else if (ratingAvg !== null) {
+          acc.fallbackRatings.push(ratingAvg);
+        }
+
+        return acc;
+      },
+      {
+        weightedScore: 0,
+        weightedCount: 0,
+        reviewsCount: 0,
+        fallbackRatings: [] as number[],
+      },
+    );
+
+    const ratingAvg =
+      aggregatedReview.weightedCount > 0
+        ? Number(
+            (
+              aggregatedReview.weightedScore /
+              aggregatedReview.weightedCount
+            ).toFixed(1),
+          )
+        : aggregatedReview.fallbackRatings.length > 0
+          ? Math.max(...aggregatedReview.fallbackRatings)
+          : null;
+
     return {
       id: doctorId,
       slug: String(doctor.slug),
       full_name: String(doctor.full_name),
       description_short: doctor.description_short ? String(doctor.description_short) : null,
+      rating_avg: ratingAvg,
+      reviews_count: aggregatedReview.reviewsCount,
       specialties: specialties.map((item) => ({
         id: String(item.id),
         slug: String(item.slug),

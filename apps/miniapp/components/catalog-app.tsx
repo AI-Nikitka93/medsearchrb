@@ -58,6 +58,12 @@ type DoctorDetailRecord = {
     clinic_name: string;
     source_url: string;
   }>;
+  reviews: Array<{
+    source_name: string;
+    source_page_url: string;
+    rating_avg: number | null;
+    reviews_count: number;
+  }>;
   rating_avg: number | null;
   reviews_count: number;
 };
@@ -73,6 +79,13 @@ type ClinicLinkAction = {
   label: string;
   url: string;
   style: "primary" | "secondary";
+};
+
+type ReviewSummaryItem = {
+  source_name: string;
+  source_page_url: string;
+  rating_avg: number | null;
+  reviews_count: number;
 };
 
 const FALLBACK_SPECIALTIES = [
@@ -97,6 +110,50 @@ function ArrowLeftIcon() {
       <path d="M6.75 10h7" />
     </svg>
   );
+}
+
+function aggregateReviewSummary(reviews: ReviewSummaryItem[]) {
+  const base = reviews.reduce(
+    (acc, review) => {
+      acc.reviews_count += review.reviews_count;
+      if (review.rating_avg !== null && review.reviews_count > 0) {
+        acc.weighted_score += review.rating_avg * review.reviews_count;
+        acc.weighted_count += review.reviews_count;
+      } else if (review.rating_avg !== null) {
+        acc.fallback.push(review.rating_avg);
+      }
+      return acc;
+    },
+    {
+      weighted_score: 0,
+      weighted_count: 0,
+      reviews_count: 0,
+      fallback: [] as number[],
+    },
+  );
+
+  return {
+    rating_avg:
+      base.weighted_count > 0
+        ? Number((base.weighted_score / base.weighted_count).toFixed(1))
+        : base.fallback.length > 0
+          ? Math.max(...base.fallback)
+          : null,
+    reviews_count: base.reviews_count,
+  };
+}
+
+function formatReviewSourceName(sourceName: string) {
+  switch (sourceName) {
+    case "ydoc":
+      return "YDoc";
+    case "103.by":
+      return "103.by";
+    case "doktora.by":
+      return "Doktora.by";
+    default:
+      return sourceName;
+  }
 }
 
 function ArrowRightIcon() {
@@ -782,7 +839,14 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
 
     fetchDoctorDetail(selectedDoctorId, controller.signal)
       .then((response) => {
-        const latestReview = response.item.reviews[0] ?? null;
+        const aggregatedReviews = aggregateReviewSummary(
+          response.item.reviews.map((item) => ({
+            source_name: item.source_name,
+            source_page_url: item.source_page_url,
+            rating_avg: item.rating_avg,
+            reviews_count: item.reviews_count,
+          })),
+        );
 
         setDoctorDetails((current) => ({
           ...current,
@@ -813,8 +877,16 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
               clinic_name: promotion.clinic.name,
               source_url: promotion.source_url,
             })),
-            rating_avg: latestReview?.rating_avg ?? null,
-            reviews_count: latestReview?.reviews_count ?? 0,
+            reviews: response.item.reviews.map((review) => ({
+              source_name: review.source_name,
+              source_page_url: review.source_page_url,
+              rating_avg: review.rating_avg,
+              reviews_count: review.reviews_count,
+            })),
+            rating_avg:
+              response.item.rating_avg ?? aggregatedReviews.rating_avg,
+            reviews_count:
+              response.item.reviews_count ?? aggregatedReviews.reviews_count,
           },
         }));
         setDetailState({
@@ -1348,6 +1420,49 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                             </div>
                           );
                         })}
+                      </div>
+                    )}
+                  </section>
+
+                  <section className="space-y-2">
+                    <h2 className="font-display text-lg font-bold text-sectionHeader">
+                      Отзывы по источникам
+                    </h2>
+                    {selectedDoctor.reviews.length === 0 ? (
+                      <EmptyState
+                        title="Отзывы еще не загружены"
+                        description="Пока у этого врача нет source breakdown по отзывам."
+                      />
+                    ) : (
+                      <div className="space-y-2">
+                        {selectedDoctor.reviews.map((review) => (
+                          <div
+                            key={`${review.source_name}:${review.source_page_url}`}
+                            className="rounded-lg bg-surface p-3 shadow-soft"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="text-sm font-semibold text-text">
+                                  {formatReviewSourceName(review.source_name)}
+                                </div>
+                                <div className="mt-1 text-sm text-subtle">
+                                  {review.rating_avg !== null
+                                    ? `Рейтинг ${review.rating_avg.toFixed(1)} • ${review.reviews_count} отзывов`
+                                    : `${review.reviews_count} отзывов`}
+                                </div>
+                              </div>
+                              <PrimaryButton
+                                className="min-h-9 px-3 py-2 text-xs"
+                                style="secondary"
+                                onClick={() =>
+                                  openExternalLink(review.source_page_url)
+                                }
+                              >
+                                Открыть источник
+                              </PrimaryButton>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </section>

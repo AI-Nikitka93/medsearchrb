@@ -70,6 +70,8 @@ export type DoctorDetailResponse = {
     slug: string;
     full_name: string;
     description_short: string | null;
+    rating_avg?: number | null;
+    reviews_count?: number;
     specialties: DoctorSpecialty[];
     clinics: DoctorClinic[];
     reviews: DoctorReview[];

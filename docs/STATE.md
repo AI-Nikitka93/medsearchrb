@@ -56,10 +56,47 @@
 Следующий шаг:
 - Держать backlog в `docs/TODO.md` как единый план выполнения; ближайшие активные задачи: завершить `clinic-site-sync`, затем внедрять `doktora.by` как первый doctor-review source
 
-Дата и время: 2026-03-22 14:58
+Дата и время: 2026-03-22 15:58
 Статус: IN_PROGRESS
-Причина: Единая карта улучшений в `docs/TODO.md` уже активирована и работа идет по ней сверху вниз. Первый активный трек `Clinic Verification P1` реально исполняется в облаке: после commit `645a0a4` и push в `origin/main` вручную запущен новый `clinic-site-sync` run `23402446176`. По live Turso видно, что backend quality-layer уже отработал большой кусок проверки сайтов клиник (`healthy=378`, `fetch_failed=15`, `blocked=6`, `redirected_external=5`, `invalid_http=2`, `unknown=4`), но `is_hidden=1` пока `0`, поэтому визуально Mini App почти не меняется: текущая suppression policy требует повторных провалов, а UI еще не показывает `site_health_status`.
+Причина: Активный трек смещен на `Review Layer P1 (103.by + doktora.by)`. Реализованы два новых production review-source, bounded scrape/backfill уже подтвердил запись новых summary-отзывов в live `reviews_summary`, Worker и Mini App пересобраны и перевыкатаны, а отдельный cloud workflow `review-sync` подготовлен для online-refresh без ПК. `Clinic Verification P1` не потерян, но временно отошел на второй план.
 Что уже сделано:
+- Реализован scraper `apps/scrapers/scrapers/by103.py`:
+  - source `103.by`
+  - crawl через `sitemap-staff.xml.gz`
+  - detail-page extraction для `ratingValue`, `reviewCount`, specialty и clinic blocks
+- Реализован scraper `apps/scrapers/scrapers/doktora.py`:
+  - source `doktora.by`
+  - crawl через paginated `/otzyvy-o-vrachah-belarusi?page=N`
+  - extraction для `review_count`, specialty и clinic mention
+  - `rating_avg` временно отключен, потому что текущий DOM-маркер `average-rating` дает недостоверное значение `1`
+- Registry/config обновлены:
+  - `apps/scrapers/scrapers/__init__.py`
+  - `config.yaml`
+  - `selectors.yaml`
+- Worker read-model переведен на multi-source aggregation:
+  - `apps/worker/src/repositories/doctors-read-repository.ts`
+  - `apps/worker/src/services/doctors-service.ts`
+- Snapshot generation переведена на latest-per-source + weighted aggregate:
+  - `apps/miniapp/scripts/generate-catalog-snapshot.mjs`
+- Mini App detail-screen теперь:
+  - считает aggregate rating/review count по всем источникам
+  - показывает блок `Отзывы по источникам`
+  - умеет открывать source page каждого review-source
+- Добавлен cloud workflow `.github/workflows/review-sync.yml` для `103.by + doktora.by`
+- Bounded smoke-run подтвержден:
+  - `103.by -> doctors_found=2, clinics_found=2, review_summaries_found=2`
+  - `doktora.by -> doctors_found=2, clinics_found=1, review_summaries_found=2`
+- Bounded live backfill подтвержден:
+  - `processed_batches=2`
+  - `inserted=6`
+  - `updated=5`
+  - `errors=0`
+- Live Turso после bounded backfill уже содержит:
+  - `reviews_summary source_name='103.by' -> 2 rows`
+  - `reviews_summary source_name='doktora.by' -> 2 rows`
+- Production deploy выполнен:
+  - Worker: `https://medsearchrb-api.aiomdurman.workers.dev`
+  - Mini App: `https://medsearch-minsk-miniapp.netlify.app`
 - Единый backlog добавлен в `docs/TODO.md` и принят как основной execution plan
 - Создан commit `645a0a4` с roadmap+workflow fix и успешно запушен в `origin/main`
 - Запущен новый cloud run `clinic-site-sync` (`23402446176`) на свежем `head_sha=645a0a4`
@@ -67,9 +104,10 @@
 - Live Turso после cloud health-pass показывает накопленное распределение `site_health_status`: `healthy=378`, `fetch_failed=15`, `blocked=6`, `redirected_external=5`, `invalid_http=2`, `unknown=4`
 - Подтверждено, что `hidden_total=0`, поэтому пользовательских визуальных изменений в Mini App пока почти нет
 Что осталось:
-- Дождаться завершения run `23402446176`
-- Определить, нужно ли ускорять suppression для явно мертвых сайтов (`404/410/parked`) вместо ожидания нескольких циклов
-- Или вывести health/verification сигналы прямо в Mini App, чтобы backend quality work был виден пользователю еще до массового `is_hidden`
-- После закрытия `Clinic Verification P1` перейти к `Review Layer P1 (doktora.by)`
+- Закоммитить и запушить review-layer changes в `origin/main`
+- Запустить первый cloud `review-sync` run уже с новыми scrapers
+- Проверить, сколько врачей из `103.by + doktora.by` реально матчится к текущему каталогу, а сколько приходит как новые карточки
+- При необходимости усилить matching между review-sources и существующим doctor catalog
+- Вернуться к `Clinic Verification P1` после первого зеленого `review-sync`
 Следующий шаг:
-- Проверить финальный статус `23402446176` и, если он зеленый, обновить `docs/TODO.md`, чтобы считать `Clinic Verification P1` закрытым или перевести его в следующий подэтап policy/UI surfacing
+- Закоммитить multi-source review-layer, запушить в `origin/main` и вручную запустить новый `review-sync`, чтобы `103.by + doktora.by` начали работать полностью online, а не только через bounded local smoke-run

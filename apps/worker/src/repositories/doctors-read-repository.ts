@@ -36,27 +36,46 @@ export class DoctorsReadRepository {
     const pageResult = await db.execute({
       sql: `
         WITH latest_reviews AS (
-          SELECT r1.doctor_id, r1.rating_avg, r1.reviews_count
-          FROM reviews_summary r1
-          INNER JOIN (
-            SELECT doctor_id, MAX(captured_at) AS max_captured_at
-            FROM reviews_summary
-            WHERE doctor_id IS NOT NULL
-            GROUP BY doctor_id
-          ) latest
-            ON latest.doctor_id = r1.doctor_id
-           AND latest.max_captured_at = r1.captured_at
+          SELECT
+            doctor_id,
+            source_name,
+            rating_avg,
+            reviews_count,
+            captured_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY doctor_id, source_name
+              ORDER BY captured_at DESC
+            ) AS row_num
+          FROM reviews_summary
+          WHERE doctor_id IS NOT NULL
+        ),
+        aggregated_reviews AS (
+          SELECT
+            doctor_id,
+            CASE
+              WHEN SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END) > 0
+                THEN ROUND(
+                  SUM(CASE WHEN rating_avg IS NOT NULL THEN rating_avg * reviews_count ELSE 0 END) * 1.0 /
+                  SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END),
+                  1
+                )
+              ELSE ROUND(MAX(rating_avg), 1)
+            END AS rating_avg,
+            SUM(reviews_count) AS reviews_count
+          FROM latest_reviews
+          WHERE row_num = 1
+          GROUP BY doctor_id
         )
         SELECT
           d.id,
           d.slug,
           d.full_name,
-          lr.rating_avg AS rating_avg,
-          COALESCE(lr.reviews_count, 0) AS reviews_count
+          ar.rating_avg AS rating_avg,
+          COALESCE(ar.reviews_count, 0) AS reviews_count
         FROM doctors d
-        LEFT JOIN latest_reviews lr ON lr.doctor_id = d.id
+        LEFT JOIN aggregated_reviews ar ON ar.doctor_id = d.id
         WHERE ${whereSql}
-        ORDER BY COALESCE(lr.reviews_count, 0) DESC, d.full_name ASC
+        ORDER BY COALESCE(ar.reviews_count, 0) DESC, d.full_name ASC
         LIMIT ? OFFSET ?
       `,
       args: [...args, filters.perPage, offset],
@@ -158,10 +177,24 @@ export class DoctorsReadRepository {
   async getReviews(db: SqlExecutor, doctorId: string) {
     const result = await db.execute({
       sql: `
+        WITH ranked_reviews AS (
+          SELECT
+            source_name,
+            source_page_url,
+            rating_avg,
+            reviews_count,
+            captured_at,
+            ROW_NUMBER() OVER (
+              PARTITION BY source_name
+              ORDER BY captured_at DESC
+            ) AS row_num
+          FROM reviews_summary
+          WHERE doctor_id = ?
+        )
         SELECT source_name, source_page_url, rating_avg, reviews_count, captured_at
-        FROM reviews_summary
-        WHERE doctor_id = ?
-        ORDER BY captured_at DESC, source_name ASC
+        FROM ranked_reviews
+        WHERE row_num = 1
+        ORDER BY reviews_count DESC, source_name ASC
       `,
       args: [doctorId],
     });

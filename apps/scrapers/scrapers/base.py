@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 import urllib.parse
 import urllib.robotparser
 from abc import ABC, abstractmethod
@@ -84,6 +85,14 @@ class BaseScraper(ABC):
     def doctor_limit_reached(self, current_count: int) -> bool:
         limit = self.config.max_doctors_per_source
         return limit > 0 and current_count >= limit
+
+    def polite_sleep(self) -> None:
+        crawl_delay_seconds = self.source_settings.get("crawl_delay_seconds")
+        if isinstance(crawl_delay_seconds, (int, float)) and crawl_delay_seconds > 0:
+            time.sleep(float(crawl_delay_seconds))
+            return
+
+        self.client.sleep_with_jitter()
 
     def trim_doctor_urls(self, urls: list[str]) -> list[str]:
         limit = self.config.max_doctors_per_source

@@ -88,9 +88,22 @@
   - doctor reputation and clinic reputation must be shown separately in Mini App;
   - one merged “single truth” rating is not allowed unless the UI also exposes the source breakdown.
 - Implementation rule:
-  - `doktora.by` enters the roadmap as a doctor-review source;
+  - `103.by` and `doktora.by` enter the first production rollout as doctor-review sources;
   - `2doc.by` enters the roadmap as a hybrid discovery/booking source with optional review fields when available.
 - Field contract for upcoming parsers:
   - `doctor_id candidate fields`: full name, specialty, city, clinic mentions, source slug
   - `review summary fields`: `rating_avg`, `review_count`, `source_name`, `source_page_url`, `captured_at`
   - `booking/discovery fields`: `clinic_name`, `clinic_slug`, `booking_url`, `source_page_url`
+
+## 2026-03-22 — Review Layer Rollout Order
+- The first production rollout of multi-source doctor reviews should prioritize:
+  1. `103.by`
+  2. `doktora.by`
+- Reason:
+  - both have live-confirmed doctor detail pages and implementation-ready markers;
+  - `103.by` provides stable `ratingValue` and `reviewCount`;
+  - `doktora.by` provides stable `review_count` and clinic mention, but its current `average-rating` marker is unreliable and must not be treated as trusted until a better extraction path is confirmed.
+- Read-model decision:
+  - top-level doctor reputation in Worker/Mini App must use `latest-per-source` rows and aggregate them by source, not simply take the latest single `reviews_summary` row.
+- UI decision:
+  - detail-screen should expose source breakdown explicitly, because different sources may disagree and some sources may provide only `review_count` without a trustworthy `rating_avg`.

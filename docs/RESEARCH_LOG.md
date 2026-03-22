@@ -830,3 +830,35 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
 - Handoff:
   - Следующий implementation step: взять по 3-5 карточек и выделить стабильные CSS/JSON-LD markers для `rating_avg`, `review_count`, `clinic_name`, `booking CTA`.
   - После этого добавить два новых scrapers: `doktora_reviews` и `2doc_doctors`.
+
+## [ТЕМА: 103.by и doktora.by implementation markers]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было довести `103.by` и `doktora.by` от research до реально внедряемого parser contract для первого production multi-source review slice.
+- Источники:
+  - live `https://www.103.by/spec/25-vecer/`
+  - live `https://www.103.by/sitemap-staff.xml.gz`
+  - live `https://doktora.by/otzyvy-o-vrachah-belarusi?page=1`
+  - live `https://doktora.by/otzyvy/akusher-v-minske-rutkovskiy-valeriy-anatolevich`
+- Подтвержденные факты:
+  - `103.by`
+    - `sitemap-staff.xml.gz` дает прямой inventory doctor detail pages;
+    - на doctor page стабильно видны `itemprop='ratingValue'` и `itemprop='reviewCount'`;
+    - clinic blocks читаются через `.StaffPage__Place` и `.StaffPage__PlaceAddress`;
+    - title дает specialty через шаблон `: отзывы, <specialty> - запись ...`.
+  - `doktora.by`
+    - paginated list `/otzyvy-o-vrachah-belarusi?page=N` содержит doctor review URLs;
+    - doctor page надежно дает `review_count` через `.bg-review`;
+    - doctor page надежно дает specialty через `[itemprop='medicalSpecialty']`;
+    - clinic mention доступен через anchor `a[href*='/medcentry/']`;
+    - текущий `.average-rating` marker недостоверен: на sample pages дает `1`, хотя это не выглядит как реальная средняя оценка.
+- Выводы для реализации:
+  - `103.by` можно использовать как полноценный `doctor-review source` с `rating_avg + review_count`.
+  - `doktora.by` на первом production-проходе нужно использовать как `review_count-first source`:
+    - `review_count` сохранять;
+    - `rating_avg` временно оставлять `null`, пока не найден надежный extraction path.
+- Handoff:
+  - Следующий data step: внедрить `2doc.by` как hybrid source с отдельным transport hardening.
+  - Следующий quality step: найти надежный rating marker или payload для `doktora.by`, чтобы позже поднять и `rating_avg`, а не только `review_count`.

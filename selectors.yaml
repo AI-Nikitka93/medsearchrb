@@ -1,3 +1,25 @@
+103.by:
+  doctor_rating:
+    primary:
+      - "[itemprop='ratingValue']"
+  doctor_reviews:
+    primary:
+      - "[itemprop='reviewCount']"
+  clinics:
+    primary:
+      - ".StaffPage__Place"
+
+doktora.by:
+  doctor_rating:
+    primary:
+      - ".average-rating"
+  doctor_reviews:
+    primary:
+      - ".bg-review"
+  clinic_link:
+    primary:
+      - "a[href*='/medcentry/']"
+
 kravira:
   promotions:
     primary:

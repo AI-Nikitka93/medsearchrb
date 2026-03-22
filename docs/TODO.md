@@ -4,16 +4,16 @@ _Последнее обновление: 2026-03-22 14:48 | Роль: Windows E
 
 ## Must
 
-- [ ] Review Layer P1 — добавить `doktora.by` как первый doctor-review source
-  - Цель: начать реальный multi-source reputation layer для врачей.
-  - Вход: подтвержденные detail-page markers `average-rating`, `total-votes`, `bg-review`.
+- [ ] Review Layer P1 — добавить `103.by` и `doktora.by` как production doctor-review sources
+  - Цель: перейти от single-source YDoc к реальному multi-source reputation layer для врачей.
+  - Вход: подтвержденные detail-page markers `103.by: ratingValue/reviewCount/clinic blocks`, `doktora.by: average-rating/total-votes/bg-review`.
   - Definition of Done:
-    - scraper для `doktora.by` получает `rating_avg`, `review_count`, `source_page_url`, specialty и clinic mention;
+    - scrapers для `103.by` и `doktora.by` получают `rating_avg`, `review_count`, `source_page_url`, specialty и clinic mention;
     - данные доходят в `reviews_summary`;
-    - Worker API detail врача отдает новый source summary;
-    - Mini App может показать source breakdown хотя бы в raw API.
-  - Сложность: M
-  - Риск блокера: средний, возможны нестабильные doctor-page шаблоны.
+    - Worker API list/detail агрегируют рейтинг по нескольким источникам;
+    - Mini App detail показывает source breakdown хотя бы как summary по источникам.
+  - Сложность: L
+  - Риск блокера: средний, возможны нестабильные detail-page шаблоны и долгие full runs.
 
 - [ ] Review Layer P2 — добавить `2doc.by` как hybrid doctor discovery/review source
   - Цель: усилить discovery/booking layer и добавить второй doctor-source.
@@ -73,5 +73,5 @@ _Последнее обновление: 2026-03-22 14:48 | Роль: Windows E
 
 ## Current Focus
 
-- [ ] Активный трек: `Clinic Verification P1`
-- [ ] Следующий после него: `Review Layer P1 (doktora.by)`
+- [ ] Активный трек: `Review Layer P1 (103.by + doktora.by)`
+- [ ] Следующий после него: `Clinic Verification P1`

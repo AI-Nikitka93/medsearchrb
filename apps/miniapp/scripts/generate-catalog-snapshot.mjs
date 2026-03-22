@@ -52,29 +52,48 @@ const client = createClient({ url, authToken });
 
 const visibleDoctorsResult = await client.execute(`
   WITH latest_reviews AS (
-    SELECT r1.doctor_id, r1.rating_avg, r1.reviews_count
-    FROM reviews_summary r1
-    INNER JOIN (
-      SELECT doctor_id, MAX(captured_at) AS max_captured_at
-      FROM reviews_summary
-      WHERE doctor_id IS NOT NULL
-      GROUP BY doctor_id
-    ) latest
-      ON latest.doctor_id = r1.doctor_id
-     AND latest.max_captured_at = r1.captured_at
+    SELECT
+      doctor_id,
+      source_name,
+      rating_avg,
+      reviews_count,
+      captured_at,
+      ROW_NUMBER() OVER (
+        PARTITION BY doctor_id, source_name
+        ORDER BY captured_at DESC
+      ) AS row_num
+    FROM reviews_summary
+    WHERE doctor_id IS NOT NULL
+  ),
+  aggregated_reviews AS (
+    SELECT
+      doctor_id,
+      CASE
+        WHEN SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END) > 0
+          THEN ROUND(
+            SUM(CASE WHEN rating_avg IS NOT NULL THEN rating_avg * reviews_count ELSE 0 END) * 1.0 /
+            SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END),
+            1
+          )
+        ELSE ROUND(MAX(rating_avg), 1)
+      END AS rating_avg,
+      SUM(reviews_count) AS reviews_count
+    FROM latest_reviews
+    WHERE row_num = 1
+    GROUP BY doctor_id
   )
   SELECT
     d.id,
     d.slug,
     d.full_name,
     d.description_short,
-    lr.rating_avg,
-    COALESCE(lr.reviews_count, 0) AS reviews_count
+    ar.rating_avg,
+    COALESCE(ar.reviews_count, 0) AS reviews_count
   FROM doctors d
-  LEFT JOIN latest_reviews lr ON lr.doctor_id = d.id
+  LEFT JOIN aggregated_reviews ar ON ar.doctor_id = d.id
   WHERE d.is_hidden = 0
     AND d.opt_out = 0
-  ORDER BY COALESCE(lr.reviews_count, 0) DESC, d.full_name ASC
+  ORDER BY COALESCE(ar.reviews_count, 0) DESC, d.full_name ASC
 `);
 
 const specialtiesResult = await client.execute(`
@@ -121,19 +140,34 @@ const clinicsResult = await client.execute(`
 `);
 
 const reviewsResult = await client.execute(`
+  WITH ranked_reviews AS (
+    SELECT
+      r.doctor_id,
+      r.source_name,
+      r.source_page_url,
+      r.rating_avg,
+      r.reviews_count,
+      r.captured_at,
+      ROW_NUMBER() OVER (
+        PARTITION BY r.doctor_id, r.source_name
+        ORDER BY r.captured_at DESC
+      ) AS row_num
+    FROM reviews_summary r
+    INNER JOIN doctors d ON d.id = r.doctor_id
+    WHERE r.doctor_id IS NOT NULL
+      AND d.is_hidden = 0
+      AND d.opt_out = 0
+  )
   SELECT
-    r.doctor_id,
-    r.source_name,
-    r.source_page_url,
-    r.rating_avg,
-    r.reviews_count,
-    r.captured_at
-  FROM reviews_summary r
-  INNER JOIN doctors d ON d.id = r.doctor_id
-  WHERE r.doctor_id IS NOT NULL
-    AND d.is_hidden = 0
-    AND d.opt_out = 0
-  ORDER BY r.doctor_id ASC, r.captured_at DESC, r.source_name ASC
+    doctor_id,
+    source_name,
+    source_page_url,
+    rating_avg,
+    reviews_count,
+    captured_at
+  FROM ranked_reviews
+  WHERE row_num = 1
+  ORDER BY doctor_id ASC, reviews_count DESC, source_name ASC
 `);
 
 const doctorPromotionsResult = await client.execute(`
