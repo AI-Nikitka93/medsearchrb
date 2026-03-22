@@ -73,5 +73,5 @@ _Последнее обновление: 2026-03-22 14:48 | Роль: Windows E
 
 ## Current Focus
 
-- [ ] Активный трек: `Review Layer P1 (103.by + doktora.by)`
+- [ ] Активный трек: `Promo Coverage Expansion + Mini App live data path`
 - [ ] Следующий после него: `Clinic Verification P1`

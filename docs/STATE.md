@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 10:38
+Дата и время: 2026-03-22 18:47
 Статус: IN_PROGRESS
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; `promo-sync` уже стабильно работает ночью по cron и многократно завершался `success`, но новых promo-posts в канал не было, потому что последние successful flush-пуски возвращали `claimed=0, sent=0`; `doctor-catalog-sync` тоже подтвердил overnight success (`23395048832`, `3h48m43s`), однако полный `YDoc` nightly run дает в основном `updated`, а не рост итогового live total врачей. Дополнительно внедрен первый online-слой качества клиник: health-check официальных `site_url` и отдельный cloud workflow для suppression битых/закрытых клиник.
+Причина: Production Worker API и Turso уже ушли вперед (`2271` врачей, `59` акций), а Netlify Mini App до этого хранил устаревший snapshot (`2165` врачей, `21` акция), из-за чего пользователь справедливо видел “как будто ничего не обновилось”. Data path Mini App исправлен: production теперь `worker-first`, snapshot остается только fallback. Параллельно локально расширен promo coverage на четыре новых official clinic sources (`Nordin`, `MedAvenu`, `SMART MEDICAL`, `Supramed`), общий live backfill уже подтвердил прибавку до `59` акций, но эти новые scraper changes еще не запушены в GitHub workflow.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -39,22 +39,26 @@
 - Ночные scheduled runs `promo-sync` подтверждены как рабочие (`23394796220`, `23396230359`, `23397058481`, `23397973431`, `23398602564`, `23399367494`, `23399948455` — все `success`)
 - Последний завершенный `promo-sync` (`23399948455`) показал `claimed=0`, `sent=0`, поэтому новых новостей в Telegram-канале не было
 - Ночной `doctor-catalog-sync` (`23395048832`) завершился `success` за `3h48m43s`, обработал `22` batch chunks и дал итог `inserted=22`, `updated=5729`, `errors=0`
-- Live totals на момент аудита: `doctors_total=2162`, `promotions_total=21`
+- Live totals на момент фикса Mini App: `doctors_total=2271`, `promotions_total=59`
 - Добавлена миграция `db/migrations/0004_clinic_site_health.sql` с полями `site_health_status`, `site_last_checked_at`, `site_last_http_status`, `site_last_error`, `site_failure_count`, `site_last_final_url`
 - Добавлен script `apps/worker/scripts/clinic-site-health-sync.ts`, который online проверяет официальные сайты клиник, пишет результаты в `clinic_verification_runs` и переводит явно битые/закрытые клиники в suppression после повторных провалов
 - `apps/worker/scripts/verify-clinic-sites.ts` переведен на `env-first`, чтобы корректно работать в GitHub Actions без локального `.env.txt`
 - Локальный smoke-test `clinics:health -- --limit 5 --all` подтвердил первый проход: `healthy=4`, `fetch_failed=1`, `hidden=0`
 - Добавлен отдельный cloud workflow `.github/workflows/clinic-site-sync.yml` c шагами `db:migrate -> verify:clinics -> clinics:health`
+- `apps/miniapp/lib/api.ts` переведен на production-safe `worker-first` для doctors/promotions/detail path; snapshot теперь только fallback
+- Production snapshot заново собран и задеплоен: `https://medsearch-minsk-miniapp.netlify.app/data/catalog.json` уже отдает `2271` врачей и `59` акций
+- Добавлены новые official promo sources `nordin`, `medavenu`, `smartmedical`, `supramed`
+- Общий local live backfill новых promo sources завершился `processed_batches=4`, `inserted=43`, `errors=0`
 Что осталось:
-- Зафиксировать единый execution backlog в `docs/TODO.md` и вести работу от него, а не от разрозненных сообщений
+- Запушить promo-source expansion (`nordin`, `medavenu`, `smartmedical`, `supramed`) в `origin/main` и прогнать cloud `promo-sync` с обновленным source list
+- Проверить Telegram WebView после deploy `69c00f94345e31322e148480`, чтобы подтвердить, что Mini App наконец тянет live-данные, а не старый snapshot
 - Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
 - Продолжить разрезание и ускорение `doctor-catalog-sync`, если `ydoc` остается слишком длинным
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Запушить и запустить новый `clinic-site-sync` workflow в GitHub, чтобы health-check жил полностью в облаке
-- Проверить визуально Mini App в Telegram WebView на реальном устройстве
 - Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
 Следующий шаг:
-- Держать backlog в `docs/TODO.md` как единый план выполнения; ближайшие активные задачи: завершить `clinic-site-sync`, затем внедрять `doktora.by` как первый doctor-review source
+- Закоммитить и запушить promo-source expansion + Mini App live data path fix, затем вручную прогнать `promo-sync` уже в облаке и убедиться, что future updates видны без локального redeploy
 
 Дата и время: 2026-03-22 16:06
 Статус: IN_PROGRESS

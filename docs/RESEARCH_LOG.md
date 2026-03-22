@@ -704,6 +704,48 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
   - `Kravira` и `LODE` уже реализованы и живо ingested.
   - Следующий source-expansion step: `Nordin`, затем inventory остальных официальных promo/news pages по крупным медцентрам Минска.
 
+## [ТЕМА: Additional official promo pages for Minsk clinics]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - После жалобы пользователя на слабое покрытие акций нужно было быстро найти еще несколько стабильных official promo/news pages и встроить их без “серых” источников.
+- Источники:
+  - live `https://nordin.by/shares`
+  - live `https://nordin.by/shares/aktsiya-v-nordine-pri-proverke-zreniya-diagnostika-sindroma-suhogo-glaza-i-vnutriglaznogo-davleniya-v-podarok-2.html`
+  - live `https://nordin.by/shares/ves-maj-mrt-so-skidkoj-25-v-nochnoe-vremya.html`
+  - live `https://medavenu.by/akcii/`
+  - live `https://medavenu.by/akcii/chek-ap-ezhegodnyj-polnyj-kontrol-zhenskogo-zdorovya/`
+  - live `https://smartmedical.by/news/`
+  - live `https://smartmedical.by/news/professionalnaya-gigiena-polosti-rta-v-komplekse-zdorovyy-rebyenok/`
+  - live `https://supramed.by/sales/`
+  - live `https://supramed.by/sales/skidka-10-ko-dnyu-rozhdeniya/`
+  - live robots:
+    - `https://nordin.by/robots.txt`
+    - `https://medavenu.by/robots.txt`
+    - `https://smartmedical.by/robots.txt`
+- Подтвержденные факты:
+  - `Nordin` имеет отдельный публичный promo archive `/shares` и promo detail pages с устойчивыми `h1` и promo wording.
+  - `MedAvenu` имеет прямую official page `/akcii/` с как минимум `8` promo URLs.
+  - `SMART MEDICAL` держит promo-materials в `/news/`; titles `АКЦИЯ ...` и promo content стабильно читаются на detail pages.
+  - `Supramed` имеет публичный `/sales/` и как минимум одну прямую акцию `Скидка 10% ко Дню рождения!`.
+  - Robots:
+    - `nordin.by` разрешает выбранные public promo pages;
+    - `medavenu.by` не запрещает `/akcii/`;
+    - `smartmedical.by` не запрещает `/news/`.
+- Выводы для реализации:
+  - Следующий reliable promo-source set для Минска:
+    - `nordin`
+    - `medavenu`
+    - `smartmedical`
+    - `supramed`
+  - `Nordin` и `MedAvenu` подходят как чистые official promo sources.
+  - `SMART MEDICAL` подходит как filtered promo/news source.
+  - `Supramed` пока стоит держать как small official promo source, даже если archive там компактный.
+- Handoff:
+  - Источники уже реализованы локально в `apps/scrapers/scrapers/*.py`.
+  - Следующий operational step: запушить код и обновленный `.github/workflows/promo-sync.yml`, затем запустить cloud `promo-sync`.
+
 ## [ТЕМА: Review aggregation policy and source strategy]
 _Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
 Статус: Актуально

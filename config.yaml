@@ -40,11 +40,31 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную страницу акций и официальный сайт клиники."
+  medavenu:
+    enabled: true
+    robots_reviewed_at: "2026-03-22"
+    notes:
+      - "Используем публичную страницу акций /akcii/ официального сайта."
   medart:
     enabled: true
     robots_reviewed_at: "2026-03-21"
     notes:
       - "Публичные страницы специалистов и акций доступны без авторизации."
+  nordin:
+    enabled: true
+    robots_reviewed_at: "2026-03-22"
+    notes:
+      - "Используем публичную страницу акций и скидок /shares и связанные промо-страницы."
+  smartmedical:
+    enabled: true
+    robots_reviewed_at: "2026-03-22"
+    notes:
+      - "Используем публичную ленту /news и фильтруем промо-материалы по ключевым словам."
+  supramed:
+    enabled: true
+    robots_reviewed_at: "2026-03-22"
+    notes:
+      - "Используем публичную страницу /sales официального сайта."
   ydoc:
     enabled: true
     robots_reviewed_at: "2026-03-21"

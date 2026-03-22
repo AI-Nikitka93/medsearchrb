@@ -46,7 +46,7 @@ jobs:
           MAX_DOCTORS_PER_SOURCE: "0"
         run: >
           python -m apps.scrapers.main
-          --sources kravira lighthouse lode medart
+          --sources kravira lighthouse lode medart medavenu nordin smartmedical supramed
           --output-mode file
           --log-level INFO
 

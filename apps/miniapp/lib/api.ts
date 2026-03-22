@@ -151,17 +151,8 @@ function resolveApiBaseUrl() {
   return DEFAULT_API_BASE_URL;
 }
 
-function isLocalHost() {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  const { hostname } = window.location;
-  return hostname === "localhost" || hostname === "127.0.0.1";
-}
-
 function resolveSourceOrder(): DataSourcePreference[] {
-  return isLocalHost() ? ["worker", "snapshot"] : ["snapshot", "worker"];
+  return ["worker", "snapshot"];
 }
 
 function resolveDoctorDetailSourceOrder(): DataSourcePreference[] {
@@ -414,6 +405,8 @@ async function fetchDoctorDetailFromSnapshot(
       slug: doctor.slug,
       full_name: doctor.full_name,
       description_short: doctor.description_short,
+      rating_avg: doctor.rating_avg,
+      reviews_count: doctor.reviews_count,
       specialties: doctor.specialties,
       clinics: doctor.clinics,
       reviews: doctor.reviews,
@@ -553,9 +546,6 @@ export async function fetchPromotions(params?: {
 
 export async function fetchCatalogOverview(signal?: AbortSignal) {
   try {
-    const snapshot = await loadCatalogSnapshot();
-    return buildCatalogOverview(snapshot);
-  } catch {
     const [doctors, promotions] = await Promise.all([
       tryWorkerJson<DoctorsListResponse>(
         "/api/v1/doctors",
@@ -581,12 +571,26 @@ export async function fetchCatalogOverview(signal?: AbortSignal) {
       ),
     ]);
 
-    return {
-      generated_at: null,
-      doctors_total: doctors.total,
-      promotions_total: promotions.total,
-      clinics_total: 0,
-      specialties: [],
-    } satisfies CatalogOverview;
+    try {
+      const snapshot = await loadCatalogSnapshot();
+      const snapshotOverview = buildCatalogOverview(snapshot);
+      return {
+        ...snapshotOverview,
+        generated_at: null,
+        doctors_total: doctors.total,
+        promotions_total: promotions.total,
+      } satisfies CatalogOverview;
+    } catch {
+      return {
+        generated_at: null,
+        doctors_total: doctors.total,
+        promotions_total: promotions.total,
+        clinics_total: 0,
+        specialties: [],
+      } satisfies CatalogOverview;
+    }
+  } catch {
+    const snapshot = await loadCatalogSnapshot();
+    return buildCatalogOverview(snapshot);
   }
 }

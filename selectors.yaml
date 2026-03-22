@@ -35,6 +35,11 @@ lighthouse:
     primary:
       - "a[href*='/promotions/']"
 
+medavenu:
+  promotions:
+    primary:
+      - "a[href*='/akcii/']"
+
 medart:
   doctor_links:
     primary:
@@ -42,6 +47,22 @@ medart:
   promotions:
     primary:
       - "a[href*='/stocks/']"
+
+nordin:
+  promotions:
+    primary:
+      - "a[href*='/shares/']"
+      - "a[href*='/news/']"
+
+smartmedical:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
+
+supramed:
+  promotions:
+    primary:
+      - "a[href*='/sales/']"
 
 ydoc:
   doctor_cards:

@@ -435,3 +435,15 @@
 **Сделано:** multi-source review-layer закоммичен в `origin/main` коммитом `1b2fc0c` по протоколу Decision Shadow Commit; после push вручную запущен первый cloud workflow `review-sync` (`23403673638`). GitHub Actions подтвердил создание job `doctor-review-sync` и его фактический старт: `Checkout`, `Setup Python`, `Setup Node` уже `success`, текущий progress дошел до `Install dependencies` и следующих этапов `Run review sources to batch file -> Backfill review batch to Turso -> Verify review source coverage`. То есть review-layer уже не только локально прогнан, но и переведен в online execution path без зависимости от ПК.
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`, `docs/STATE.md`
 **Следующий шаг:** дождаться финала run `23403673638`, затем зафиксировать его verdict и при необходимости начать performance-tuning полного crawl `103.by + doktora.by`
+
+## 2026-03-22 18:47 — Mini App Switched To Live Worker-First Data Path
+**Роль:** Windows Engineering Assistant  
+**Сделано:** найден реальный корень жалобы “Mini App не обновляется с ночи”: production Worker API уже отдавал `doctors_total=2271` и `promotions_total=59`, а Netlify `catalog.json` оставался старым (`2165/21`), потому что `apps/miniapp/lib/api.ts` в production читал `snapshot-first`. Mini App переведен на `worker-first` для doctor/promotion/detail path с snapshot как fallback, а `fetchCatalogOverview()` теперь берет live totals из Worker и использует snapshot только для specialty inventory. После пересборки `apps/miniapp` snapshot заново сгенерирован уже с актуальными данными (`2271` врачей, `59` акций) и production перевыкатан на Netlify deploy `69c00f94345e31322e148480`.
+**Изменены файлы:** `apps/miniapp/lib/api.ts`, `apps/miniapp/public/data/catalog.json`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** получить новый скрин из Telegram WebView после deploy `69c00f94345e31322e148480` и подтвердить, что live отзывы/акции действительно подтянулись в Mini App без локального redeploy
+
+## 2026-03-22 18:47 — Promo Coverage Expanded With Four Official Clinic Sources
+**Роль:** Windows Engineering Assistant  
+**Сделано:** добавлены четыре новых official promo-source для Минска: `Nordin`, `MedAvenu`, `SMART MEDICAL`, `Supramed`. Реализованы scrapers `apps/scrapers/scrapers/nordin.py`, `medavenu.py`, `smartmedical.py`, `supramed.py`, обновлены registry/config/selectors и cloud workflow `.github/workflows/promo-sync.yml`. Bounded и общий локальный scrape подтвердили новые источники: `nordin -> 21 promotions`, `medavenu -> 8`, `smartmedical -> 9`, `supramed -> 1`. Общий live backfill в Turso прошел без ошибок (`processed_batches=4`, `inserted=43`, `errors=0`), что и подняло актуальный production total promotions до `59`.
+**Изменены файлы:** `apps/scrapers/scrapers/nordin.py`, `apps/scrapers/scrapers/medavenu.py`, `apps/scrapers/scrapers/smartmedical.py`, `apps/scrapers/scrapers/supramed.py`, `apps/scrapers/scrapers/__init__.py`, `config.yaml`, `selectors.yaml`, `.github/workflows/promo-sync.yml`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** закоммитить и запушить promo-source expansion в `origin/main`, затем запустить cloud `promo-sync` уже с новым source list
