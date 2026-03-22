@@ -1,6 +1,6 @@
-Дата и время: 2026-03-23 01:21
+Дата и время: 2026-03-23 01:48
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), а giant bottleneck `review-sync` уже разрезан на bounded source workflows. Netlify оказался тупиковым для freshness: текущий account hit credit limit, а build hook не давал новых production deploy. Поэтому активный трек теперь — Cloudflare Pages direct deploy из GitHub Actions после успешных data-runs.
+Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), giant bottleneck `review-sync` уже разрезан на bounded source workflows, а freshness-path для Mini App уже подтвержден через прямой Cloudflare Pages production deploy из GitHub Actions. Netlify оказался тупиковым для freshness: текущий account hit credit limit, а build hook не давал новых production deploy; теперь активный трек — поддерживать Pages deploy как бесплатный production host и добивать review/verification coverage.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -49,13 +49,12 @@
 - Production snapshot заново собран и задеплоен: `https://medsearch-minsk-miniapp.netlify.app/data/catalog.json` уже отдает `2271` врачей и `59` акций
 - Добавлены новые official promo sources `nordin`, `medavenu`, `smartmedical`, `supramed`
 - Общий local live backfill новых promo sources завершился `processed_batches=4`, `inserted=43`, `errors=0`
+- Cloudflare Pages project `medsearch-minsk-miniapp` подтвержден рабочим: прямой `wrangler pages deploy` создает production deployment, а run `review-sync` `23413937432` дошел до `Deploy Mini App to Cloudflare Pages` и завершился успешно
 Что осталось:
-- Запушить promo-source expansion (`nordin`, `medavenu`, `smartmedical`, `supramed`) в `origin/main` и прогнать cloud `promo-sync` с обновленным source list
-- Проверить Telegram WebView после deploy `69c00f94345e31322e148480`, чтобы подтвердить, что Mini App наконец тянет live-данные, а не старый snapshot
-- Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
-- Продолжить разрезание и ускорение `doctor-catalog-sync`, если `ydoc` остается слишком длинным
-- После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
-- Запушить и запустить новый `clinic-site-sync` workflow в GitHub, чтобы health-check жил полностью в облаке
+- Добить review coverage: `103.by`, `doktora.by` и `2doc.by` должны заметно увеличить multi-source doctors
+- После стабилизации текущих runs вынести `doctor-clinic-verify` в отдельный cloud step
+- Продолжить улучшение matching между врачами и clinic pages, чтобы CTA и source breakdown были полнее
+- Держать Cloudflare Pages deploy path под наблюдением и убедиться, что он стабильно срабатывает после каждого успешного data-run
 - Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
 Следующий шаг:
 - Закоммитить и запушить promo-source expansion + Mini App live data path fix, затем вручную прогнать `promo-sync` уже в облаке и убедиться, что future updates видны без локального redeploy

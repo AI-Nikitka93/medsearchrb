@@ -16,7 +16,7 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
   - Сложность: M
   - Риск блокера: средний, нужен аккуратный баланс между скоростью и respectful crawl.
 
-- [ ] Mini App Freshness P0 — делать прямой Cloudflare Pages production deploy из data workflows
+- [x] Mini App Freshness P0 — делать прямой Cloudflare Pages production deploy из data workflows
   - Цель: чтобы public `catalog.json` перестал отставать от live Worker после cloud-обновлений.
   - Вход: созданный Cloudflare Pages project `medsearch-minsk-miniapp` и GitHub secret `CLOUDFLARE_API_TOKEN`.
   - Definition of Done:
@@ -24,6 +24,7 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
     - workflow выполняет `npm --prefix apps/miniapp exec wrangler -- pages deploy apps/miniapp/out --project-name medsearch-minsk-miniapp --branch main`;
     - после успешного data-run в Cloudflare Pages появляется новый production deployment;
     - Mini App freshness больше не зависит от ручного redeploy.
+  - Подтверждение: run `review-sync` `23413937432` дошел до `Deploy Mini App to Cloudflare Pages`, а `wrangler pages deployment list` показал свежий production deployment `f6a87eb6-57d8-4e39-9b91-a2bad01207ce`.
   - Сложность: M
   - Риск блокера: низкий-средний.
 
@@ -97,5 +98,5 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
 ## Current Focus
 
 - [ ] Активный трек: `Review Pipeline Hardening P0 (split 103.by / doktora.by + bounded cloud windows)`
-- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub Actions -> Cloudflare Pages deploy)`
+- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub Actions -> Cloudflare Pages deploy)` завершен; next focus — review coverage and verification depth
 - [ ] Следующий после него: `Clinic Verification P1 + review matching coverage + 2doc.by`
