@@ -114,3 +114,32 @@
 - Вернуться к `Clinic Verification P1` после первого зеленого `review-sync`
 Следующий шаг:
 - Снять финальный статус `23403673638`; если run зеленый, зафиксировать `review-sync` как рабочий online pipeline и перейти к следующему треку: matching/coverage или `2doc.by`
+
+Дата и время: 2026-03-22 20:16
+Статус: IN_PROGRESS
+Причина: Полная перепроверка показала, что production сам по себе живой (`2271` врачей, `59` акций, Mini App `HTTP 200`), но два cloud-пайплайна содержали реальные дефекты, из-за которых прогресс выглядел хуже, чем был. `clinic-site-sync` три последних run-а падали уже после полезной работы, потому что final summary-step запускал `tsx` из repo root и не резолвил `@libsql/client`. `review-sync` был зеленым только наполовину: `doktora.by` доезжал, а `103.by` целиком проваливался на одном битом URL `https://www.103.by/spec//` из sitemap.
+Что уже сделано:
+- Production endpoints перепроверены:
+  - Worker `/health` -> `ok=true`
+  - Worker `/api/v1/doctors?page=1&per_page=1` -> `total=2271`
+  - Worker `/api/v1/promotions?page=1&per_page=5` -> `total=59`
+  - Netlify Mini App `/` -> `HTTP 200`
+  - Netlify snapshot `/data/catalog.json` -> `doctors=2271`, `promotions=59`, `generated_at=2026-03-22T16:06:56.961Z`
+- Подтверждено, что `promo-sync` online работает стабильно:
+  - последние scheduled runs `23407654470`, `23406848399`, `23406523840`, `23405736472`, `23405236511`, `23404524046` завершились `success`
+- Подтверждено, что `doctor-catalog-sync` последний завершенный run `23395048832` зеленый (`3h48m43s`, `inserted=22`, `updated=5729`, `errors=0`)
+- Подтверждено, что `clinic-site-sync` падал три раза подряд (`23401254824`, `23402446176`, `23403825588`) на final summary-step с ошибкой `Cannot find module '@libsql/client'`
+- Исправлен workflow `.github/workflows/clinic-site-sync.yml`:
+  - summary-step переведен на `cd apps/worker && npx tsx -e ...`
+  - локальный smoke-test этого exact path прошел и вернул live `site_health_status` summary
+- Исправлен workflow `.github/workflows/review-sync.yml`:
+  - verify-step также переведен на `cd apps/worker && npx tsx -e ...`
+- Исправлен scraper `apps/scrapers/scrapers/by103.py`:
+  - sitemap URLs с пустым suffix `/spec//` теперь отфильтровываются
+  - bounded local run снова зеленый: `doctors_found=9`, `clinics_found=8`, `review_summaries_found=9`
+Что осталось:
+- Закоммитить и запушить cloud-fixes (`by103` + workflow hardening) в `origin/main`
+- Перезапустить `clinic-site-sync` и `review-sync`, чтобы подтвердить зеленые runs уже в GitHub Actions
+- После этого переснять live coverage по review-sources и health-layer клиник
+Следующий шаг:
+- Зафиксировать commit с cloud pipeline fixes, запушить его и вручную прогнать оба workflow для подтверждения реального восстановления cloud execution

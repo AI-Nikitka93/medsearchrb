@@ -56,6 +56,8 @@ class By103Scraper(BaseScraper):
             url = loc.text.strip()
             if "/spec/" not in url:
                 continue
+            if re.search(r"/spec//?$", url):
+                continue
             urls.append(url)
         return self.unique_urls(urls)
 

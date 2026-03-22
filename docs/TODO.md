@@ -73,5 +73,5 @@ _Последнее обновление: 2026-03-22 14:48 | Роль: Windows E
 
 ## Current Focus
 
-- [ ] Активный трек: `Promo Coverage Expansion + Mini App live data path`
-- [ ] Следующий после него: `Clinic Verification P1`
+- [ ] Активный трек: `Cloud Pipeline Hardening (clinic-site-sync + review-sync + 103.by URL fix)`
+- [ ] Следующий после него: `Clinic Verification P1 + review matching coverage`

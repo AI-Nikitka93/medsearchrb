@@ -65,7 +65,8 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: |
-          npm --prefix apps/worker exec --yes tsx -e "
+          cd apps/worker
+          npx tsx -e "
           import { createClient } from '@libsql/client';
           const client = createClient({
             url: process.env.TURSO_DATABASE_URL,
