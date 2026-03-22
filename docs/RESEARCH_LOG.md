@@ -675,3 +675,31 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
 - Handoff:
   - Источник уже реализован в `apps/scrapers/scrapers/lighthouse.py`.
   - Следующий operational step: запушить код и включить `lighthouse` в следующий cloud `catalog-sync`.
+
+## [ТЕМА: Official promo pages for Minsk clinics]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - После `Lighthouse` нужно было быстро расширить official promo coverage на несколько крупных клиник Минска и понять, какие публичные pages реально подходят под scraper.
+- Источники:
+  - live `https://www.kravira.by/actions/`
+  - live `https://www.lode.by/news/`
+  - live `https://nordin.by/news/`
+  - live `https://www.kravira.by/actions/lazernoe-lechenie-varikoza/`
+  - live `https://www.lode.by/news/novyy-god-s-idealnym-zreniem/`
+  - live `https://www.lode.by/news/spetsialnye-predlozheniya-lode-ko-dnyu-materi/`
+  - live `https://nordin.by/news/aktsii-i-skidki-v-iyule-2.html`
+- Подтвержденные факты:
+  - `Kravira` имеет отдельный публичный archive `https://www.kravira.by/actions/` с как минимум `4` реальными action pages.
+  - `LODE` не имеет отдельного `/actions/`, но в `https://www.lode.by/news/` есть promo-like posts с устойчивыми title/content keywords.
+  - `Nordin` использует paginated news archive (`/news/page/2 ... /page/57`) и содержит promo-like entries, например `Акции и скидки в июле`.
+  - `Kravira` detail page содержит promo text и явные сроки акции.
+  - `LODE` detail pages содержат promotional wording и сроки вида `до 31 декабря 2025 года`.
+- Выводы для реализации:
+  - `Kravira` подходит как чистый official promo source.
+  - `LODE` можно подключать как filtered promo/news source с keyword-based gating.
+  - `Nordin` тоже перспективен, но для чистого результата лучше делать отдельный paginated filtered source, а не добавлять наспех.
+- Handoff:
+  - `Kravira` и `LODE` уже реализованы и живо ingested.
+  - Следующий source-expansion step: `Nordin`, затем inventory остальных официальных promo/news pages по крупным медцентрам Минска.

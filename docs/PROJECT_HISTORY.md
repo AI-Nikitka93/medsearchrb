@@ -279,3 +279,9 @@
 **Сделано:** исправлен direct ingest path в `apps/scrapers/output.py`: `urllib` теперь отправляет `User-Agent`, из-за чего live Worker перестал отвечать `403` на `output_mode=ingest`; повторный production smoke-test `python -m apps.scrapers.main --sources lighthouse --output-mode ingest` завершился успешно и подтвердил прямой POST в `https://medsearchrb-api.aiomdurman.workers.dev/internal/ingest/source-batch` со статусом `200`  
 **Изменены файлы:** `apps/scrapers/output.py`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** закоммитить и запушить `Lighthouse` + direct-ingest fix, затем запустить cloud `catalog-sync`, чтобы следующий online refresh уже использовал новый источник и исправленный ingest transport
+
+## 2026-03-22 03:14 — Multi-Clinic Promo Coverage Expansion
+**Роль:** Windows Engineering Assistant  
+**Сделано:** coverage расширен с одного official source до нескольких клиник: добавлены `Kravira` и `LODE` как новые promo sources, источник `lighthouse` сохранен; workflow `.github/workflows/scraper.yml` теперь готов запускать `kravira lighthouse lode medart ydoc`; локальный scrape подтвердил `Kravira=4` promo pages и `LODE=3` promo/news pages, затем direct ingest в live Worker прошел со статусом `200`; production promotions API вырос до `21` акций, а ручной flush outbox отправил новые записи в канал (`claimed=7`, `sent=3`, `skipped=4`)  
+**Изменены файлы:** `.github/workflows/scraper.yml`, `apps/scrapers/scrapers/__init__.py`, `apps/scrapers/scrapers/kravira.py`, `apps/scrapers/scrapers/lode.py`, `config.yaml`, `selectors.yaml`, `docs/PROJECT_HISTORY.md`, `docs/RESEARCH_LOG.md`, `docs/STATE.md`  
+**Следующий шаг:** запушить multi-clinic promo expansion и сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска, чтобы coverage двигался от “несколько ключевых клиник” к действительно широкому catalog-wide охвату

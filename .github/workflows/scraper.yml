@@ -42,7 +42,7 @@ jobs:
       - name: Run scrapers
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
-        run: python -m apps.scrapers.main --sources lighthouse medart ydoc --output-mode file --log-level INFO
+        run: python -m apps.scrapers.main --sources kravira lighthouse lode medart ydoc --output-mode file --log-level INFO
 
       - name: Backfill Turso from batch
         env:

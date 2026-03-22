@@ -1,3 +1,13 @@
+kravira:
+  promotions:
+    primary:
+      - "a[href*='/actions/']"
+
+lode:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
+
 lighthouse:
   promotions:
     primary:

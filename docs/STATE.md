@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 02:53
+Дата и время: 2026-03-22 03:14
 Статус: IN_PROGRESS
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже переведен в `PUBLIC`, billing blocker private Actions снят, и cloud workflow уже может исполняться. Дополнительно новый promo source `Lighthouse` уже вручную добавлен в live Turso и начал поститься в канал, но код источника еще нужно запушить и прогнать отдельным cloud run, чтобы future refresh/promotions publishing тоже шли полностью online.
+Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже `PUBLIC`, cloud workflow `catalog-sync` перезапущен с актуального `main`, а promo coverage расширен с `MedArt`/`Lighthouse` до `Kravira` и `LODE`. Однако это еще не “все клиники Минска”: online-пайплайн уже multi-clinic, но source inventory по остальным официальным promo/news pages еще не завершен.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -29,11 +29,16 @@
 - `Lighthouse` batch успешно прогнан через live Turso backfill (`inserted=18`, `errors=0`)
 - Production Worker API `/api/v1/promotions` теперь отдает `18` акций, включая `Диагностика варикоза по выгодной стоимости`
 - Promotion outbox для `Lighthouse` акций реально отправлен в Telegram channel через live flush (`sent=10`, затем `sent=7`, затем очередь опустела)
+- Добавлены новые official promo sources `Kravira` (`4` акции) и `LODE` (`3` promo/news записи)
+- Direct ingest для `kravira + lode` подтвержден на live Worker со статусом `200`
+- Production Worker API `/api/v1/promotions` вырос до `21` акций
+- Новый flush outbox для `Kravira/LODE` завершился с `claimed=7`, `sent=3`, `skipped=4`
 Что осталось:
-- Запушить свежий код `Lighthouse` + promotion-posting pipeline в public repo
-- Запустить новый `catalog-sync` cloud run уже с `lighthouse` в списке источников
+- Запушить свежий multi-clinic promo код в public repo
+- Дождаться / перепроверить новый `catalog-sync` cloud run уже с `kravira lighthouse lode medart ydoc`
+- Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
 - При необходимости разрезать pipeline на более короткие cloud jobs
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 Следующий шаг:
-- Закоммитить и запушить `Lighthouse` source, затем вручную запустить новый `catalog-sync` run и подтвердить, что scrape + backfill + promo channel posting для `Lighthouse` уже идут полностью в облаке без локального ПК
+- Закоммитить и запушить multi-clinic promo expansion, затем подтвердить новый cloud `catalog-sync` run и продолжить source-by-source подключение остальных клиник Минска
