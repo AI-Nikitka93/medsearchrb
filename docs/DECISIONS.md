@@ -107,3 +107,32 @@
   - top-level doctor reputation in Worker/Mini App must use `latest-per-source` rows and aggregate them by source, not simply take the latest single `reviews_summary` row.
 - UI decision:
   - detail-screen should expose source breakdown explicitly, because different sources may disagree and some sources may provide only `review_count` without a trustworthy `rating_avg`.
+
+## 2026-03-22 — Review Sync Must Be Split By Source and Windowed
+- `review-sync` cannot stay as one unbounded scheduled crawl.
+- Root cause:
+  - `103.by` exposes a very large doctor sitemap and full crawl does not fit into a user-friendly cloud run;
+  - `doktora.by` requires respectful pacing (`crawl_delay_seconds=10`), so it must not share the same critical path with faster sources.
+- Operational decision:
+  - keep `.github/workflows/review-sync.yml` only as a manual bounded smoke workflow;
+  - move scheduled production execution into:
+    - `review-sync-103.yml`
+    - `review-sync-doktora.yml`
+- `103.by` strategy:
+  - process the sitemap in rotating windows using `BY103_URL_OFFSET` + `BY103_URL_LIMIT`;
+  - one scheduled run handles one chunk, not the whole inventory.
+- `doktora.by` strategy:
+  - process rotating page windows using `DOKTORA_PAGE_OFFSET` + `DOKTORA_PAGE_LIMIT`;
+  - keep `crawl_delay_seconds=10`, but bound each run by page window and max doctors.
+- Resulting rule:
+  - progress must accumulate over many bounded runs;
+  - no single review-source is allowed to monopolize the whole review pipeline window again.
+
+## 2026-03-22 — Mini App Snapshot Freshness Needs A Separate Delivery Path
+- Same-origin snapshot is still the best fast path for Telegram WebView rendering.
+- But snapshot freshness must not depend on manual local redeploys.
+- Current blocker:
+  - GitHub repo has no Netlify deployment secrets, so Actions cannot yet redeploy the Mini App automatically after data workflows.
+- Until secrets exist, product assumptions must stay honest:
+  - live Worker API can move ahead of the public `catalog.json`;
+  - UX changes should avoid claiming instant freshness if the Mini App still serves the older snapshot.

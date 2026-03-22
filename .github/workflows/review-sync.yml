@@ -2,20 +2,18 @@ name: review-sync
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "45 2 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: medsearchrb-review-sync
+  group: medsearchrb-review-sync-smoke
   cancel-in-progress: true
 
 jobs:
-  doctor-review-sync:
+  doctor-review-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -43,7 +41,9 @@ jobs:
 
       - name: Run review sources to batch file
         env:
-          MAX_DOCTORS_PER_SOURCE: "0"
+          MAX_DOCTORS_PER_SOURCE: "20"
+          BY103_URL_LIMIT: "20"
+          DOKTORA_PAGE_LIMIT: "2"
         run: >
           python -m apps.scrapers.main
           --sources by103 doktora
@@ -85,6 +85,6 @@ jobs:
       - name: Upload review batch artifact
         uses: actions/upload-artifact@v4
         with:
-          name: review-source-batch
+          name: review-source-batch-smoke
           path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
           if-no-files-found: warn

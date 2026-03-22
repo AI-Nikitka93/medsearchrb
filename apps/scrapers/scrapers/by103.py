@@ -59,7 +59,12 @@ class By103Scraper(BaseScraper):
             if re.search(r"/spec//?$", url):
                 continue
             urls.append(url)
-        return self.unique_urls(urls)
+        unique_urls = self.unique_urls(urls)
+        return self.slice_urls_with_env(
+            unique_urls,
+            offset_env="BY103_URL_OFFSET",
+            limit_env="BY103_URL_LIMIT",
+        )
 
     def _extract_doctor(
         self,

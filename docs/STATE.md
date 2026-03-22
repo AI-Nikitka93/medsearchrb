@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 18:47
+Дата и время: 2026-03-22 23:41
 Статус: IN_PROGRESS
-Причина: Production Worker API и Turso уже ушли вперед (`2271` врачей, `59` акций), а Netlify Mini App до этого хранил устаревший snapshot (`2165` врачей, `21` акция), из-за чего пользователь справедливо видел “как будто ничего не обновилось”. Data path Mini App исправлен: production теперь `worker-first`, snapshot остается только fallback. Параллельно локально расширен promo coverage на четыре новых official clinic sources (`Nordin`, `MedAvenu`, `SMART MEDICAL`, `Supramed`), общий live backfill уже подтвердил прибавку до `59` акций, но эти новые scraper changes еще не запушены в GitHub workflow.
+Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), но главный bottleneck сместился в review-layer. Старый scheduled `review-sync` был архитектурно перегружен: он пытался в одном giant-run проходить `103.by` full sitemap и медленный respectful crawl `doktora.by`, из-за чего progress выглядел “зависшим”. В этом шаге pipeline разрезан на отдельные bounded workflows `review-sync-103` и `review-sync-doktora`, а старый `review-sync` переведен в manual smoke-only режим. Дополнительный blocker по Mini App freshness пока остается: в GitHub нет Netlify deploy secrets, поэтому public `catalog.json` все еще может отставать от live Worker API между ручными deploy.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`

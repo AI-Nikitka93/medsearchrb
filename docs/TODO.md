@@ -1,8 +1,20 @@
 # MedsearchRB Execution Backlog
 
-_Последнее обновление: 2026-03-22 14:48 | Роль: Windows Engineering Assistant_
+_Последнее обновление: 2026-03-22 23:41 | Роль: Windows Engineering Assistant_
 
 ## Must
+
+- [ ] Review Pipeline Hardening P0 — разрезать giant `review-sync` и убрать full crawl за один run
+  - Цель: перестать держать `103.by` + `doktora.by` в одном долгом job и перевести review-layer на bounded cloud execution.
+  - Вход: live-diagnosis показал `103.by sitemap ≈ 27 562` doctor URLs и `doktora.by crawl_delay_seconds=10`.
+  - Definition of Done:
+    - old `review-sync` больше не крутит unbounded scheduled crawl;
+    - есть отдельные workflows `review-sync-103` и `review-sync-doktora`;
+    - `103.by` идет chunk-ами по sitemap offset/window;
+    - `doktora.by` идет page-window + bounded doctor count;
+    - каждый run укладывается в предсказуемое время и не маскирует прогресс других источников.
+  - Сложность: M
+  - Риск блокера: средний, нужен аккуратный баланс между скоростью и respectful crawl.
 
 - [ ] Review Layer P1 — добавить `103.by` и `doktora.by` как production doctor-review sources
   - Цель: перейти от single-source YDoc к реальному multi-source reputation layer для врачей.
@@ -73,5 +85,6 @@ _Последнее обновление: 2026-03-22 14:48 | Роль: Windows E
 
 ## Current Focus
 
-- [ ] Активный трек: `Cloud Pipeline Hardening (clinic-site-sync + review-sync + 103.by URL fix)`
-- [ ] Следующий после него: `Clinic Verification P1 + review matching coverage`
+- [ ] Активный трек: `Review Pipeline Hardening P0 (split 103.by / doktora.by + bounded cloud windows)`
+- [ ] Параллельный блокер: `Mini App snapshot freshness still lags live Worker because GitHub repo has no Netlify deploy secrets`
+- [ ] Следующий после него: `Clinic Verification P1 + review matching coverage + 2doc.by`

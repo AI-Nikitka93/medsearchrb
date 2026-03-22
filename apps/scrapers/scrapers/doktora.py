@@ -46,14 +46,17 @@ class DoktoraScraper(BaseScraper):
         response = self.client.get_text(first_page_url, referer=self.base_url)
         soup = self.soup(response.text)
         total_pages = self._extract_last_page(soup)
+        start_page = self.env_int("DOKTORA_PAGE_OFFSET", default=1, minimum=1)
+        page_limit = self.env_int("DOKTORA_PAGE_LIMIT", default=0, minimum=0)
+        end_page = total_pages if page_limit == 0 else min(total_pages, start_page + page_limit - 1)
 
         candidates: list[str] = []
-        for page in range(1, total_pages + 1):
+        for page in range(start_page, end_page + 1):
             if self.doctor_limit_reached(len(self.unique_urls(candidates))):
                 break
 
             page_url = first_page_url if page == 1 else self.absolute_url(f"/otzyvy-o-vrachah-belarusi?page={page}")
-            if page > 1:
+            if page != 1:
                 self.polite_sleep()
                 response = self.client.get_text(page_url, referer=first_page_url)
                 soup = self.soup(response.text)

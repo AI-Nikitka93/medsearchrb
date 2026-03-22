@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import logging
+import os
 import re
 import time
 import urllib.parse
@@ -116,6 +117,35 @@ class BaseScraper(ABC):
         if limit > 0:
             return urls[:limit]
         return urls
+
+    def env_int(self, name: str, default: int = 0, minimum: int | None = None) -> int:
+        raw = os.environ.get(name)
+        if raw is None or raw == "":
+            value = default
+        else:
+            try:
+                value = int(raw)
+            except ValueError:
+                value = default
+
+        if minimum is not None:
+            return max(minimum, value)
+        return value
+
+    def slice_urls_with_env(
+        self,
+        urls: list[str],
+        *,
+        offset_env: str,
+        limit_env: str,
+    ) -> list[str]:
+        offset = self.env_int(offset_env, default=0, minimum=0)
+        limit = self.env_int(limit_env, default=0, minimum=0)
+
+        sliced = urls[offset:]
+        if limit > 0:
+            sliced = sliced[:limit]
+        return sliced
 
     def promotion_has_end_marker(self, *values: str | None) -> bool:
         haystack = " ".join(self.normalize_space(value).lower() for value in values if value)
