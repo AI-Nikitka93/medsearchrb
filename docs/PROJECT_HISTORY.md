@@ -315,3 +315,9 @@
 **Сделано:** найден и исправлен последний хвост cloud-run: `promo-sync` уже успешно проходил scrape, backfill и Telegram flush, но падал на финальном `Verify live promo total` из-за `HTTP 403` без `User-Agent`; в `.github/workflows/promo-sync.yml` и `.github/workflows/scraper.yml` добавлен явный `User-Agent: MedsearchRB-GitHubActions/1.0` для финальных live-проверок, а ручной smoke-test к production API с тем же заголовком подтвердил ответ `200` и `total=21`  
 **Изменены файлы:** `.github/workflows/promo-sync.yml`, `.github/workflows/scraper.yml`, `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** закоммитить и запушить verification fix, затем перезапустить `promo-sync` и получить первый полностью зеленый cloud run без локального ПК
+
+## 2026-03-22 03:44 — First Fully Green Online Promo Sync
+**Роль:** Windows Engineering Assistant  
+**Сделано:** получен первый полностью успешный cloud run `promo-sync` без локального ПК: GitHub Actions run `23392262386` завершился `success` за `4m16s`, прошел все этапы `scrape -> backfill -> Telegram flush -> live verify -> artifact upload`; production promotions API после run подтверждает `total=21`, а артефакт `promo-source-batch` сохранен в Actions  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** расширять source coverage по остальным клиникам Минска и отдельно довести `doctor-catalog-sync`, чтобы весь pipeline был online, а не только promo-layer

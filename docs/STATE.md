@@ -1,6 +1,6 @@
-Дата и время: 2026-03-22 03:14
+Дата и время: 2026-03-22 03:44
 Статус: IN_PROGRESS
-Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже `PUBLIC`, cloud workflow `catalog-sync` перезапущен с актуального `main`, а promo coverage расширен с `MedArt`/`Lighthouse` до `Kravira` и `LODE`. Однако это еще не “все клиники Минска”: online-пайплайн уже multi-clinic, но source inventory по остальным официальным promo/news pages еще не завершен.
+Причина: Production bot/API/Mini App online и live каталог доступен без локального ПК; репозиторий `AI-Nikitka93/medsearchrb` уже `PUBLIC`; получен первый полностью успешный cloud run `promo-sync` (`23392262386`, `success`, `4m16s`) для `MedArt`/`Lighthouse`/`Kravira`/`LODE`. Однако это еще не “все клиники Минска”: online promo-pipeline уже работает, но source inventory по остальным официальным promo/news pages еще не завершен, а `doctor-catalog-sync` все еще длинный.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -33,12 +33,13 @@
 - Direct ingest для `kravira + lode` подтвержден на live Worker со статусом `200`
 - Production Worker API `/api/v1/promotions` вырос до `21` акций
 - Новый flush outbox для `Kravira/LODE` завершился с `claimed=7`, `sent=3`, `skipped=4`
+- `promo-sync` окончательно отвязан от локального `.env.txt`: backfill использует GitHub secrets напрямую
+- Финальная live-проверка в GitHub Actions исправлена через `User-Agent: MedsearchRB-GitHubActions/1.0`
+- Получен первый полностью успешный online run `promo-sync` (`23392262386`), включая `scrape -> backfill -> Telegram flush -> live verify -> artifact upload`
 Что осталось:
-- Запушить свежий multi-clinic promo код в public repo
-- Дождаться / перепроверить новый `catalog-sync` cloud run уже с `kravira lighthouse lode medart ydoc`
 - Сформировать source inventory по оставшимся официальным promo/news pages медцентров Минска
-- При необходимости разрезать pipeline на более короткие cloud jobs
+- Продолжить разрезание и ускорение `doctor-catalog-sync`, если `ydoc` остается слишком длинным
 - После стабилизации текущего run вынести `doctor-clinic-verify` в отдельный cloud step
 - Проверить визуально Mini App в Telegram WebView на реальном устройстве
 Следующий шаг:
-- Закоммитить и запушить multi-clinic promo expansion, затем подтвердить новый cloud `catalog-sync` run и продолжить source-by-source подключение остальных клиник Минска
+- Продолжить source-by-source подключение остальных клиник Минска в `promo-sync` и отдельно довести `doctor-catalog-sync`, чтобы весь refresh pipeline был онлайн, а не только promotions
