@@ -4,6 +4,7 @@ import logging
 import random
 import time
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
 from curl_cffi import requests as cffi_requests
 
@@ -47,6 +48,7 @@ class HttpClient:
         headers = {}
         if referer:
             headers["Referer"] = referer
+        verify_tls = not self._allow_insecure_tls(url)
 
         for attempt in range(1, self._config.max_attempts + 1):
             try:
@@ -54,6 +56,7 @@ class HttpClient:
                     url,
                     headers=headers,
                     timeout=self._config.request_timeout_seconds,
+                    verify=verify_tls,
                 )
             except Exception as exc:  # noqa: BLE001
                 if attempt >= self._config.max_attempts:
@@ -101,3 +104,11 @@ class HttpClient:
             return int(value)
         except ValueError:
             return None
+
+    def _allow_insecure_tls(self, url: str) -> bool:
+        host = urlparse(url).hostname or ""
+        if not host:
+            return False
+
+        source_settings = self._config.source_config.get(host, {})
+        return bool(source_settings.get("insecure_tls"))

@@ -19,6 +19,12 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем doctor detail pages из sitemap-staff.xml.gz и itemprop aggregateRating/reviewCount."
+  "2doc.by":
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    insecure_tls: true
+    notes:
+      - "Используем sitemap-doctor.xml и inline doctor payload как hybrid discovery/review source."
   "doktora.by":
     enabled: true
     robots_reviewed_at: "2026-03-22"

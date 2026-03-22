@@ -9,6 +9,17 @@
     primary:
       - ".StaffPage__Place"
 
+2doc.by:
+  doctor_rating:
+    primary:
+      - "[itemprop='rating']"
+  doctor_reviews:
+    primary:
+      - "[itemprop='comment_count']"
+  clinics:
+    primary:
+      - "a[href*='/clinic/']"
+
 doktora.by:
   doctor_rating:
     primary:

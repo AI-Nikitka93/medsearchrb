@@ -1,0 +1,168 @@
+name: review-sync-2doc
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "55 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: medsearchrb-review-sync-2doc
+  cancel-in-progress: true
+
+jobs:
+  review-sync-2doc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            apps/worker/package-lock.json
+            apps/miniapp/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          npm --prefix apps/worker ci --no-audit --prefer-offline
+          npm --prefix apps/miniapp ci --no-audit --prefer-offline
+
+      - name: Compute 2doc chunk window
+        id: chunk
+        env:
+          CHUNK_SIZE: "150"
+        run: |
+          python - <<'PY'
+          import json
+          import math
+          import os
+          import xml.etree.ElementTree as ET
+          from urllib.request import Request, urlopen
+
+          ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          request = Request(
+              "https://2doc.by/sitemap-doctor.xml",
+              headers={"User-Agent": "MedsearchRB-GitHubActions/1.0"},
+          )
+          with urlopen(request, timeout=90) as response:
+              raw = response.read().decode("utf-8", "ignore")
+
+          root = ET.fromstring(raw)
+          urls = []
+          for loc in root.findall("s:url/s:loc", ns):
+              if not loc.text:
+                  continue
+              url = loc.text.strip()
+              if "/doctor/" not in url:
+                  continue
+              urls.append(url)
+
+          total = len(urls)
+          chunk_size = max(1, int(os.environ["CHUNK_SIZE"]))
+          total_chunks = max(1, math.ceil(total / chunk_size))
+          run_number = int(os.environ["GITHUB_RUN_NUMBER"])
+          chunk_index = (run_number - 1) % total_chunks
+          offset = chunk_index * chunk_size
+
+          payload = {
+              "total_urls": total,
+              "chunk_size": chunk_size,
+              "total_chunks": total_chunks,
+              "chunk_index": chunk_index,
+              "offset": offset,
+          }
+          print(json.dumps(payload, ensure_ascii=False))
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              for key, value in payload.items():
+                  handle.write(f"{key}={value}\n")
+          PY
+
+      - name: Run 2doc review chunk to batch file
+        env:
+          MAX_DOCTORS_PER_SOURCE: ${{ steps.chunk.outputs.chunk_size }}
+          TWODOC_URL_OFFSET: ${{ steps.chunk.outputs.offset }}
+          TWODOC_URL_LIMIT: ${{ steps.chunk.outputs.chunk_size }}
+        run: >
+          python -m apps.scrapers.main
+          --sources 2doc
+          --output-mode file
+          --log-level INFO
+
+      - name: Backfill 2doc review batch to Turso
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
+        run: >
+          npm --prefix apps/worker run catalog:backfill --
+          --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
+          --chunk-size 75
+
+      - name: Verify 2doc review coverage
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          cd apps/worker
+          npx tsx -e "
+          import { createClient } from '@libsql/client';
+          (async () => {
+            const client = createClient({
+              url: process.env.TURSO_DATABASE_URL,
+              authToken: process.env.TURSO_AUTH_TOKEN,
+            });
+            const result = await client.execute(\`
+              SELECT source_name, COUNT(*) AS rows_count
+              FROM reviews_summary
+              WHERE source_name = '2doc.by'
+              GROUP BY source_name
+            \`);
+            console.log(JSON.stringify(result.rows, null, 2));
+          })().catch((error) => {
+            console.error(error instanceof Error ? error.stack ?? error.message : error);
+            process.exit(1);
+          });
+          "
+
+      - name: Build Mini App snapshot
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          npm --prefix apps/miniapp run build
+
+      - name: Deploy Mini App to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: >
+          npm --prefix apps/miniapp exec wrangler -- pages deploy
+          apps/miniapp/out
+          --project-name medsearch-minsk-miniapp
+          --branch main
+          --commit-hash "${{ github.sha }}"
+          --commit-message "review-sync-2doc snapshot refresh"
+
+      - name: Upload 2doc review batch artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-source-batch-2doc
+          path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
+          if-no-files-found: warn
