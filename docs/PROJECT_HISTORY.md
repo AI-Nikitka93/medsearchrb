@@ -339,3 +339,15 @@
 **Сделано:** проведен аудит ночных cloud runs и текущего scraper coverage; подтверждено, что `promo-sync` всю ночь работал online по cron `*/15 * * * *` и многократно завершался `success`, а последний завершенный run `23399948455` показал `claimed=0, sent=0`, то есть новых промо для канала не было; одновременно `doctor-catalog-sync` по расписанию завершился `success` в run `23395048832` за `3h48m43s`, обработал `22` chunk batch, дал `inserted=22`, `updated=5729`, `errors=0`, но live total врачей остался `2162`, что означает сильный dedup/update-overwrite, а не рост каталога; текущая фактическая source coverage по коду: `ydoc`, `medart`, `lighthouse`, `kravira`, `lode`  
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`  
 **Следующий шаг:** расширять promo coverage на новые клиники Минска и отдельно диагностировать, почему полный `YDoc` nightly run дает много `updated`, но не увеличивает live total врачей
+
+## 2026-03-22 10:18 — Product Readiness Map Prepared
+**Роль:** Windows Engineering Assistant  
+**Сделано:** собрана сводная карта готовности по production-контуру проекта для бота, Telegram-канала и Mini App; повторно подтверждены live totals (`doctors=2162`, `promotions=21`), доступность production Mini App (`HTTP 200`) и свежие успешные cloud runs: `promo-sync` (`23400582031`, `success`, `4m31s`) и ночной `doctor-catalog-sync` (`23395048832`, `success`, `3h48m43s`)  
+**Изменены файлы:** `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** использовать карту готовности как рабочий backlog: сначала закрыть source coverage по клиникам Минска и verification doctor->clinic, затем дожать UX Mini App и official booking URLs
+
+## 2026-03-22 10:38 — Online Clinic Site Health Layer Added
+**Роль:** Windows Engineering Assistant  
+**Сделано:** внедрен первый online-слой очистки битых и закрытых клиник: добавлена миграция `0004_clinic_site_health.sql` с health-полями на `clinics`, создан script `apps/worker/scripts/clinic-site-health-sync.ts` для проверки официальных `site_url`, записи результатов в `clinic_verification_runs` и suppression явно невалидных клиник после повторных провалов; `verify-clinic-sites.ts` переведен на `env-first` для GitHub Actions, а новый workflow `.github/workflows/clinic-site-sync.yml` запускает `db:migrate -> verify:clinics -> clinics:health` полностью в облаке; локальный smoke-test подтвердил первый проход (`healthy=4`, `fetch_failed=1`, `hidden=0`)  
+**Изменены файлы:** `.github/workflows/clinic-site-sync.yml`, `apps/worker/package.json`, `apps/worker/scripts/clinic-site-health-sync.ts`, `apps/worker/scripts/verify-clinic-sites.ts`, `db/migrations/0004_clinic_site_health.sql`, `docs/PROJECT_HISTORY.md`, `docs/STATE.md`  
+**Следующий шаг:** закоммитить и запушить новый health-layer, вручную прогнать первый `clinic-site-sync` run в GitHub и подтвердить, что suppression битых `site_url` работает online без локального ПК

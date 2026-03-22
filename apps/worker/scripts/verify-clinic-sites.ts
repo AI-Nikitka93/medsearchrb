@@ -64,6 +64,10 @@ function parseArgs(): VerifyOptions {
 }
 
 function loadRootEnv(): RuntimeEnv {
+  if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
+    return process.env as unknown as RuntimeEnv;
+  }
+
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
   const root = path.resolve(scriptDir, "../../..");
   const candidatePaths = [path.join(root, ".env.txt"), path.join(root, ".env")];
