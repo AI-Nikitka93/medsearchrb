@@ -904,3 +904,58 @@ _Последнее обновление: 2026-03-22 | Роль: Windows Enginee
 - Handoff:
   - Следующий data step: внедрить `2doc.by` как hybrid source с отдельным transport hardening.
   - Следующий quality step: найти надежный rating marker или payload для `doktora.by`, чтобы позже поднять и `rating_avg`, а не только `review_count`.
+
+## [ТЕМА: Production strategy audit — Mini App, reviews, promotions, trust layer]
+_Последнее обновление: 2026-03-22 | Роль: Windows Engineering Assistant_
+Статус: Актуально
+
+- Контекст:
+  - Нужно было не локально “допилить баг”, а сверить всю продуктовую стратегию проекта с актуальными внешними источниками на дату `2026-03-22`: Telegram Mini Apps, cloud refresh, review aggregation, clinic reputation и freshness delivery.
+- Источники:
+  - official Telegram Mini Apps docs: `https://core.telegram.org/bots/webapps`
+  - official GitHub Actions docs: `https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs`
+  - official GitHub concurrency docs: `https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs`
+  - official Netlify build hooks docs: `https://docs.netlify.com/build/configure-builds/build-hooks/`
+  - official Google Places API policies: `https://developers.google.com/maps/documentation/places/web-service/policies`
+  - official 2GIS search API docs: `https://docs.2gis.com/en/api/search/overview`
+  - live market sources:
+    - `https://ydoc.by/`
+    - `https://www.103.by/`
+    - `https://doktora.by/`
+    - `https://2gis.by/minsk`
+    - `https://2doc.by/` (через web fetch в этом исследовании вернул `502`, поэтому источник считаем потенциально нестабильным и требующим осторожности)
+- Подтвержденные факты:
+  - Telegram прямо требует делать Mini Apps “snappy, smooth”, mobile-first, уважать `safeAreaInset` / `contentSafeAreaInset` и подстраиваться под Telegram UI и производительность устройства.
+  - Telegram Main Mini App и profile `Launch app` button — правильный long-term UX path для сервиса, который должен открываться в один тап из профиля бота.
+  - GitHub Actions позволяет управлять расписанием и concurrency; bounded runs с `cancel-in-progress: true` — это корректный способ не допускать накопления stale jobs.
+  - Netlify build hooks позволяют триггерить новый deploy простым `POST` в уникальный URL; это лучший lightweight path для refresh snapshot после data-runs, если хранить hook URL как GitHub secret.
+  - Google Places reviews и photos можно использовать только с обязательной атрибуцией; для review summaries есть отдельные display-требования и обязательные ссылки.
+  - 2GIS через официальный API дает review statistics (`review count` + `average rating`), но не тексты отзывов; данные каталога обновляются ежемесячно.
+  - `YDoc.by` сейчас публично позиционируется как review-heavy doctor platform в Беларуси (`3601` отзыв, `2529` врачей, `2198` клиник на homepage в момент проверки).
+  - `103.by` сейчас позиционируется как крупный doctor/clinic/discovery marketplace с `25 000+` специалистами и `1000+` медцентрами.
+  - `doktora.by` публично показывает doctor-first review/community слой (`4601` врачей в базе, `10062` отзывов на homepage в момент проверки).
+- Выводы для стратегии:
+  - Mini App должен оставаться `snapshot-first for speed`, но freshness нельзя оставлять на ручном deploy; правильный production path — build hook из GitHub Actions после успешных data workflows.
+  - Review layer нельзя подавать как “одна истина”; правильная модель — source breakdown + aggregated score only when multiple trustworthy sources exist.
+  - Для doctor reputation приоритетно использовать doctor-first sources:
+    - `YDoc.by`
+    - `103.by`
+    - `doktora.by`
+    - затем `2doc.by`
+  - Для clinic reputation лучше идти официальным API-путем:
+    - `2GIS` как clinic stats source
+    - `Google Places` только при готовности соблюдать атрибуцию/policy
+  - Для каналов акций и CTA в Mini App доверие должно строиться сверху вниз:
+    1. official clinic site / official booking URL
+    2. trusted aggregator URL
+    3. скрытие или понижение stale/closed clinics
+  - Full refresh workflow-ы должны быть bounded by design; giant full crawls по `103.by` или similar inventories в одном run — архитектурная ошибка, а не “нормальная цена за полноту”.
+- Handoff:
+  - Следующий engineering step:
+    1. добавить в GitHub secrets Netlify build hook URL;
+    2. вызывать build hook после `promo-sync`, `review-sync-*` и doctor-catalog refresh;
+    3. после этого Mini App перестанет visibly lag live Worker.
+  - Следующий data step:
+    - усилить `103.by` / `doktora.by` matching;
+    - затем подключить `2doc.by`;
+    - отдельно рассмотреть `2GIS` как clinic-level rating source, а не doctor-review source.

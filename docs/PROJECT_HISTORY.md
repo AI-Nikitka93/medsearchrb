@@ -507,3 +507,9 @@
 **Сделано:** пакет hardening-правок зафиксирован commit-ом `cca73ba` и запушен в `origin/main`. Старый зависший run `review-sync` (`23408281709`) отправлен на отмену, чтобы он больше не занимал cloud window. Вместо него вручную созданы два новых run-а на свежем head: `review-sync-103` (`23412067706`) и `review-sync-doktora` (`23412067697`). На момент фиксации оба workflow уже реально стартовали в GitHub Actions и дошли до setup-steps, значит split не остался “только на бумаге”.
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`
 **Следующий шаг:** дождаться завершения `23412067706` и `23412067697`, затем заново снять review coverage и понять, насколько выросли `103.by` / `doktora.by` без giant long-run
+
+## 2026-03-22 23:58 — External Strategy Research Completed For Mini App, Reviews And Freshness
+**Роль:** Windows Engineering Assistant  
+**Сделано:** проведено актуальное внешнее исследование на дату `2026-03-22` по ключевым продуктовым и техническим слоям проекта. Сверены official docs Telegram Mini Apps, GitHub Actions, Netlify build hooks, Google Places policies и 2GIS API, плюс повторно проверены live market players (`YDoc.by`, `103.by`, `doktora.by`, `2GIS`). Зафиксирован главный стратегический вывод: Mini App должен оставаться `snapshot-first` ради скорости в Telegram WebView, но freshness нужно переводить на automated Netlify build hooks из GitHub Actions. Для review-layer подтверждено, что doctor reputation и clinic reputation нужно разделять: `YDoc.by/103.by/doktora.by` — doctor-first, `2GIS` и позже `Google Places` — clinic-first. Исследование занесено в `docs/RESEARCH_LOG.md`.
+**Изменены файлы:** `docs/RESEARCH_LOG.md`, `docs/PROJECT_HISTORY.md`
+**Следующий шаг:** использовать исследование как основу для следующего engineering пакета: Netlify hook refresh, review matching hardening и clinic reputation layer
