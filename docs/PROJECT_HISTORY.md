@@ -479,6 +479,12 @@
 **Следующий шаг:** закоммитить и запушить эти cloud-fixes в `origin/main`, затем повторно запустить `clinic-site-sync` и `review-sync`, чтобы подтвердить зеленые runs уже в GitHub Actions
 
 ## 2026-03-22 20:18 — Cloud Pipeline Fixes Pushed And Re-runs Started
+## 2026-03-23 00:09 — Review Smoke Workflow Verify Step Fixed For Netlify Hook Path
+**Роль:** Windows Engineering Assistant  
+**Сделано:** исправлен подтвержденный cloud-bug в `.github/workflows/review-sync.yml`: verify-step `Verify review source coverage` больше не использует top-level `await` в `npx tsx -e`, а завернут в async IIFE с явным `catch/process.exit(1)`. Это устраняет падение manual smoke-run на ошибке `Top-level await is currently not supported with the "cjs" output format` и открывает путь к следующему шагу `Trigger Mini App snapshot rebuild`. YAML workflow заново провалидирован локально.  
+**Изменены файлы:** `.github/workflows/review-sync.yml`, `docs/PROJECT_HISTORY.md`  
+**Следующий шаг:** закоммитить fix, запушить в `origin/main`, вручную перезапустить `review-sync` smoke и проверить, что run доходит до Netlify build hook
+
 **Роль:** Windows Engineering Assistant  
 **Сделано:** cloud-fixes зафиксированы commit-ом `1e9f781` и запушены в `origin/main`. После этого вручную созданы новые runs: `clinic-site-sync` `23408281710` и `review-sync` `23408281709`, оба на `head_sha=1e9f7818272a91cc771601d3dd2afea3e5f41d5b`. На момент фиксации оба workflow уже реально стартовали в GitHub Actions: `clinic-site-sync` дошел до шага `Backfill official clinic sites from YDoc clinic pages`, а `review-sync` дошел до шага `Run review sources to batch file`. Production live-state параллельно подтвержден: Worker `/health` жив, `/api/v1/doctors` -> `2271`, `/api/v1/promotions` -> `59`, Netlify `catalog.json` синхронизирован по этим totals.
 **Изменены файлы:** `docs/PROJECT_HISTORY.md`

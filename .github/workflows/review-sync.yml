@@ -68,18 +68,23 @@ jobs:
           cd apps/worker
           npx tsx -e "
           import { createClient } from '@libsql/client';
-          const client = createClient({
-            url: process.env.TURSO_DATABASE_URL,
-            authToken: process.env.TURSO_AUTH_TOKEN,
+          (async () => {
+            const client = createClient({
+              url: process.env.TURSO_DATABASE_URL,
+              authToken: process.env.TURSO_AUTH_TOKEN,
+            });
+            const result = await client.execute(\`
+              SELECT source_name, COUNT(*) AS rows_count
+              FROM reviews_summary
+              WHERE source_name IN ('103.by', 'doktora.by')
+              GROUP BY source_name
+              ORDER BY source_name ASC
+            \`);
+            console.log(JSON.stringify(result.rows, null, 2));
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
           });
-          const result = await client.execute(\`
-            SELECT source_name, COUNT(*) AS rows_count
-            FROM reviews_summary
-            WHERE source_name IN ('103.by', 'doktora.by')
-            GROUP BY source_name
-            ORDER BY source_name ASC
-          \`);
-          console.log(JSON.stringify(result.rows, null, 2));
           "
 
       - name: Trigger Mini App snapshot rebuild
