@@ -14,7 +14,13 @@ import type {
   SourceBatchEnvelope,
 } from "../types/ingest";
 import { sha256, shortHash } from "../utils/hash";
-import { normalizeAddress, normalizeText, slugify } from "../utils/normalize";
+import {
+  normalizeAddress,
+  normalizeClinicName,
+  normalizeText,
+  significantNameTokens,
+  slugify,
+} from "../utils/normalize";
 import { promotionIsActive } from "../utils/promotion-status";
 
 type IngestMeta = {
@@ -168,6 +174,7 @@ export class IngestService {
             : 100);
 
     const normalizedName = normalizeText(clinic.name);
+    const normalizedClinicName = normalizeClinicName(clinic.name);
     const normalizedAddr = normalizeAddress(clinic.address);
     const checksum = await sha256(
       JSON.stringify({
@@ -244,6 +251,60 @@ export class IngestService {
       });
       counts.updated += 1;
     } else {
+      const looseCandidates = await this.repo.findClinicLooseCandidates(db, {
+        city: clinic.city,
+        normalizedAddress: normalizedAddr || null,
+        tokenHints: significantNameTokens(clinic.name),
+      });
+      const rankedLooseCandidates = looseCandidates
+        .map((row) => ({
+          id: String(row.id),
+          score: this.scoreClinicCandidate(
+            {
+              name: row.name,
+              normalized_name: row.normalized_name,
+              normalized_address: row.normalized_address,
+              site_url: row.site_url,
+            },
+            {
+              normalizedName,
+              normalizedClinicName,
+              normalizedAddress: normalizedAddr || null,
+              siteUrl,
+            },
+          ),
+        }))
+        .sort((left, right) => right.score - left.score);
+
+      const bestLooseCandidate = rankedLooseCandidates[0] ?? null;
+      const runnerUpLooseCandidate = rankedLooseCandidates[1] ?? null;
+
+      if (
+        bestLooseCandidate &&
+        bestLooseCandidate.score >= 8 &&
+        (!runnerUpLooseCandidate ||
+          bestLooseCandidate.score - runnerUpLooseCandidate.score >= 2)
+      ) {
+        clinicId = bestLooseCandidate.id;
+        await this.repo.touchClinic(db, {
+          clinicId,
+          name: clinic.name,
+          normalizedName,
+          normalizedAddress: normalizedAddr || null,
+          address: clinic.address ?? null,
+          siteUrl,
+          bookingUrlOfficial,
+          officialDirectoryUrl,
+          officialBookingWidgetUrl,
+          verificationStatus,
+          officialLastVerifiedAt: clinic.official_last_verified_at ?? null,
+          officialVerificationNotes: clinic.official_verification_notes ?? null,
+          isOfficial: isOfficial ? 1 : 0,
+          hasOnlineBooking: bookingUrlOfficial || officialBookingWidgetUrl || clinic.url ? 1 : 0,
+          nowIso: clinic.captured_at,
+        });
+        counts.updated += 1;
+      } else {
       clinicId = crypto.randomUUID();
       const slug = await this.uniqueSlug("clinic", clinic.name, clinic.external_id);
       await this.repo.insertClinic(db, {
@@ -266,6 +327,7 @@ export class IngestService {
         nowIso: clinic.captured_at,
       });
       counts.inserted += 1;
+      }
     }
 
     await this.repo.upsertClinicSource(db, {
@@ -735,5 +797,72 @@ export class IngestService {
     }
 
     return score;
+  }
+
+  private scoreClinicCandidate(
+    candidate: {
+      name?: unknown;
+      normalized_name?: unknown;
+      normalized_address?: unknown;
+      site_url?: unknown;
+    },
+    incoming: {
+      normalizedName: string;
+      normalizedClinicName: string;
+      normalizedAddress: string | null;
+      siteUrl: string | null;
+    },
+  ) {
+    const candidateNormalizedName = String(candidate.normalized_name ?? "");
+    const candidateClinicName = normalizeClinicName(String(candidate.name ?? ""));
+    const candidateAddress = String(candidate.normalized_address ?? "");
+    const candidateSiteUrl = String(candidate.site_url ?? "");
+
+    let score = 0;
+    if (candidateNormalizedName && candidateNormalizedName === incoming.normalizedName) {
+      score += 8;
+    }
+    if (
+      incoming.normalizedClinicName &&
+      candidateClinicName &&
+      candidateClinicName === incoming.normalizedClinicName
+    ) {
+      score += 6;
+    }
+    if (
+      incoming.normalizedAddress &&
+      candidateAddress &&
+      candidateAddress === incoming.normalizedAddress
+    ) {
+      score += 5;
+    }
+    if (
+      incoming.siteUrl &&
+      candidateSiteUrl &&
+      this.extractHost(incoming.siteUrl) === this.extractHost(candidateSiteUrl)
+    ) {
+      score += 6;
+    }
+
+    const incomingTokens = new Set(significantNameTokens(incoming.normalizedClinicName));
+    const candidateTokens = significantNameTokens(candidateClinicName);
+    const tokenHits = candidateTokens.filter((token) => incomingTokens.has(token)).length;
+    if (tokenHits > 0) {
+      score += Math.min(4, tokenHits);
+    }
+
+    return score;
+  }
+
+  private extractHost(url: string | null) {
+    if (!url) {
+      return null;
+    }
+
+    try {
+      return new URL(url).hostname.toLowerCase();
+    } catch {
+      return null;
+    }
   }
 }

@@ -65,3 +65,43 @@ export function normalizeAddress(value: string | null | undefined): string {
     .replace(/\bпр-т\b/g, "проспект")
     .replace(/\bд\.\s*/g, "дом ");
 }
+
+export function normalizeClinicName(value: string | null | undefined): string {
+  return normalizeText(value)
+    .replace(/\([^)]*\)/g, " ")
+    .replace(
+      /\b(медицинский центр|медицинская клиника|медицинский кабинет|медцентр|центр семейной медицины|центр эстетической медицины|клиника|центр)\b/g,
+      " ",
+    )
+    .replace(/\b(ооо|ао|зао|чуп|уп)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function significantNameTokens(value: string | null | undefined): string[] {
+  const stopWords = new Set([
+    "медицинский",
+    "медицинская",
+    "центр",
+    "клиника",
+    "кабинет",
+    "семейной",
+    "эстетической",
+    "медицины",
+    "ооо",
+    "ао",
+    "зао",
+    "чуп",
+    "уп",
+    "минск",
+  ]);
+
+  return Array.from(
+    new Set(
+      normalizeClinicName(value)
+        .split(/[\s/-]+/)
+        .map((token) => token.trim())
+        .filter((token) => token.length >= 3 && !stopWords.has(token)),
+    ),
+  );
+}

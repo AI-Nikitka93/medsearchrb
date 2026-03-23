@@ -154,6 +154,49 @@ export class CatalogWriteRepository {
     return result.rows[0] ?? null;
   }
 
+  async findClinicLooseCandidates(
+    db: SqlExecutor,
+    args: {
+      city: string;
+      normalizedAddress: string | null;
+      tokenHints: string[];
+    },
+  ) {
+    const signalClauses: string[] = [];
+    const sqlArgs: Array<string> = [args.city];
+
+    if (args.normalizedAddress) {
+      signalClauses.push("coalesce(normalized_address, '') = ?");
+      sqlArgs.push(args.normalizedAddress);
+    }
+
+    const tokenHints = args.tokenHints.slice(0, 3);
+    if (tokenHints.length > 0) {
+      const tokenClauses = tokenHints.map(() => "normalized_name LIKE ?");
+      signalClauses.push(`(${tokenClauses.join(" OR ")})`);
+      for (const token of tokenHints) {
+        sqlArgs.push(`%${token}%`);
+      }
+    }
+
+    if (signalClauses.length === 0) {
+      return [];
+    }
+
+    const result = await db.execute({
+      sql: `
+        SELECT id, name, normalized_name, normalized_address, site_url, is_hidden, opt_out
+        FROM clinics
+        WHERE city = ?
+          AND (${signalClauses.join(" OR ")})
+        LIMIT 25
+      `,
+      args: sqlArgs,
+    });
+
+    return result.rows;
+  }
+
   async insertClinic(
     db: SqlExecutor,
     args: {
