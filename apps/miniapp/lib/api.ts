@@ -155,11 +155,20 @@ function resolveApiBaseUrl() {
 }
 
 function resolveSourceOrder(): DataSourcePreference[] {
-  return ["worker", "snapshot"];
+  return isLocalHost() ? ["worker", "snapshot"] : ["snapshot", "worker"];
 }
 
 function resolveDoctorDetailSourceOrder(): DataSourcePreference[] {
   return resolveSourceOrder();
+}
+
+function isLocalHost() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const { hostname } = window.location;
+  return hostname === "localhost" || hostname === "127.0.0.1";
 }
 
 function withQuery(path: string, query: Record<string, QueryValue>) {
@@ -628,8 +637,5 @@ export async function fetchCatalogOverview(signal?: AbortSignal) {
         specialties: [],
       } satisfies CatalogOverview;
     }
-  } catch {
-    const snapshot = await loadCatalogSnapshot();
-    return buildCatalogOverview(snapshot);
   }
 }
