@@ -84,7 +84,13 @@ class YDocScraper(BaseScraper):
                         )
                     else:
                         self.polite_sleep()
-                        doctor, detail_clinics = self._enrich_doctor_from_detail(doctor)
+                        doctor, detail_clinics, detail_rating_value, detail_review_count = self._enrich_doctor_from_detail(doctor)
+                        if detail_rating_value is not None:
+                            review.rating_value = detail_rating_value
+                        if detail_review_count and detail_review_count > 0:
+                            review.review_count = max(review.review_count, detail_review_count)
+                            if review.review_count <= 0:
+                                review.rating_value = None
                         doctor_map[doctor.external_id] = doctor
                         clinics = self._merge_clinics(clinics, detail_clinics)
 
@@ -176,6 +182,8 @@ class YDocScraper(BaseScraper):
         clinic_ids = [clinic.external_id for clinic in clinic_records]
         review_count = self._extract_review_count(self.normalize_space(card.get_text(" ", strip=True)))
         rating_value = self._extract_card_rating(card)
+        if review_count <= 0:
+            rating_value = None
 
         doctor = DoctorRecord(
             source=self.source_name,
@@ -218,9 +226,13 @@ class YDocScraper(BaseScraper):
         )
         return doctor, review, clinic_records
 
-    def _enrich_doctor_from_detail(self, doctor: DoctorRecord) -> tuple[DoctorRecord, list[ClinicRecord]]:
+    def _enrich_doctor_from_detail(
+        self,
+        doctor: DoctorRecord,
+    ) -> tuple[DoctorRecord, list[ClinicRecord], float | None, int | None]:
         response = self.client.get_text(doctor.url, referer=self.absolute_url("/minsk/vrach/"))
         detail_clinics = self._extract_clinics_from_detail(response.text)
+        detail_rating_value, detail_review_count = self._extract_review_summary_from_detail(response.text)
         clinic_external_ids = self._merge_values(
             doctor.clinic_external_ids,
             [clinic.external_id for clinic in detail_clinics],
@@ -264,7 +276,7 @@ class YDocScraper(BaseScraper):
             city=doctor.city,
             captured_at=doctor.captured_at,
         )
-        return enriched_doctor, detail_clinics
+        return enriched_doctor, detail_clinics, detail_rating_value, detail_review_count
 
     def _extract_clinics(self, soup, html: str) -> list[ClinicRecord]:
         clinics: dict[str, ClinicRecord] = {}
@@ -479,6 +491,36 @@ class YDocScraper(BaseScraper):
         if rating < 0 or rating > 5.0:
             return None
         return rating
+
+    def _extract_review_summary_from_detail(self, html: str) -> tuple[float | None, int | None]:
+        soup = self.soup(html)
+
+        rating_value = None
+        rating_node = soup.select_one(".doctor-rating .text-h5")
+        if rating_node:
+            rating_match = re.search(r"(\d+(?:\.\d+)?)", rating_node.get_text(" ", strip=True))
+            if rating_match:
+                candidate = float(rating_match.group(1))
+                if 0 < candidate <= 5:
+                    rating_value = candidate
+
+        review_count = None
+        for pattern in (
+            r'ratingCount[^0-9]*(\d+)',
+            r'(\d+)\s+отзыв',
+        ):
+            match = re.search(pattern, html, re.IGNORECASE)
+            if not match:
+                continue
+            candidate = int(match.group(1))
+            if candidate >= 0:
+                review_count = candidate
+                break
+
+        if review_count is not None and review_count <= 0:
+            rating_value = None
+
+        return rating_value, review_count
 
     def _parse_card_payload(self, card) -> dict:
         raw = card.get("data-schedule-item", "").strip()
