@@ -104,9 +104,18 @@ export class IngestService {
           await this.upsertReviewSummary(tx, review, doctorMap, counts);
         }
 
+        const activePromotionFingerprints: string[] = [];
         for (const promotion of batch.promotions) {
-          await this.upsertPromotion(tx, promotion, clinicMap, counts);
+          const fingerprintHash = await this.upsertPromotion(tx, promotion, clinicMap, counts);
+          if (fingerprintHash) {
+            activePromotionFingerprints.push(fingerprintHash);
+          }
         }
+        await this.repo.deactivateMissingPromotionsForSource(tx, {
+          sourceName: batch.source,
+          activeFingerprints: activePromotionFingerprints,
+          nowIso: batch.captured_at,
+        });
 
         await tx.commit();
         await this.repo.completeScrapeRun(
@@ -608,7 +617,7 @@ export class IngestService {
 
     if (!clinicId) {
       counts.skipped += 1;
-      return;
+      return null;
     }
 
     const fingerprintHash = await sha256(
@@ -665,6 +674,7 @@ export class IngestService {
     }
 
     counts[existing ? "updated" : "inserted"] += 1;
+    return fingerprintHash;
   }
 
   private async uniqueSlug(prefix: string, value: string, suffixSeed: string): Promise<string> {

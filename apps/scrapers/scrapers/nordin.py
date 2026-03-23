@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 from apps.scrapers.models import ClinicRecord, PromotionRecord
@@ -30,6 +30,32 @@ RUS_MONTHS = {
     "ноября": 11,
     "декабря": 12,
 }
+
+MONTH_STEMS = {
+    1: ("январ",),
+    2: ("феврал",),
+    3: ("март",),
+    4: ("апрел",),
+    5: ("май", "мая"),
+    6: ("июн",),
+    7: ("июл",),
+    8: ("август",),
+    9: ("сентябр",),
+    10: ("октябр",),
+    11: ("ноябр",),
+    12: ("декабр",),
+}
+
+GENERIC_ARCHIVE_TITLE_PATTERNS = (
+    re.compile(r"^акции(?: и скидки)? в [а-яё]+$", re.IGNORECASE),
+    re.compile(r"^акции [а-яё]+$", re.IGNORECASE),
+    re.compile(r"^скидки и акции месяца$", re.IGNORECASE),
+)
+
+GENERIC_ARCHIVE_URL_MARKERS = (
+    "://nordin.by/news/aktsii-i-skidki-v-",
+    "://nordin.by/shares/akcii-",
+)
 
 
 class NordinScraper(BaseScraper):
@@ -111,6 +137,10 @@ class NordinScraper(BaseScraper):
             if not any(keyword in content_text.lower() for keyword in PROMO_KEYWORDS):
                 continue
             valid_until = self._find_deadline(content_text)
+            if self._is_generic_archive_promotion(title, promo_url, valid_until):
+                continue
+            if self._is_month_bound_offer_without_date(title, promo_url, valid_until):
+                continue
             if not self.promotion_is_active(title, content_text, valid_until):
                 continue
             promotions.append(
@@ -125,6 +155,38 @@ class NordinScraper(BaseScraper):
                 )
             )
         return promotions
+
+    def _is_generic_archive_promotion(
+        self,
+        title: str,
+        promo_url: str,
+        valid_until: str | None,
+    ) -> bool:
+        if valid_until:
+            return False
+
+        normalized_title = self.normalize_space(title).lower()
+        if any(pattern.fullmatch(normalized_title) for pattern in GENERIC_ARCHIVE_TITLE_PATTERNS):
+            return True
+
+        normalized_url = promo_url.lower()
+        return any(marker in normalized_url for marker in GENERIC_ARCHIVE_URL_MARKERS)
+
+    def _is_month_bound_offer_without_date(
+        self,
+        title: str,
+        promo_url: str,
+        valid_until: str | None,
+    ) -> bool:
+        if valid_until:
+            return False
+
+        haystack = f"{self.normalize_space(title).lower()} {promo_url.lower()}"
+        current_month = datetime.now(timezone.utc).month
+        for month_number, stems in MONTH_STEMS.items():
+            if any(stem in haystack for stem in stems) and month_number != current_month:
+                return True
+        return False
 
     def _unique_candidates(self, candidates: list[tuple[str, str]]) -> list[tuple[str, str]]:
         seen: set[str] = set()

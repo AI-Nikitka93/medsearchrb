@@ -853,6 +853,42 @@ export class CatalogWriteRepository {
     });
   }
 
+  async deactivateMissingPromotionsForSource(
+    db: SqlExecutor,
+    args: {
+      sourceName: string;
+      activeFingerprints: string[];
+      nowIso: string;
+    },
+  ) {
+    if (args.activeFingerprints.length === 0) {
+      await db.execute({
+        sql: `
+          UPDATE promotions
+          SET is_active = 0,
+              updated_at = ?
+          WHERE source_name = ?
+            AND is_active = 1
+        `,
+        args: [args.nowIso, args.sourceName],
+      });
+      return;
+    }
+
+    const placeholders = args.activeFingerprints.map(() => "?").join(", ");
+    await db.execute({
+      sql: `
+        UPDATE promotions
+        SET is_active = 0,
+            updated_at = ?
+        WHERE source_name = ?
+          AND is_active = 1
+          AND fingerprint_hash NOT IN (${placeholders})
+      `,
+      args: [args.nowIso, args.sourceName, ...args.activeFingerprints],
+    });
+  }
+
   async insertOutboxIfMissing(
     db: SqlExecutor,
     args: {
