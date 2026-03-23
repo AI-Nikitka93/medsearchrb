@@ -25,6 +25,11 @@ centrsna:
     primary:
       - "a[href*='/news/']"
 
+doctortut:
+  promotions:
+    primary:
+      - "a[href*='/sale/']"
+
 doktora.by:
   doctor_rating:
     primary:
@@ -40,6 +45,11 @@ eclinic:
   promotions:
     primary:
       - "a[href*='/news/']"
+
+forestmed:
+  promotions:
+    primary:
+      - "a[href*='/20']"
 
 happyderm:
   promotions:

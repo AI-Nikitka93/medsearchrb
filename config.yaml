@@ -33,6 +33,11 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем раздел /news/ как официальный источник новостей и акций Центра здорового сна."
+  doctortut:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем официальный раздел /sale/ для акций и скидок центра Доктор Тут."
   "doktora.by":
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -44,6 +49,11 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем /news/ и фильтруем промо-материалы по ключевым словам."
+  forestmed:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем официальный раздел /akcii/ и article-based promo pages ФОРЕСТМЕД."
   happyderm:
     enabled: true
     robots_reviewed_at: "2026-03-23"

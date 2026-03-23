@@ -1,7 +1,9 @@
 from apps.scrapers.scrapers.by103 import By103Scraper
 from apps.scrapers.scrapers.centrsna import CentrSnaScraper
+from apps.scrapers.scrapers.doctortut import DoctorTutScraper
 from apps.scrapers.scrapers.doktora import DoktoraScraper
 from apps.scrapers.scrapers.eclinic import EClinicScraper
+from apps.scrapers.scrapers.forestmed import ForestMedScraper
 from apps.scrapers.scrapers.happyderm import HappyDermScraper
 from apps.scrapers.scrapers.twodoc import TwoDocScraper
 from apps.scrapers.scrapers.kaskad import KaskadScraper
@@ -19,8 +21,10 @@ from apps.scrapers.scrapers.ydoc import YDocScraper
 SCRAPER_REGISTRY = {
     "by103": By103Scraper,
     "centrsna": CentrSnaScraper,
+    "doctortut": DoctorTutScraper,
     "doktora": DoktoraScraper,
     "eclinic": EClinicScraper,
+    "forestmed": ForestMedScraper,
     "happyderm": HappyDermScraper,
     "2doc": TwoDocScraper,
     "kaskad": KaskadScraper,
