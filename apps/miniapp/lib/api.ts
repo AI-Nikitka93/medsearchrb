@@ -1,6 +1,7 @@
 const LOCAL_API_BASE_URL = "http://127.0.0.1:8787";
 const DEFAULT_API_BASE_URL = "https://medsearchrb-api.aiomdurman.workers.dev";
 const SNAPSHOT_PATH = `${process.env.NEXT_PUBLIC_BASE_PATH?.trim() || ""}/data/catalog.json`;
+const OVERVIEW_SNAPSHOT_PATH = `${process.env.NEXT_PUBLIC_BASE_PATH?.trim() || ""}/data/catalog-overview.json`;
 
 type DoctorSpecialty = {
   id: string;
@@ -134,6 +135,8 @@ type QueryValue = string | number | undefined | null;
 type DataSourcePreference = "worker" | "snapshot";
 
 let catalogSnapshotPromise: Promise<CatalogSnapshot> | null = null;
+let overviewSnapshotPromise: Promise<CatalogOverview> | null = null;
+const WORKER_TIMEOUT_MS = 2500;
 
 function resolveApiBaseUrl() {
   const explicit = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
@@ -248,6 +251,30 @@ function buildCatalogOverview(snapshot: CatalogSnapshot): CatalogOverview {
   };
 }
 
+async function loadOverviewSnapshot() {
+  if (!overviewSnapshotPromise) {
+    overviewSnapshotPromise = fetch(OVERVIEW_SNAPSHOT_PATH, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Overview snapshot HTTP ${response.status}`);
+        }
+
+        return (await response.json()) as CatalogOverview;
+      })
+      .catch((error) => {
+        overviewSnapshotPromise = null;
+        throw error;
+      });
+  }
+
+  return overviewSnapshotPromise;
+}
+
 async function loadCatalogSnapshot() {
   if (!catalogSnapshotPromise) {
     catalogSnapshotPromise = fetch(SNAPSHOT_PATH, {
@@ -277,7 +304,23 @@ async function tryWorkerJson<T>(
   query: Record<string, QueryValue>,
   init?: RequestInit,
 ): Promise<T> {
-  return fetchJson<T>(path, query, init);
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => {
+    timeoutController.abort(new Error("worker_timeout"));
+  }, WORKER_TIMEOUT_MS);
+
+  const mergedSignal = init?.signal
+    ? AbortSignal.any([init.signal, timeoutController.signal])
+    : timeoutController.signal;
+
+  try {
+    return await fetchJson<T>(path, query, {
+      ...init,
+      signal: mergedSignal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 async function fetchJson<T>(
@@ -546,41 +589,37 @@ export async function fetchPromotions(params?: {
 
 export async function fetchCatalogOverview(signal?: AbortSignal) {
   try {
-    const [doctors, promotions] = await Promise.all([
-      tryWorkerJson<DoctorsListResponse>(
-        "/api/v1/doctors",
-        {
-          page: 1,
-          per_page: 1,
-        },
-        {
-          cache: "no-store",
-          signal,
-        },
-      ),
-      tryWorkerJson<PromotionListResponse>(
-        "/api/v1/promotions",
-        {
-          page: 1,
-          per_page: 1,
-        },
-        {
-          cache: "no-store",
-          signal,
-        },
-      ),
-    ]);
-
+    return await loadOverviewSnapshot();
+  } catch {
     try {
       const snapshot = await loadCatalogSnapshot();
-      const snapshotOverview = buildCatalogOverview(snapshot);
-      return {
-        ...snapshotOverview,
-        generated_at: null,
-        doctors_total: doctors.total,
-        promotions_total: promotions.total,
-      } satisfies CatalogOverview;
+      return buildCatalogOverview(snapshot);
     } catch {
+      const [doctors, promotions] = await Promise.all([
+        tryWorkerJson<DoctorsListResponse>(
+          "/api/v1/doctors",
+          {
+            page: 1,
+            per_page: 1,
+          },
+          {
+            cache: "no-store",
+            signal,
+          },
+        ),
+        tryWorkerJson<PromotionListResponse>(
+          "/api/v1/promotions",
+          {
+            page: 1,
+            per_page: 1,
+          },
+          {
+            cache: "no-store",
+            signal,
+          },
+        ),
+      ]);
+
       return {
         generated_at: null,
         doctors_total: doctors.total,

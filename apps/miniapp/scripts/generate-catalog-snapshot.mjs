@@ -7,6 +7,7 @@ const miniappRoot = process.cwd();
 const repoRoot = path.resolve(miniappRoot, "..", "..");
 const outputDir = path.join(miniappRoot, "public", "data");
 const outputPath = path.join(outputDir, "catalog.json");
+const overviewOutputPath = path.join(outputDir, "catalog-overview.json");
 const envFiles = [path.join(repoRoot, ".env"), path.join(repoRoot, ".env.txt")];
 
 function loadEnvFile(filePath) {
@@ -75,7 +76,7 @@ const visibleDoctorsResult = await client.execute(`
             SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END),
             1
           )
-        ELSE ROUND(MAX(rating_avg), 1)
+        ELSE ROUND(MAX(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN rating_avg END), 1)
       END AS rating_avg,
       SUM(reviews_count) AS reviews_count
     FROM latest_reviews
@@ -158,16 +159,19 @@ const reviewsResult = await client.execute(`
       AND d.is_hidden = 0
       AND d.opt_out = 0
   )
-  SELECT
-    doctor_id,
-    source_name,
-    source_page_url,
-    rating_avg,
-    reviews_count,
-    captured_at
-  FROM ranked_reviews
-  WHERE row_num = 1
-  ORDER BY doctor_id ASC, reviews_count DESC, source_name ASC
+SELECT
+  doctor_id,
+  source_name,
+  source_page_url,
+  CASE
+    WHEN reviews_count > 0 THEN rating_avg
+    ELSE NULL
+  END AS rating_avg,
+  reviews_count,
+  captured_at
+FROM ranked_reviews
+WHERE row_num = 1
+ORDER BY doctor_id ASC, reviews_count DESC, source_name ASC
 `);
 
 const doctorPromotionsResult = await client.execute(`
@@ -332,18 +336,58 @@ const promotions = promotionsResult.rows.map((row) => ({
     : null,
 }));
 
-const payload = {
+const clinicIds = new Set();
+const specialtyMap = new Map();
+
+for (const doctor of doctors) {
+  for (const clinic of doctor.clinics) {
+    clinicIds.add(clinic.id);
+  }
+
+  for (const specialty of doctor.specialties) {
+    const key = specialty.slug || specialty.name.trim().toLowerCase();
+    const current = specialtyMap.get(key);
+    if (current) {
+      current.count += 1;
+      continue;
+    }
+
+    specialtyMap.set(key, {
+      slug: specialty.slug || key,
+      name: specialty.name,
+      count: 1,
+    });
+  }
+}
+
+const overviewPayload = {
   generated_at: new Date().toISOString(),
+  doctors_total: doctors.length,
+  promotions_total: promotions.length,
+  clinics_total: clinicIds.size,
+  specialties: Array.from(specialtyMap.values()).sort((left, right) => {
+    if (right.count !== left.count) {
+      return right.count - left.count;
+    }
+
+    return left.name.localeCompare(right.name, "ru");
+  }),
+};
+
+const payload = {
+  generated_at: overviewPayload.generated_at,
   doctors,
   promotions,
 };
 
 fs.mkdirSync(outputDir, { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(payload));
+fs.writeFileSync(overviewOutputPath, JSON.stringify(overviewPayload));
 
 console.log(
   JSON.stringify({
     output: outputPath,
+    overview_output: overviewOutputPath,
     doctors: doctors.length,
     promotions: promotions.length,
   }),
