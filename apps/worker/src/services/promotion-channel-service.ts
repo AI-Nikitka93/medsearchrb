@@ -5,6 +5,7 @@ import { ensureDbReady } from "../lib/db";
 import { NotificationOutboxRepository } from "../repositories/notification-outbox-repository";
 import { TelegramBotService } from "./telegram-bot-service";
 import { promotionHasEndMarker, promotionIsActive } from "../utils/promotion-status";
+import { PromotionAiService } from "./promotion-ai-service";
 
 export type PromotionDispatchResult = {
   claimed: number;
@@ -17,6 +18,7 @@ export class PromotionChannelService {
   constructor(
     private readonly repo = new NotificationOutboxRepository(),
     private readonly batchLimit = 10,
+    private readonly promotionAi = new PromotionAiService(),
   ) {}
 
   async dispatchPending(env: WorkerBindings): Promise<PromotionDispatchResult> {
@@ -51,7 +53,14 @@ export class PromotionChannelService {
           continue;
         }
 
-        const recheck = await this.recheckPromotionSource(payload.source_url, payload.title, payload.ends_at);
+        const recheck = await this.recheckPromotionSource(
+          payload.source_url,
+          payload.title,
+          payload.ends_at,
+          env,
+          payload.clinic_name,
+          payload.source_name,
+        );
         if (!recheck.isActive) {
           await this.repo.deactivatePromotion(client, payload.promotion_id, new Date().toISOString());
           await this.repo.markFailed(
@@ -91,6 +100,9 @@ export class PromotionChannelService {
     sourceUrl: string,
     title: string,
     endsAt: string | null,
+    env: WorkerBindings,
+    clinicName: string,
+    sourceName: string,
   ): Promise<{ isActive: boolean; reason?: string }> {
     if (!promotionIsActive({ title, endsAt })) {
       return {
@@ -119,6 +131,28 @@ export class PromotionChannelService {
         isActive: false,
         reason: "Promotion page contains ended marker",
       };
+    }
+
+    if (this.promotionAi.isAvailable(env)) {
+      try {
+        const aiAudit = await this.promotionAi.auditPromotion(env, {
+          title,
+          clinicName,
+          sourceName,
+          sourceUrl,
+          endsAt,
+          pageText,
+        });
+
+        if (aiAudit.status === "ended" && aiAudit.confidence >= 0.85) {
+          return {
+            isActive: false,
+            reason: `Workers AI audit: ${aiAudit.reason}`,
+          };
+        }
+      } catch (error) {
+        console.error("promotion_ai_audit_error", error);
+      }
     }
 
     return { isActive: true };

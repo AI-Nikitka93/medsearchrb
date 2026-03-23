@@ -1,6 +1,8 @@
 export type WorkerBindings = {
+  AI?: Ai;
   APP_ENV?: string;
   API_VERSION?: string;
+  AI_PROMO_MODEL?: string;
   ALLOWED_ORIGINS?: string;
   TURSO_DATABASE_URL: string;
   TURSO_AUTH_TOKEN: string;
