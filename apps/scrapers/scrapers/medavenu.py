@@ -6,6 +6,10 @@ import re
 from apps.scrapers.models import ClinicRecord, PromotionRecord
 from apps.scrapers.scrapers.base import BaseScraper
 
+GENERIC_PROMOTION_TITLES = {
+    "акции нашего центра",
+}
+
 
 class MedAvenuScraper(BaseScraper):
     source_name = "medavenu"
@@ -67,6 +71,11 @@ class MedAvenuScraper(BaseScraper):
             heading = promo_soup.find("h1")
             title = self.normalize_space(heading.get_text(" ", strip=True) if heading else "")
             if not title:
+                continue
+            normalized_title = title.lower()
+            if normalized_title in GENERIC_PROMOTION_TITLES:
+                continue
+            if promo_response.url.rstrip("/").endswith("/akcii/#content") or promo_response.url.endswith("#content"):
                 continue
             content = promo_soup.select_one(".content") or promo_soup.select_one(".entry-content") or promo_soup.select_one(".page-content")
             content_text = self.normalize_space(content.get_text(" ", strip=True) if content else promo_soup.get_text(" ", strip=True))

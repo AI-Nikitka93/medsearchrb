@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 import re
 
 from apps.scrapers.models import ClinicRecord, PromotionRecord
@@ -30,6 +30,8 @@ RUS_MONTHS = {
     "ноября": 11,
     "декабря": 12,
 }
+
+STALE_PROMOTION_AGE_DAYS = 120
 
 
 class SmartMedicalScraper(BaseScraper):
@@ -104,6 +106,9 @@ class SmartMedicalScraper(BaseScraper):
             if not any(keyword in content_text.lower() for keyword in PROMO_KEYWORDS):
                 continue
             valid_until = self._find_deadline(content_text)
+            published_on = self._find_published_on(soup)
+            if self._is_stale_news_promotion(valid_until, published_on):
+                continue
             if not self.promotion_is_active(title, content_text, valid_until):
                 continue
             promotions.append(
@@ -129,10 +134,29 @@ class SmartMedicalScraper(BaseScraper):
             unique.append((url, title))
         return unique
 
+    def _find_published_on(self, soup) -> str | None:
+        node = soup.select_one(".date")
+        if not node:
+            return None
+        return self._to_iso(node.get_text(" ", strip=True))
+
+    def _is_stale_news_promotion(self, valid_until: str | None, published_on: str | None) -> bool:
+        if valid_until or not published_on:
+            return False
+
+        published_date = self.parse_promotion_date(published_on)
+        if not published_date:
+            return False
+
+        return (date.today() - published_date).days > STALE_PROMOTION_AGE_DAYS
+
     def _find_deadline(self, text: str) -> str | None:
         match = re.search(r"с\s+(\d{1,2}\s+[А-Яа-яA-Za-z]+\s+\d{4})\s+по\s+(\d{1,2}\s+[А-Яа-яA-Za-z]+\s+\d{4})", text, re.IGNORECASE)
         if match:
             return self._to_iso(match.group(2))
+        match = re.search(r"до\s+(\d{1,2}\s+[А-Яа-яA-Za-z]+\s+\d{4})", text, re.IGNORECASE)
+        if match:
+            return self._to_iso(match.group(1))
         match = re.search(r"(\d{2}\.\d{2}\.\d{4})", text)
         if match:
             return datetime.strptime(match.group(1), "%d.%m.%Y").date().isoformat()
