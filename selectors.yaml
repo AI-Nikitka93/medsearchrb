@@ -94,11 +94,21 @@ mrtby:
     primary:
       - "a[href*='/akcii/']"
 
+neomedical:
+  promotions:
+    primary:
+      - "a[href*='/akcii/']"
+
 nordin:
   promotions:
     primary:
       - "a[href*='/shares/']"
       - "a[href*='/news/']"
+
+sante:
+  promotions:
+    primary:
+      - "__NEXT_DATA__.currentPromotions"
 
 smartmedical:
   promotions:

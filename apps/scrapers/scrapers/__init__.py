@@ -13,7 +13,9 @@ from apps.scrapers.scrapers.lode import LodeScraper
 from apps.scrapers.scrapers.medavenu import MedAvenuScraper
 from apps.scrapers.scrapers.medart import MedArtScraper
 from apps.scrapers.scrapers.mrtby import MrtByScraper
+from apps.scrapers.scrapers.neomedical import NeoMedicalScraper
 from apps.scrapers.scrapers.nordin import NordinScraper
+from apps.scrapers.scrapers.sante import SanteScraper
 from apps.scrapers.scrapers.smartmedical import SmartMedicalScraper
 from apps.scrapers.scrapers.supramed import SupraMedScraper
 from apps.scrapers.scrapers.ydoc import YDocScraper
@@ -34,7 +36,9 @@ SCRAPER_REGISTRY = {
     "medavenu": MedAvenuScraper,
     "medart": MedArtScraper,
     "mrtby": MrtByScraper,
+    "neomedical": NeoMedicalScraper,
     "nordin": NordinScraper,
+    "sante": SanteScraper,
     "smartmedical": SmartMedicalScraper,
     "supramed": SupraMedScraper,
     "ydoc": YDocScraper,
