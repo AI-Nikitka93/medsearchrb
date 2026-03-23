@@ -3,11 +3,12 @@ $ErrorActionPreference = "Stop"
 $workerRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Resolve-Path (Join-Path $workerRoot "..\..")
 $rootEnv = Join-Path $repoRoot ".env.txt"
+$workerEnv = Join-Path $workerRoot ".dev.vars"
 if (-not (Test-Path $rootEnv)) {
   $rootEnv = Join-Path $repoRoot ".env"
 }
 
-if (-not (Test-Path $rootEnv)) {
+if (-not (Test-Path $rootEnv) -and -not (Test-Path $workerEnv)) {
   throw "Root env file not found. Expected '$repoRoot\.env.txt' or '.env'."
 }
 
@@ -22,6 +23,26 @@ function Get-EnvPairs {
   }
 
   return $pairs
+}
+
+function Merge-EnvPairs {
+  param(
+    [hashtable]$BasePairs,
+    [hashtable]$OverlayPairs
+  )
+
+  $merged = @{}
+  foreach ($entry in $BasePairs.GetEnumerator()) {
+    $merged[$entry.Key] = $entry.Value
+  }
+
+  foreach ($entry in $OverlayPairs.GetEnumerator()) {
+    if (-not [string]::IsNullOrWhiteSpace($entry.Value)) {
+      $merged[$entry.Key] = $entry.Value
+    }
+  }
+
+  return $merged
 }
 
 function Require-Command {
@@ -84,7 +105,14 @@ try {
 
   npx wrangler whoami | Out-Host
 
-  $pairs = Get-EnvPairs -Path $rootEnv
+  $pairs = @{}
+  if (Test-Path $rootEnv) {
+    $pairs = Get-EnvPairs -Path $rootEnv
+  }
+  if (Test-Path $workerEnv) {
+    $workerPairs = Get-EnvPairs -Path $workerEnv
+    $pairs = Merge-EnvPairs -BasePairs $pairs -OverlayPairs $workerPairs
+  }
 
   Put-WorkerSecret -Pairs $pairs -SecretName "TURSO_DATABASE_URL" -EnvKey "TURSO_DATABASE_URL"
   Put-WorkerSecret -Pairs $pairs -SecretName "TURSO_AUTH_TOKEN" -EnvKey "TURSO_AUTH_TOKEN"
@@ -110,6 +138,10 @@ try {
     $pairs["TELEGRAM_WEBHOOK_SECRET"] = $pairs["INGEST_SHARED_SECRET"]
   }
   Put-WorkerSecret -Pairs $pairs -SecretName "TELEGRAM_WEBHOOK_SECRET" -EnvKey "TELEGRAM_WEBHOOK_SECRET"
+
+  if (-not [string]::IsNullOrWhiteSpace($pairs["GROQ_API_KEY"])) {
+    Put-WorkerSecret -Pairs $pairs -SecretName "GROQ_API_KEY" -EnvKey "GROQ_API_KEY"
+  }
 
   $deployOutput = npx wrangler deploy 2>&1
   $deployOutput | Out-Host

@@ -3,6 +3,9 @@ export type WorkerBindings = {
   APP_ENV?: string;
   API_VERSION?: string;
   AI_PROMO_MODEL?: string;
+  GROQ_API_KEY?: string;
+  GROQ_PROMO_MODEL?: string;
+  GROQ_PROMO_FALLBACK_MODEL?: string;
   ALLOWED_ORIGINS?: string;
   TURSO_DATABASE_URL: string;
   TURSO_AUTH_TOKEN: string;

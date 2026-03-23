@@ -3,7 +3,10 @@ import { Hono } from "hono";
 import type { WorkerBindings } from "../env";
 import { ensureDbReady } from "../lib/db";
 import { IngestService } from "../services/ingest-service";
-import { PromotionAiService } from "../services/promotion-ai-service";
+import {
+  PromotionAiService,
+  type PromotionAiProviderPreference,
+} from "../services/promotion-ai-service";
 import { PromotionChannelService } from "../services/promotion-channel-service";
 import { sourceBatchEnvelopeSchema } from "../types/ingest";
 import { errorJson } from "../utils/http";
@@ -97,6 +100,7 @@ internal.post("/ai/promotions/audit", async (c) => {
         source_url?: string;
         ends_at?: string | null;
         page_text?: string | null;
+        provider?: PromotionAiProviderPreference;
       }
     | null;
 
@@ -120,7 +124,7 @@ internal.post("/ai/promotions/audit", async (c) => {
     sourceUrl,
     endsAt: payload?.ends_at ?? null,
     pageText: payload?.page_text ?? null,
-  });
+  }, payload?.provider ?? "auto");
 
   return c.json({
     ok: true,

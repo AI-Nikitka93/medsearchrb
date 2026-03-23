@@ -4,6 +4,8 @@ import type { WorkerBindings } from "../env";
 import { parsePromotionDate, promotionIsExpired } from "../utils/promotion-status";
 
 const DEFAULT_PROMOTION_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const DEFAULT_GROQ_PROMO_MODEL = "qwen/qwen3-32b";
+const DEFAULT_GROQ_PROMO_FALLBACK_MODEL = "llama-3.1-8b-instant";
 
 const aiPromotionAuditSchema = z.object({
   status: z.enum(["active", "ended", "uncertain"]),
@@ -22,9 +24,12 @@ export type PromotionAiAuditInput = {
   pageText?: string | null;
 };
 
+export type PromotionAiProviderPreference = "auto" | "cloudflare" | "groq";
+
 export type PromotionAiAuditResult = z.infer<typeof aiPromotionAuditSchema> & {
   available: boolean;
   model: string | null;
+  provider: "cloudflare" | "groq" | null;
 };
 
 function extractJsonBlock(value: string) {
@@ -137,7 +142,11 @@ function buildPromotionAuditPrompt(input: PromotionAiAuditInput, pageText: strin
 
 export class PromotionAiService {
   isAvailable(env: WorkerBindings) {
-    return Boolean(env.AI);
+    return Boolean(env.AI || env.GROQ_API_KEY?.trim());
+  }
+
+  private isGroqAvailable(env: WorkerBindings) {
+    return Boolean(env.GROQ_API_KEY?.trim());
   }
 
   private async loadPageText(sourceUrl: string) {
@@ -158,11 +167,38 @@ export class PromotionAiService {
   async auditPromotion(
     env: WorkerBindings,
     input: PromotionAiAuditInput,
+    provider: PromotionAiProviderPreference = "auto",
+  ): Promise<PromotionAiAuditResult> {
+    if (provider === "cloudflare") {
+      return this.auditWithCloudflare(env, input);
+    }
+
+    if (provider === "groq") {
+      return this.auditWithGroq(env, input);
+    }
+
+    const cloudflareResult = await this.auditWithCloudflare(env, input);
+    if (!this.shouldFallbackToGroq(cloudflareResult) || !this.isGroqAvailable(env)) {
+      return cloudflareResult;
+    }
+
+    const groqResult = await this.auditWithGroq(env, input);
+    if (groqResult.confidence > cloudflareResult.confidence) {
+      return groqResult;
+    }
+
+    return cloudflareResult;
+  }
+
+  private async auditWithCloudflare(
+    env: WorkerBindings,
+    input: PromotionAiAuditInput,
   ): Promise<PromotionAiAuditResult> {
     if (!env.AI) {
       return {
         available: false,
         model: null,
+        provider: null,
         status: "uncertain",
         confidence: 0,
         reason: "Workers AI binding is not configured",
@@ -195,18 +231,146 @@ export class PromotionAiService {
       return {
         available: true,
         model,
+        provider: "cloudflare",
         ...parsed,
       };
     } catch (error) {
       return {
         available: true,
         model,
+        provider: "cloudflare",
         status: "uncertain",
         confidence: 0,
         reason: error instanceof Error ? error.message : "Workers AI audit failed",
         suggested_title: null,
         suggested_body: null,
       };
+    }
+  }
+
+  private shouldFallbackToGroq(result: PromotionAiAuditResult) {
+    return !result.available || result.status === "uncertain" || result.confidence < 0.8;
+  }
+
+  private async runGroqAuditWithModel(
+    apiKey: string,
+    model: string,
+    prompt: string,
+  ) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        max_tokens: 300,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Ты возвращаешь только JSON по заданной схеме без markdown, пояснений и префиксов.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Groq API failed with HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string | null } }>;
+    };
+
+    const text = payload.choices?.[0]?.message?.content?.trim();
+    if (!text) {
+      throw new Error("Groq returned an empty completion");
+    }
+
+    return aiPromotionAuditSchema.parse(JSON.parse(extractJsonBlock(text)));
+  }
+
+  private async auditWithGroq(
+    env: WorkerBindings,
+    input: PromotionAiAuditInput,
+  ): Promise<PromotionAiAuditResult> {
+    const apiKey = env.GROQ_API_KEY?.trim();
+    if (!apiKey) {
+      return {
+        available: false,
+        model: null,
+        provider: null,
+        status: "uncertain",
+        confidence: 0,
+        reason: "Groq API key is not configured",
+        suggested_title: null,
+        suggested_body: null,
+      };
+    }
+
+    let pageText = input.pageText?.trim()
+      ? input.pageText.slice(0, 12_000)
+      : "";
+
+    if (!pageText) {
+      try {
+        pageText = await this.loadPageText(input.sourceUrl);
+      } catch (error) {
+        pageText =
+          `Не удалось загрузить страницу источника автоматически. ` +
+          `Источник: ${input.sourceUrl}. ` +
+          `Ошибка: ${error instanceof Error ? error.message : "unknown fetch error"}`;
+      }
+    }
+
+    const prompt = buildPromotionAuditPrompt(input, pageText);
+    const primaryModel = env.GROQ_PROMO_MODEL?.trim() || DEFAULT_GROQ_PROMO_MODEL;
+    const fallbackModel =
+      env.GROQ_PROMO_FALLBACK_MODEL?.trim() || DEFAULT_GROQ_PROMO_FALLBACK_MODEL;
+
+    try {
+      const parsed = await this.runGroqAuditWithModel(apiKey, primaryModel, prompt);
+      return {
+        available: true,
+        provider: "groq",
+        model: primaryModel,
+        ...parsed,
+      };
+    } catch (primaryError) {
+      try {
+        const parsed = await this.runGroqAuditWithModel(apiKey, fallbackModel, prompt);
+        return {
+          available: true,
+          provider: "groq",
+          model: fallbackModel,
+          ...parsed,
+        };
+      } catch (fallbackError) {
+        const reason =
+          fallbackError instanceof Error
+            ? fallbackError.message
+            : primaryError instanceof Error
+              ? primaryError.message
+              : "Groq audit failed";
+
+        return {
+          available: true,
+          provider: "groq",
+          model: fallbackModel,
+          status: "uncertain",
+          confidence: 0,
+          reason,
+          suggested_title: null,
+          suggested_body: null,
+        };
+      }
     }
   }
 }

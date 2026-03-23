@@ -7,6 +7,8 @@
     "APP_ENV": "production",
     "API_VERSION": "v1",
     "AI_PROMO_MODEL": "@cf/meta/llama-3.1-8b-instruct",
+    "GROQ_PROMO_MODEL": "qwen/qwen3-32b",
+    "GROQ_PROMO_FALLBACK_MODEL": "llama-3.1-8b-instant",
     "ALLOWED_ORIGINS": "https://ai-nikitka93.github.io,https://medsearch-minsk-miniapp.pages.dev,https://medsearch-minsk-miniapp.netlify.app,http://localhost:3000,http://127.0.0.1:3000"
   },
   "ai": {
