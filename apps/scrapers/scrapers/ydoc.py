@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 from html import unescape
 from urllib.parse import urldefrag, urlparse
@@ -36,6 +37,7 @@ class YDocScraper(BaseScraper):
         specialty_pages = self._extract_specialty_pages(soup)
         if not specialty_pages:
             specialty_pages = [(self.absolute_url("/minsk/vrach/"), None, self.page_size)]
+        specialty_pages = self._apply_specialty_window(specialty_pages)
 
         doctor_map: dict[str, DoctorRecord] = {}
         review_map: dict[str, ReviewSummaryRecord] = {}
@@ -49,7 +51,7 @@ class YDocScraper(BaseScraper):
 
                 page_url = specialty_url if page == 1 else f"{specialty_url}?page={page}"
                 if doctor_map or page > 1:
-                    self.client.sleep_with_jitter()
+                    self.polite_sleep()
 
                 page_response = self.client.get_text(page_url, referer=specialty_url)
                 page_soup = self.soup(page_response.text)
@@ -81,7 +83,7 @@ class YDocScraper(BaseScraper):
                             doctor.clinic_links,
                         )
                     else:
-                        self.client.sleep_with_jitter()
+                        self.polite_sleep()
                         doctor, detail_clinics = self._enrich_doctor_from_detail(doctor)
                         doctor_map[doctor.external_id] = doctor
                         clinics = self._merge_clinics(clinics, detail_clinics)
@@ -133,6 +135,33 @@ class YDocScraper(BaseScraper):
             specialty_pages.append((specialty_url, specialty_name or None, doctor_count))
 
         return specialty_pages
+
+    def _apply_specialty_window(
+        self,
+        specialty_pages: list[tuple[str, str | None, int]],
+    ) -> list[tuple[str, str | None, int]]:
+        raw_json = os.environ.get("YDOC_SPECIALTY_URLS_JSON", "").strip()
+        if raw_json:
+            try:
+                selected_urls = {
+                    self.absolute_url(url.strip())
+                    for url in json.loads(raw_json)
+                    if isinstance(url, str) and url.strip()
+                }
+            except json.JSONDecodeError:
+                selected_urls = set()
+
+            if selected_urls:
+                filtered = [page for page in specialty_pages if page[0] in selected_urls]
+                if filtered:
+                    return filtered
+
+        offset = self.env_int("YDOC_SPECIALTY_OFFSET", default=0, minimum=0)
+        limit = self.env_int("YDOC_SPECIALTY_LIMIT", default=0, minimum=0)
+        sliced = specialty_pages[offset:]
+        if limit > 0:
+            sliced = sliced[:limit]
+        return sliced or specialty_pages
 
     def _extract_doctor_from_card(self, card, specialty_hint: str | None):
         doctor_url = self._extract_doctor_url(card)
@@ -387,7 +416,7 @@ class YDocScraper(BaseScraper):
         return enriched
 
     def _enrich_clinic_from_ydoc_page(self, clinic: ClinicRecord) -> ClinicRecord:
-        self.client.sleep_with_jitter()
+        self.polite_sleep()
         try:
             response = self.client.get_text(clinic.url, referer=clinic.url)
         except Exception:

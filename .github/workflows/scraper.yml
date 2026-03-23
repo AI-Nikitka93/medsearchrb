@@ -3,7 +3,7 @@ name: doctor-catalog-sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 1 * * *"
+    - cron: "15,45 * * * *"
 
 permissions:
   contents: write
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   ydoc-catalog:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 28
 
     steps:
       - name: Checkout
@@ -44,9 +44,68 @@ jobs:
           npm --prefix apps/worker ci --no-audit --prefer-offline
           npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
-      - name: Run YDoc catalog scraper
+      - name: Compute YDoc specialty bucket
+        id: chunk
+        env:
+          TARGET_DOCTORS_PER_BUCKET: "180"
+        run: |
+          python - <<'PY'
+          import heapq
+          import json
+          import math
+          import os
+
+          from apps.scrapers.config import load_runtime_config
+          from apps.scrapers.http_client import HttpClient
+          from apps.scrapers.scrapers.ydoc import YDocScraper
+
+          config = load_runtime_config()
+          client = HttpClient(config)
+          scraper = YDocScraper(client, config)
+          response = client.get_text(scraper.absolute_url("/minsk/vrach/"), referer=scraper.base_url)
+          soup = scraper.soup(response.text)
+          pages = scraper._extract_specialty_pages(soup)
+          if not pages:
+              pages = [(scraper.absolute_url("/minsk/vrach/"), None, scraper.page_size)]
+
+          target = max(1, int(os.environ["TARGET_DOCTORS_PER_BUCKET"]))
+          total_hint = sum(max(1, count) for _, _, count in pages)
+          bucket_count = max(1, math.ceil(total_hint / target))
+
+          buckets = [(0, index, []) for index in range(bucket_count)]
+          heapq.heapify(buckets)
+          for page in sorted(pages, key=lambda item: max(1, item[2]), reverse=True):
+              weight = max(1, page[2])
+              total_weight, index, items = heapq.heappop(buckets)
+              items = items + [page]
+              heapq.heappush(buckets, (total_weight + weight, index, items))
+
+          ordered_buckets = sorted(buckets, key=lambda item: item[1])
+          run_number = int(os.environ["GITHUB_RUN_NUMBER"])
+          bucket_index = (run_number - 1) % len(ordered_buckets)
+          bucket_weight, _, bucket_pages = ordered_buckets[bucket_index]
+          bucket_urls = [url for url, _, _ in bucket_pages]
+
+          payload = {
+              "total_specialties": len(pages),
+              "total_hint": total_hint,
+              "bucket_count": len(ordered_buckets),
+              "bucket_index": bucket_index,
+              "bucket_doctor_hint": bucket_weight,
+              "bucket_specialties": len(bucket_pages),
+              "bucket_urls_json": json.dumps(bucket_urls, ensure_ascii=False),
+          }
+          print(json.dumps(payload, ensure_ascii=False))
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              for key, value in payload.items():
+                  handle.write(f"{key}={value}\n")
+          PY
+
+      - name: Run YDoc catalog bucket
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
+          YDOC_SPECIALTY_URLS_JSON: ${{ steps.chunk.outputs.bucket_urls_json }}
         run: >
           python -m apps.scrapers.main
           --sources ydoc
