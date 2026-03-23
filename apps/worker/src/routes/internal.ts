@@ -49,6 +49,7 @@ internal.post("/ingest/source-batch", async (c) => {
   const client = await ensureDbReady(c.env);
   const result = await ingestService.ingest(client, parsed.data, {
     githubRunId: c.req.header("x-github-run-id") ?? null,
+    env: c.env,
   });
 
   return c.json({

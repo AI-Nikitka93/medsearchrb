@@ -5,6 +5,7 @@ import {
   type BatchRunCounts,
 } from "../repositories/catalog-write-repository";
 import type { SqlExecutor } from "../lib/db";
+import type { WorkerBindings } from "../env";
 import type {
   ClinicRecord,
   DoctorClinicLinkRecord,
@@ -14,6 +15,7 @@ import type {
   SourceBatchEnvelope,
 } from "../types/ingest";
 import { sha256, shortHash } from "../utils/hash";
+import { PromotionAiService } from "./promotion-ai-service";
 import {
   normalizeAddress,
   normalizeClinicName,
@@ -25,6 +27,7 @@ import { promotionIsActive } from "../utils/promotion-status";
 
 type IngestMeta = {
   githubRunId: string | null;
+  env?: WorkerBindings;
 };
 
 export type IngestResult = {
@@ -36,7 +39,10 @@ export type IngestResult = {
 };
 
 export class IngestService {
-  constructor(private readonly repo = new CatalogWriteRepository()) {}
+  constructor(
+    private readonly repo = new CatalogWriteRepository(),
+    private readonly promotionAi = new PromotionAiService(),
+  ) {}
 
   async ingest(
     client: Client,
@@ -106,7 +112,13 @@ export class IngestService {
 
         const activePromotionFingerprints: string[] = [];
         for (const promotion of batch.promotions) {
-          const fingerprintHash = await this.upsertPromotion(tx, promotion, clinicMap, counts);
+          const fingerprintHash = await this.upsertPromotion(
+            tx,
+            promotion,
+            clinicMap,
+            counts,
+            meta.env,
+          );
           if (fingerprintHash) {
             activePromotionFingerprints.push(fingerprintHash);
           }
@@ -610,6 +622,7 @@ export class IngestService {
     promotion: PromotionRecord,
     clinicMap: Map<string, string>,
     counts: BatchRunCounts,
+    env?: WorkerBindings,
   ) {
     const clinicId = promotion.clinic_external_id
       ? clinicMap.get(promotion.clinic_external_id)
@@ -631,12 +644,30 @@ export class IngestService {
     );
 
     const existing = await this.repo.findPromotionByFingerprint(db, fingerprintHash);
-    const isActive = promotionIsActive({
+    let isActive = promotionIsActive({
       title: promotion.title,
       endsAt: promotion.valid_until ?? null,
     })
       ? 1
       : 0;
+
+    if (isActive && env && this.shouldAuditPromotionWithAi(promotion)) {
+      try {
+        const aiAudit = await this.promotionAi.auditPromotion(env, {
+          title: promotion.title,
+          clinicName: null,
+          sourceName: promotion.source,
+          sourceUrl: promotion.source_url ?? promotion.url,
+          endsAt: promotion.valid_until ?? null,
+        });
+
+        if (aiAudit.status === "ended" && aiAudit.confidence >= 0.85) {
+          isActive = 0;
+        }
+      } catch (error) {
+        console.error("promotion_ingest_ai_audit_error", error);
+      }
+    }
 
     const promotionId = existing ? String(existing.id) : crypto.randomUUID();
     await this.repo.upsertPromotion(db, {
@@ -675,6 +706,26 @@ export class IngestService {
 
     counts[existing ? "updated" : "inserted"] += 1;
     return fingerprintHash;
+  }
+
+  private shouldAuditPromotionWithAi(promotion: PromotionRecord) {
+    if (promotion.valid_until) {
+      return false;
+    }
+
+    const normalizedSource = normalizeText(promotion.source);
+    if (["mrtby", "mrt.by", "nordin", "medavenu", "eclinic", "smartmedical"].includes(normalizedSource)) {
+      return true;
+    }
+
+    const normalizedTitle = normalizeText(promotion.title);
+    return (
+      normalizedTitle.includes("сегодня") ||
+      normalizedTitle.includes("новость") ||
+      normalizedTitle.includes("сенсация") ||
+      normalizedTitle.includes("снижа") ||
+      normalizedTitle.includes("акция")
+    );
   }
 
   private async uniqueSlug(prefix: string, value: string, suffixSeed: string): Promise<string> {
