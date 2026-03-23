@@ -28,12 +28,32 @@ sources:
     insecure_tls: true
     notes:
       - "Используем sitemap-doctor.xml и inline doctor payload как hybrid discovery/review source."
+  centrsna:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем раздел /news/ как официальный источник новостей и акций Центра здорового сна."
   "doktora.by":
     enabled: true
     robots_reviewed_at: "2026-03-22"
     crawl_delay_seconds: 10
     notes:
       - "Используем paginated раздел отзывов и соблюдаем Crawl-delay: 10."
+  eclinic:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем /news/ и фильтруем промо-материалы по ключевым словам."
+  happyderm:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем /news как официальный раздел Новости / Акции."
+  kaskad:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем /news/ и фильтруем записи с акциями, чекапами и скидками."
   kravira:
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -59,6 +79,11 @@ sources:
     robots_reviewed_at: "2026-03-21"
     notes:
       - "Публичные страницы специалистов и акций доступны без авторизации."
+  mrtby:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем официальный раздел /akcii/ центра Томография."
   nordin:
     enabled: true
     robots_reviewed_at: "2026-03-22"

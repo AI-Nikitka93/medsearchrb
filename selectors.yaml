@@ -20,6 +20,11 @@
     primary:
       - "a[href*='/clinic/']"
 
+centrsna:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
+
 doktora.by:
   doctor_rating:
     primary:
@@ -30,6 +35,21 @@ doktora.by:
   clinic_link:
     primary:
       - "a[href*='/medcentry/']"
+
+eclinic:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
+
+happyderm:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
+
+kaskad:
+  promotions:
+    primary:
+      - "a[href*='/news/']"
 
 kravira:
   promotions:
@@ -58,6 +78,11 @@ medart:
   promotions:
     primary:
       - "a[href*='/stocks/']"
+
+mrtby:
+  promotions:
+    primary:
+      - "a[href*='/akcii/']"
 
 nordin:
   promotions:
