@@ -358,19 +358,40 @@ export class IngestService {
           .map((key) => clinicMap.get(key))
           .filter((item): item is string => Boolean(item)),
       );
+      const specialtyTokenSet = new Set(
+        doctor.specialty_names
+          .map((name) => normalizeText(name))
+          .filter(Boolean),
+      );
 
       let matchedId: string | null = null;
-      for (const candidate of candidates) {
-        const candidateClinicIds = String(candidate.clinic_ids ?? "")
-          .split(",")
-          .filter(Boolean);
-        const clinicHit =
-          clinicTokenSet.size > 0 &&
-          candidateClinicIds.some((clinicId) => clinicTokenSet.has(clinicId));
-        if (clinicHit || candidates.length === 1) {
-          matchedId = String(candidate.id);
-          break;
-        }
+      const rankedCandidates = candidates
+        .map((candidate) => ({
+          id: String(candidate.id),
+          score: this.scoreDoctorCandidate(candidate, clinicTokenSet, specialtyTokenSet),
+        }))
+        .sort((left, right) => {
+          if (right.score !== left.score) {
+            return right.score - left.score;
+          }
+
+          return left.id.localeCompare(right.id);
+        });
+
+      const bestCandidate = rankedCandidates[0] ?? null;
+      const runnerUp = rankedCandidates[1] ?? null;
+      if (
+        bestCandidate &&
+        bestCandidate.score >= 7 &&
+        (!runnerUp || bestCandidate.score - runnerUp.score >= 2)
+      ) {
+        matchedId = bestCandidate.id;
+      } else if (
+        bestCandidate &&
+        bestCandidate.score >= 4 &&
+        rankedCandidates.length === 1
+      ) {
+        matchedId = bestCandidate.id;
       }
 
       if (matchedId) {
@@ -679,5 +700,40 @@ export class IngestService {
         (verifiedOnClinicSite ? doctor.captured_at : null),
       positionTitle: clinicLink.position_title ?? null,
     };
+  }
+
+  private scoreDoctorCandidate(
+    candidate: Record<string, unknown>,
+    clinicTokenSet: Set<string>,
+    specialtyTokenSet: Set<string>,
+  ) {
+    const candidateClinicIds = String(candidate.clinic_ids ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+    const candidateSpecialtyNames = String(candidate.specialty_names ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    const clinicHits = candidateClinicIds.filter((clinicId) => clinicTokenSet.has(clinicId)).length;
+    const specialtyHits = candidateSpecialtyNames.filter((name) => specialtyTokenSet.has(name)).length;
+    const sourceCount = Number(candidate.source_count ?? 0);
+
+    let score = 0;
+    if (clinicHits > 0) {
+      score += 6 + Math.min(4, clinicHits - 1);
+    }
+    if (specialtyHits > 0) {
+      score += 3 + Math.min(2, specialtyHits - 1);
+    }
+    if (clinicTokenSet.size === 0 && specialtyHits > 0) {
+      score += 1;
+    }
+    if (sourceCount > 0) {
+      score += Math.min(2, sourceCount - 1);
+    }
+
+    return score;
   }
 }

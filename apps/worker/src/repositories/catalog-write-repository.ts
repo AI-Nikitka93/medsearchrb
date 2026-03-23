@@ -387,10 +387,14 @@ export class CatalogWriteRepository {
                d.is_hidden,
                d.opt_out,
                group_concat(DISTINCT ds.specialty_id) AS specialty_ids,
-               group_concat(DISTINCT dc.clinic_id) AS clinic_ids
+               group_concat(DISTINCT s.normalized_name) AS specialty_names,
+               group_concat(DISTINCT dc.clinic_id) AS clinic_ids,
+               COUNT(DISTINCT dsrc.id) AS source_count
         FROM doctors d
         LEFT JOIN doctor_specialties ds ON ds.doctor_id = d.id
+        LEFT JOIN specialties s ON s.id = ds.specialty_id
         LEFT JOIN doctor_clinics dc ON dc.doctor_id = d.id AND dc.is_active = 1
+        LEFT JOIN doctor_sources dsrc ON dsrc.doctor_id = d.id
         WHERE d.normalized_name = ?
         GROUP BY d.id, d.slug, d.is_hidden, d.opt_out
       `,
