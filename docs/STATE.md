@@ -1,6 +1,6 @@
-Дата и время: 2026-03-23 01:48
+Дата и время: 2026-03-23 21:33
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + promo-sync + clinic-site-sync`), giant bottleneck `review-sync` уже разрезан на bounded source workflows, а freshness-path для Mini App уже подтвержден через прямой Cloudflare Pages production deploy из GitHub Actions. Netlify оказался тупиковым для freshness: текущий account hit credit limit, а build hook не давал новых production deploy; теперь активный трек — поддерживать Pages deploy как бесплатный production host и добивать review/verification coverage.
+Причина: Основной production-контур жив (`bot + worker + mini app + promo/review/catalog workflows`), а следующий реальный шаг к `100/100` теперь зафиксирован как `Catalog Trust P0`. В репо добавлен runnable audit `npm --prefix apps/worker run catalog:audit`, и baseline показал ключевые узкие места: `3252` врачей, `151` групп дублей врачей (`302` строк), `149` врачей без активной клиники и только `22` врача с verified clinic link. Это делает doctor/clinic identity quality главным рабочим треком поверх уже стабилизированной инфраструктуры.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`
@@ -51,15 +51,16 @@
 - Общий local live backfill новых promo sources завершился `processed_batches=4`, `inserted=43`, `errors=0`
 - Cloudflare Pages project `medsearch-minsk-miniapp` подтвержден рабочим: прямой `wrangler pages deploy` создает production deployment, а run `review-sync` `23413937432` дошел до `Deploy Mini App to Cloudflare Pages` и завершился успешно
 - Added `2doc.by` as a bounded hybrid review/discovery source: `review-sync-2doc` `23414212650` завершился `success`, bounded run дал `doctors_found=25`, `clinics_found=18`, `review_summaries_found=25`, а live Turso verify показал `source_name='2doc.by' -> 25 rows`
+- Добавлен baseline-аудит качества каталога `apps/worker/scripts/catalog-quality-audit.ts` и npm-команда `npm --prefix apps/worker run catalog:audit`
+- Аудит зафиксировал текущие ключевые метрики: `doctors_visible=3252`, `clinics_visible=641`, `promotions_active=48`, `doctors_without_active_clinic=149`, `doctors_without_reviews=1574`, `doctors_with_multi_review_sources=48`, `doctors_with_verified_clinic_link=22`, `duplicate_doctor_name_groups=151`, `duplicate_doctor_rows=302`
 Что осталось:
-- Добить review coverage: `103.by`, `doktora.by` и `2doc.by` должны заметно увеличить multi-source doctors
-- После стабилизации текущих runs вынести `doctor-clinic-verify` в отдельный cloud step
-- Продолжить улучшение matching между врачами и clinic pages, чтобы CTA и source breakdown были полнее
-- Держать Cloudflare Pages deploy path под наблюдением и убедиться, что он стабильно срабатывает после каждого успешного data-run
-- Усилить `2doc.by` matching, если появятся дополнительные doctor pages за пределами первого bounded chunk
-- Понять, почему overnight `YDoc` run добавляет/обновляет тысячи записей, но почти не увеличивает итоговое число уникальных карточек врачей
+- Сократить doctor duplicates с baseline `151` групп
+- Сократить `149` врачей без активной клиники через better matching/remediation
+- Нарастить verified clinic links выше текущих `22`
+- Добить review truth layer: больше multi-source doctors и честный aggregate rating
+- Продолжить promo cleanup по спорным source-specific акциям
 Следующий шаг:
-- Закоммитить и запушить promo-source expansion + Mini App live data path fix, затем вручную прогнать `promo-sync` уже в облаке и убедиться, что future updates видны без локального redeploy
+- Взять `Catalog Trust P0` как основной remediation-трек: сначала exact duplicate/orphan analysis, затем усиление doctor identity matching и cleanup orphan doctors
 
 Дата и время: 2026-03-22 16:06
 Статус: IN_PROGRESS

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit",
+    "catalog:audit": "tsx ./scripts/catalog-quality-audit.ts",
     "catalog:backfill": "tsx ./scripts/backfill-from-batch.ts",
     "check": "tsc --noEmit",
     "clinics:health": "tsx ./scripts/clinic-site-health-sync.ts",

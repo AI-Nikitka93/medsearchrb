@@ -1,6 +1,6 @@
 # MedsearchRB Execution Backlog
 
-_Последнее обновление: 2026-03-23 00:27 | Роль: Windows Engineering Assistant_
+_Последнее обновление: 2026-03-23 21:33 | Роль: Windows Engineering Assistant_
 
 ## Must
 
@@ -98,6 +98,6 @@ _Последнее обновление: 2026-03-23 00:27 | Роль: Windows E
 
 ## Current Focus
 
-- [ ] Активный трек: `Review Pipeline Hardening P0 (split 103.by / doktora.by + bounded cloud windows)`
-- [ ] Параллельный трек: `Mini App Freshness P0 (GitHub Actions -> Cloudflare Pages deploy)` завершен; next focus — review coverage and verification depth
-- [ ] Следующий после него: `Clinic Verification P1 + review matching coverage + 2doc.by`
+- [ ] Активный трек: `Catalog Trust P0 (doctor duplicates + orphan doctors + doctor/clinic identity quality)`
+- [ ] Параллельный трек: `Promo Integrity P1 (stale/news promo cleanup + AI conservative audit)`
+- [ ] Следующий после него: `Review Truth P1 + truthful aggregate rating + clinic verification depth`
