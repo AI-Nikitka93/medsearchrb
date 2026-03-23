@@ -61,6 +61,11 @@ kaskad:
     primary:
       - "a[href*='/news/']"
 
+klinik:
+  promotions:
+    primary:
+      - ".card-sales"
+
 kravira:
   promotions:
     primary:
@@ -75,6 +80,11 @@ lighthouse:
   promotions:
     primary:
       - "a[href*='/promotions/']"
+
+lifecity:
+  promotions:
+    primary:
+      - "sitemap.xml -> /medical/actions-*.html"
 
 medavenu:
   promotions:

@@ -64,6 +64,11 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем /news/ и фильтруем записи с акциями, чекапами и скидками."
+  klinik:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем страницу /about-slinis/sales-2/ и вытаскиваем текущие promo card блоки."
   kravira:
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -79,6 +84,11 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную страницу акций и официальный сайт клиники."
+  lifecity:
+    enabled: true
+    robots_reviewed_at: "2026-03-23"
+    notes:
+      - "Используем sitemap.xml и берем только medical action pages с stale filtering по дате в URL."
   medavenu:
     enabled: true
     robots_reviewed_at: "2026-03-22"
