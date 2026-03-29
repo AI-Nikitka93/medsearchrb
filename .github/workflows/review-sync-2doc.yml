@@ -89,17 +89,9 @@ jobs:
           });
           "
 
-      - name: Build Mini App snapshot
-        env:
-          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
-          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
-          NEXT_PUBLIC_BASE_PATH: /medsearchrb
+      - name: Skip Mini App publish
         run: |
-          npm --prefix apps/miniapp run build
-
-      - name: Publish Mini App to GitHub Pages
-        run: |
-          bash ./scripts/publish-miniapp-gh-pages.sh
+          echo "Mini App publish is intentionally decoupled from 2doc review sync to protect the stable gh-pages release."
 
       - name: Upload 2doc review batch artifact
         uses: actions/upload-artifact@v4
