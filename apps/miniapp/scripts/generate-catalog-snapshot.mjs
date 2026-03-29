@@ -8,7 +8,18 @@ const repoRoot = path.resolve(miniappRoot, "..", "..");
 const outputDir = path.join(miniappRoot, "public", "data");
 const outputPath = path.join(outputDir, "catalog.json");
 const overviewOutputPath = path.join(outputDir, "catalog-overview.json");
-const envFiles = [path.join(repoRoot, ".env"), path.join(repoRoot, ".env.txt")];
+const doctorsListOutputPath = path.join(outputDir, "catalog-list.json");
+const promotionsOutputPath = path.join(outputDir, "promotions.json");
+const generatedDir = path.join(miniappRoot, "lib", "generated");
+const snapshotVersionModulePath = path.join(
+  generatedDir,
+  "snapshot-version.ts",
+);
+const envFiles = [
+  path.join(repoRoot, ".env.local"),
+  path.join(repoRoot, ".env"),
+  path.join(repoRoot, ".env.txt"),
+];
 
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -51,7 +62,209 @@ if (!url || !authToken) {
 
 const client = createClient({ url, authToken });
 
-const visibleDoctorsResult = await client.execute(`
+const NON_MEDICAL_SPECIALTY_PATTERNS = [
+  /парикмах/u,
+  /барбер/u,
+  /бровист/u,
+  /визаж/u,
+  /стилист/u,
+  /мастер/u,
+  /маникюр/u,
+  /педикюр/u,
+  /шугар/u,
+  /депиляц/u,
+  /эпиляц/u,
+  /ресниц/u,
+  /перманентн/u,
+  /макияж/u,
+  /косметик/u,
+  /косметолог/u,
+  /дерматокосмет/u,
+  /массаж/u,
+  /йог/u,
+  /инструктор/u,
+  /администратор/u,
+  /медрегистратор/u,
+  /нутрициолог/u,
+  /подолог/u,
+  /подиатр/u,
+  /липокоррек/u,
+  /пирсинг/u,
+  /узкопрофильн/u,
+  /специалист по/u,
+  /^специалист$/u,
+  /уходу за телом/u,
+  /грудному вскармливанию/u,
+  /тренер/u,
+  /преподавател/u,
+  /воспитател/u,
+  /спа/u,
+  /тату/u,
+  /ветеринар/u,
+];
+
+const NON_MEDICAL_CLINIC_PATTERNS = [
+  /ветеринар/u,
+  /ветцентр/u,
+  /ветклиник/u,
+  /ветмед/u,
+  /ветмир/u,
+  /доктор вет/u,
+  /альфа-вет/u,
+  /wellvet/u,
+  /animal clinic/u,
+  /энимал/u,
+  /pets?\s*health/u,
+  /zoohelp/u,
+  /зооклиник/u,
+  /зоовет/u,
+  /девять жизней/u,
+  /питомец/u,
+  /главное хвост/u,
+  /базылевск/u,
+  /умная ветеринар/u,
+];
+
+function normalizeSpecialtyName(value) {
+  return String(value ?? "")
+    .trim()
+    .toLocaleLowerCase("ru-RU")
+    .replaceAll("ё", "е")
+    .replace(/\s+/g, " ");
+}
+
+function isMedicalSpecialtyName(value) {
+  const normalized = normalizeSpecialtyName(value);
+  if (!normalized) {
+    return false;
+  }
+
+  return !NON_MEDICAL_SPECIALTY_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+function isMedicalClinicName(value) {
+  const normalized = normalizeSpecialtyName(value);
+  if (!normalized) {
+    return false;
+  }
+
+  return !NON_MEDICAL_CLINIC_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+function normalizeLocationText(value) {
+  return String(value ?? "")
+    .trim()
+    .toLocaleLowerCase("ru-RU")
+    .replaceAll("ё", "е")
+    .replace(/[.,/№()"«»-]+/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function splitLocationSegments(value) {
+  return String(value ?? "")
+    .split(/[;,]/)
+    .map((segment) => normalizeLocationText(segment))
+    .filter(Boolean);
+}
+
+function hasNormalizedWord(value, word) {
+  return new RegExp(`(^|\\s)${word}($|\\s)`, "u").test(value);
+}
+
+const OUTSIDE_MINSK_AREA_PATTERNS = [
+  /минск(?:ий|ого)?\s+район/u,
+  /район\s+минск/u,
+  /минский\s*р[-\s]*н/u,
+  /минск(?:ая)?\s+обл/u,
+  /боровлян/u,
+  /жданович/u,
+  /копищ/u,
+  /лесн(?:ой|ого)/u,
+  /тарасов/u,
+  /колодищ/u,
+  /аксаковщин/u,
+  /юхновк/u,
+  /королев\s*стан/u,
+  /валерьянов/u,
+  /сельсовет/u,
+  /сениц/u,
+];
+
+const OUTSIDE_MINSK_SEGMENT_PATTERNS = [
+  /(^|\s)(аг|агрогородок|дер|деревня|пос|поселок|с\/с)($|\s)/u,
+  /(^|\s)(брест|витебск|гомель|гродно|могилев|борисов|жодино|заславль|дзержинск|столбцы|смолевичи|фаниполь|барановичи|пинск|молодечно|нарочь)($|\s)/u,
+];
+
+const STREET_SEGMENT_PATTERN =
+  /^(ул|улица|пр|просп|проспект|пер|переулок|тракт|бульвар|б\s*р|пл|площадь|наб|набережная|шоссе|мкад)\b/u;
+
+function isMinskClinicAddress(value) {
+  const normalized = normalizeLocationText(value);
+  if (!normalized) {
+    return false;
+  }
+
+  if (OUTSIDE_MINSK_AREA_PATTERNS.some((pattern) => pattern.test(normalized))) {
+    return false;
+  }
+
+  const segments = splitLocationSegments(value);
+  if (
+    segments.some((segment) =>
+      OUTSIDE_MINSK_SEGMENT_PATTERNS.some((pattern) => pattern.test(segment)),
+    )
+  ) {
+    return false;
+  }
+
+  if (hasNormalizedWord(normalized, "минск")) {
+    return true;
+  }
+
+  return segments.length > 0 && STREET_SEGMENT_PATTERN.test(segments[0]);
+}
+
+function hasValidDoctorName(value) {
+  return String(value ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length >= 2;
+}
+
+function toSnapshotVersion(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/[^0-9a-z]+/gi, "")
+    .toLowerCase();
+}
+
+function reuseExistingSnapshotsOrThrow(error) {
+  if (!fs.existsSync(outputPath) || !fs.existsSync(overviewOutputPath)) {
+    throw error;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  console.warn(
+    JSON.stringify({
+      warning:
+        "Falling back to existing snapshot files because live snapshot generation failed.",
+      output: outputPath,
+      overview_output: overviewOutputPath,
+      error: message,
+    }),
+  );
+  process.exit(0);
+}
+
+async function executeQuery(sql) {
+  try {
+    return await client.execute(sql);
+  } catch (error) {
+    reuseExistingSnapshotsOrThrow(error);
+  }
+}
+
+const visibleDoctorsResult = await executeQuery(`
   WITH latest_reviews AS (
     SELECT
       doctor_id,
@@ -97,7 +310,7 @@ const visibleDoctorsResult = await client.execute(`
   ORDER BY COALESCE(ar.reviews_count, 0) DESC, d.full_name ASC
 `);
 
-const specialtiesResult = await client.execute(`
+const specialtiesResult = await executeQuery(`
   SELECT
     ds.doctor_id,
     s.id,
@@ -112,7 +325,7 @@ const specialtiesResult = await client.execute(`
   ORDER BY ds.doctor_id ASC, ds.is_primary DESC, s.sort_order ASC, s.name ASC
 `);
 
-const clinicsResult = await client.execute(`
+const clinicsResult = await executeQuery(`
   SELECT
     dc.doctor_id,
     c.id AS clinic_id,
@@ -140,7 +353,7 @@ const clinicsResult = await client.execute(`
   ORDER BY dc.doctor_id ASC, c.name ASC
 `);
 
-const reviewsResult = await client.execute(`
+const reviewsResult = await executeQuery(`
   WITH ranked_reviews AS (
     SELECT
       r.doctor_id,
@@ -174,7 +387,7 @@ WHERE row_num = 1
 ORDER BY doctor_id ASC, reviews_count DESC, source_name ASC
 `);
 
-const doctorPromotionsResult = await client.execute(`
+const doctorPromotionsResult = await executeQuery(`
   SELECT
     dc.doctor_id,
     p.id,
@@ -183,7 +396,8 @@ const doctorPromotionsResult = await client.execute(`
     p.ends_at,
     c.id AS clinic_id,
     c.slug AS clinic_slug,
-    c.name AS clinic_name
+    c.name AS clinic_name,
+    c.address AS clinic_address
   FROM doctor_clinics dc
   INNER JOIN promotions p ON p.clinic_id = dc.clinic_id
   INNER JOIN clinics c ON c.id = p.clinic_id
@@ -199,7 +413,7 @@ const doctorPromotionsResult = await client.execute(`
   ORDER BY dc.doctor_id ASC, COALESCE(p.ends_at, '9999-12-31T00:00:00Z') ASC, p.updated_at DESC
 `);
 
-const promotionsResult = await client.execute(`
+const promotionsResult = await executeQuery(`
   SELECT
     p.id,
     p.title,
@@ -208,6 +422,7 @@ const promotionsResult = await client.execute(`
     c.id AS clinic_id,
     c.slug AS clinic_slug,
     c.name AS clinic_name,
+    c.address AS clinic_address,
     d.id AS doctor_id,
     d.slug AS doctor_slug,
     d.full_name AS doctor_name
@@ -224,6 +439,10 @@ const promotionsResult = await client.execute(`
 
 const specialtiesByDoctorId = new Map();
 for (const row of specialtiesResult.rows) {
+  if (!isMedicalSpecialtyName(row.name)) {
+    continue;
+  }
+
   const doctorId = String(row.doctor_id);
   const current = specialtiesByDoctorId.get(doctorId) ?? [];
   current.push({
@@ -237,6 +456,13 @@ for (const row of specialtiesResult.rows) {
 
 const clinicsByDoctorId = new Map();
 for (const row of clinicsResult.rows) {
+  if (
+    !isMedicalClinicName(row.clinic_name) ||
+    !isMinskClinicAddress(row.address)
+  ) {
+    continue;
+  }
+
   const doctorId = String(row.doctor_id);
   const current = clinicsByDoctorId.get(doctorId) ?? [];
   current.push({
@@ -284,6 +510,13 @@ for (const row of reviewsResult.rows) {
 
 const doctorPromotionsByDoctorId = new Map();
 for (const row of doctorPromotionsResult.rows) {
+  if (
+    !isMedicalClinicName(row.clinic_name) ||
+    !isMinskClinicAddress(row.clinic_address)
+  ) {
+    continue;
+  }
+
   const doctorId = String(row.doctor_id);
   const current = doctorPromotionsByDoctorId.get(doctorId) ?? [];
   current.push({
@@ -300,41 +533,56 @@ for (const row of doctorPromotionsResult.rows) {
   doctorPromotionsByDoctorId.set(doctorId, current);
 }
 
-const doctors = visibleDoctorsResult.rows.map((row) => {
-  const doctorId = String(row.id);
+const allowedDoctorIds = new Set(
+  Array.from(specialtiesByDoctorId.entries())
+    .filter(([doctorId, specialties]) =>
+      specialties.length > 0 && (clinicsByDoctorId.get(doctorId)?.length ?? 0) > 0,
+    )
+    .map(([doctorId]) => doctorId),
+);
 
-  return {
-    id: doctorId,
-    slug: String(row.slug),
-    full_name: String(row.full_name),
-    description_short: row.description_short ? String(row.description_short) : null,
-    rating_avg: row.rating_avg === null ? null : Number(row.rating_avg),
-    reviews_count: Number(row.reviews_count ?? 0),
-    specialties: specialtiesByDoctorId.get(doctorId) ?? [],
-    clinics: clinicsByDoctorId.get(doctorId) ?? [],
-    reviews: reviewsByDoctorId.get(doctorId) ?? [],
-    promotions: doctorPromotionsByDoctorId.get(doctorId) ?? [],
-  };
-});
+const doctors = visibleDoctorsResult.rows
+  .filter((row) => allowedDoctorIds.has(String(row.id)))
+  .filter((row) => hasValidDoctorName(row.full_name))
+  .map((row) => {
+    const doctorId = String(row.id);
 
-const promotions = promotionsResult.rows.map((row) => ({
-  id: String(row.id),
-  title: String(row.title),
-  source_url: String(row.source_url),
-  ends_at: row.ends_at ? String(row.ends_at) : null,
-  clinic: {
-    id: String(row.clinic_id),
-    slug: String(row.clinic_slug),
-    name: String(row.clinic_name),
-  },
-  doctor: row.doctor_id
-    ? {
-        id: String(row.doctor_id),
-        slug: String(row.doctor_slug),
-        full_name: String(row.doctor_name),
-      }
-    : null,
-}));
+    return {
+      id: doctorId,
+      slug: String(row.slug),
+      full_name: String(row.full_name),
+      description_short: row.description_short ? String(row.description_short) : null,
+      rating_avg: row.rating_avg === null ? null : Number(row.rating_avg),
+      reviews_count: Number(row.reviews_count ?? 0),
+      specialties: specialtiesByDoctorId.get(doctorId) ?? [],
+      clinics: clinicsByDoctorId.get(doctorId) ?? [],
+      reviews: reviewsByDoctorId.get(doctorId) ?? [],
+      promotions: doctorPromotionsByDoctorId.get(doctorId) ?? [],
+    };
+  });
+
+const promotions = promotionsResult.rows
+  .filter((row) => isMedicalClinicName(row.clinic_name))
+  .filter((row) => isMinskClinicAddress(row.clinic_address))
+  .filter((row) => !row.doctor_id || allowedDoctorIds.has(String(row.doctor_id)))
+  .map((row) => ({
+    id: String(row.id),
+    title: String(row.title),
+    source_url: String(row.source_url),
+    ends_at: row.ends_at ? String(row.ends_at) : null,
+    clinic: {
+      id: String(row.clinic_id),
+      slug: String(row.clinic_slug),
+      name: String(row.clinic_name),
+    },
+    doctor: row.doctor_id
+      ? {
+          id: String(row.doctor_id),
+          slug: String(row.doctor_slug),
+          full_name: String(row.doctor_name),
+        }
+      : null,
+  }));
 
 const clinicIds = new Set();
 const specialtyMap = new Map();
@@ -380,14 +628,70 @@ const payload = {
   promotions,
 };
 
+const doctorsListPayload = {
+  generated_at: overviewPayload.generated_at,
+  items: doctors.map((doctor) => ({
+    id: doctor.id,
+    slug: doctor.slug,
+    full_name: doctor.full_name,
+    specialties: doctor.specialties.map((item) => item.name),
+    clinics: doctor.clinics.map((item) => item.name),
+    rating_avg: doctor.rating_avg,
+    reviews_count: doctor.reviews_count,
+    promo_title: doctor.promotions[0]?.title ?? null,
+  })),
+};
+
+const promotionsPayload = {
+  generated_at: overviewPayload.generated_at,
+  items: promotions,
+};
+
+const snapshotVersion =
+  toSnapshotVersion(overviewPayload.generated_at) || String(Date.now());
+const versionedOutputPath = path.join(
+  outputDir,
+  `catalog.${snapshotVersion}.json`,
+);
+const versionedOverviewOutputPath = path.join(
+  outputDir,
+  `catalog-overview.${snapshotVersion}.json`,
+);
+const versionedDoctorsListOutputPath = path.join(
+  outputDir,
+  `catalog-list.${snapshotVersion}.json`,
+);
+const versionedPromotionsOutputPath = path.join(
+  outputDir,
+  `promotions.${snapshotVersion}.json`,
+);
+
 fs.mkdirSync(outputDir, { recursive: true });
+fs.mkdirSync(generatedDir, { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(payload));
 fs.writeFileSync(overviewOutputPath, JSON.stringify(overviewPayload));
+fs.writeFileSync(doctorsListOutputPath, JSON.stringify(doctorsListPayload));
+fs.writeFileSync(promotionsOutputPath, JSON.stringify(promotionsPayload));
+fs.writeFileSync(versionedOutputPath, JSON.stringify(payload));
+fs.writeFileSync(versionedOverviewOutputPath, JSON.stringify(overviewPayload));
+fs.writeFileSync(versionedDoctorsListOutputPath, JSON.stringify(doctorsListPayload));
+fs.writeFileSync(versionedPromotionsOutputPath, JSON.stringify(promotionsPayload));
+fs.writeFileSync(
+  snapshotVersionModulePath,
+  `export const SNAPSHOT_VERSION = ${JSON.stringify(snapshotVersion)};\n`,
+);
 
 console.log(
   JSON.stringify({
     output: outputPath,
     overview_output: overviewOutputPath,
+    doctors_list_output: doctorsListOutputPath,
+    promotions_output: promotionsOutputPath,
+    versioned_output: versionedOutputPath,
+    versioned_overview_output: versionedOverviewOutputPath,
+    versioned_doctors_list_output: versionedDoctorsListOutputPath,
+    versioned_promotions_output: versionedPromotionsOutputPath,
+    snapshot_version: snapshotVersion,
     doctors: doctors.length,
     promotions: promotions.length,
   }),
