@@ -155,6 +155,8 @@ Live worker deploy сейчас заблокирован Cloudflare account mism
 - чтобы снять зависимость от локального OAuth, добавлен обходной deploy path:
   - workflow `.github/workflows/worker-deploy.yml`
   - helper `scripts/sync-worker-github-secrets.ps1`
+- production check уже выполнен: GitHub Actions run `worker-deploy` `23752689339` подтвердил, что workflow и repo secrets wiring работают, но сам `CLOUDFLARE_API_TOKEN` в GitHub сейчас недействителен
+- точная ошибка из шага `Show Cloudflare auth account`: `Invalid access token [code: 9109]`
 
 ### Blocker B
 Статус: `[-]`
@@ -187,12 +189,14 @@ Live worker deploy сейчас заблокирован Cloudflare account mism
 
 Идти именно так, не перепрыгивать:
 
-1. `[ ]` прогнать `powershell -File scripts/sync-worker-github-secrets.ps1`
-2. `[ ]` активировать и проверить workflow `worker-deploy`
-3. `[ ]` после deploy повторно проверить `GET /api/v1/promotions`, channel и mini app
-4. `[ ]` пройтись по promo-scraper-ам и дотянуть `published_at` там, где дата реально доступна
-5. `[ ]` затем брать следующую волну promo expansion
-6. `[ ]` параллельно запускать cleanup `Catalog Trust P0`
+1. `[x]` прогнать `powershell -File scripts/sync-worker-github-secrets.ps1`
+2. `[x]` активировать и проверить workflow `worker-deploy`
+3. `[ ]` заменить GitHub secret `CLOUDFLARE_API_TOKEN` на действующий token account `64b387...`
+4. `[ ]` повторно запустить `worker-deploy`
+5. `[ ]` после deploy повторно проверить `GET /api/v1/promotions`, channel и mini app
+6. `[ ]` пройтись по promo-scraper-ам и дотянуть `published_at` там, где дата реально доступна
+7. `[ ]` затем брать следующую волну promo expansion
+8. `[ ]` параллельно запускать cleanup `Catalog Trust P0`
 
 ## Definition of Done для ближайшего этапа
 

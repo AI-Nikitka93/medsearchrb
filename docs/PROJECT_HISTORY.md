@@ -2,6 +2,10 @@
 **Сделано:** локальный direct deploy Worker в Cloudflare окончательно признан ненадёжным из-за чужого OAuth account `66f004...`, тогда как кэш проекта и service history подтверждают целевой account `64b387...`. Чтобы больше не зависеть от локального `wrangler login`, добавлен новый production deploy path через GitHub Actions: workflow `worker-deploy` выполняет `npm --prefix apps/worker run check`, `db:migrate`, синхронизирует runtime secrets через `wrangler secret put` и затем вызывает `wrangler deploy`, используя repo secret `CLOUDFLARE_API_TOKEN`. Для подготовки недостающих repo secrets из локальных `.env.txt/.env/.env.local` добавлен helper `scripts/sync-worker-github-secrets.ps1`; он без вывода значений синхронизирует `BOT_TOKEN`, `TELEGRAM_CHANNEL_ID`, `WEBAPP_URL`, `PRIVACY_URL`, `SUPPORT_USERNAME`, bot descriptions и `TELEGRAM_WEBHOOK_SECRET` в GitHub Secrets.
 **Изменены файлы:** `.github/workflows/worker-deploy.yml`, `scripts/sync-worker-github-secrets.ps1`, `docs/EXECUTION_MAP.md`, `docs/STATE.md`, `docs/PROJECT_HISTORY.md`
 
+## 2026-03-30 18:25 — Worker Deploy Token Diagnosis
+**Сделано:** новый workflow `worker-deploy` доведён до реального production запуска на GitHub Actions run `23752689339`. Это подтвердило, что wiring по workflow, GitHub auth и worker secrets работает: job прошёл `Checkout`, `Validate required deploy secrets`, `Install Worker dependencies`, `Typecheck Worker` и `Apply Turso migrations`. Падение произошло уже на первом Cloudflare auth шаге `npm --prefix apps/worker exec wrangler whoami` с точной ошибкой `Invalid access token [code: 9109]`. Значит, текущий blocker больше не “неясный deploy path”, а конкретно недействительный GitHub secret `CLOUDFLARE_API_TOKEN`; до его замены повторный worker deploy не пройдёт ни локально, ни через Actions.
+**Изменены файлы:** `docs/EXECUTION_MAP.md`, `docs/STATE.md`, `docs/PROJECT_HISTORY.md`
+
 ## 2026-03-21 04:05 — Deep Research
 **Запросы:** исследование рынка агрегаторов врачей Беларуси, review-платформ, Telegram-каналов и legal/robots рисков  
 **Темы:** конкуренты, UX-паттерны, популярность сервисов, Telegram distribution, reuse отзывов, ограничения парсинга  
