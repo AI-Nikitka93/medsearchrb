@@ -7,6 +7,19 @@ import { TelegramBotService } from "../services/telegram-bot-service";
 
 const telegram = new Hono<{ Bindings: WorkerBindings }>();
 
+function constantTimeEqual(left: string, right: string) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  let mismatch = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return mismatch === 0;
+}
+
 const updateSchema = z.object({
   message: z
     .object({
@@ -44,8 +57,13 @@ telegram.get("/health", (c) =>
 telegram.post("/webhook", async (c) => {
   const bot = new TelegramBotService(c.env);
   const providedSecret = c.req.header("x-telegram-bot-api-secret-token");
+  const expectedSecret = bot.webhookSecret()?.trim();
 
-  if (!providedSecret || providedSecret !== bot.webhookSecret()) {
+  if (!expectedSecret) {
+    return errorJson(c, 503, "WEBHOOK_SECRET_MISSING", "telegram webhook secret is not configured", false);
+  }
+
+  if (!providedSecret || !constantTimeEqual(providedSecret, expectedSecret)) {
     return errorJson(c, 401, "UNAUTHORIZED", "telegram webhook secret is invalid", false);
   }
 

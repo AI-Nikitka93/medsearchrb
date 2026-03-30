@@ -21,11 +21,21 @@ from apps.telegram_bot.services.copy import (
 router = Router(name="commands")
 
 
+def _extract_start_param(message: Message) -> str | None:
+    parts = (message.text or "").split(maxsplit=1)
+    if len(parts) < 2:
+        return None
+
+    payload = parts[1].strip()
+    return payload or None
+
+
 @router.message(CommandStart())
 async def handle_start(message: Message, settings: BotSettings) -> None:
+    start_param = _extract_start_param(message)
     await message.answer(
         build_start_text(settings),
-        reply_markup=build_main_menu_keyboard(settings),
+        reply_markup=build_main_menu_keyboard(settings, start_param=start_param),
     )
 
 

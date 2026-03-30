@@ -15,17 +15,24 @@ export type PromotionChannelPayload = {
   title: string;
   source_url: string;
   ends_at: string | null;
+  published_at: string | null;
   clinic_name: string;
   clinic_site_url: string | null;
   source_name: string;
 };
 
 export class NotificationOutboxRepository {
+  private readonly staleProcessingWindowMs = 20 * 60 * 1000;
+
   async claimPendingPromotionEvents(
     client: Client,
     limit: number,
   ): Promise<PendingPromotionEvent[]> {
     const tx = await client.transaction("write");
+    const staleBeforeIso = new Date(
+      Date.now() - this.staleProcessingWindowMs,
+    ).toISOString();
+    const claimedAt = new Date().toISOString();
 
     try {
       const selected = await tx.execute({
@@ -34,12 +41,21 @@ export class NotificationOutboxRepository {
           FROM notification_outbox
           WHERE event_type = 'promotion.updated'
             AND entity_type = 'promotion'
-            AND status IN ('pending', 'failed')
             AND attempt_count < 5
+            AND (
+              status IN ('pending', 'failed')
+              OR (
+                status = 'processing'
+                AND (
+                  (claimed_at IS NOT NULL AND claimed_at <= ?)
+                  OR (claimed_at IS NULL AND created_at <= ?)
+                )
+              )
+            )
           ORDER BY created_at ASC
           LIMIT ?
         `,
-        args: [limit],
+        args: [staleBeforeIso, staleBeforeIso, limit],
       });
 
       const rows = selected.rows as unknown as PendingPromotionEvent[];
@@ -54,10 +70,11 @@ export class NotificationOutboxRepository {
             UPDATE notification_outbox
             SET status = 'processing',
                 attempt_count = attempt_count + 1,
-                last_error = NULL
+                last_error = NULL,
+                claimed_at = ?
             WHERE id = ?
           `,
-          args: [row.id],
+          args: [claimedAt, row.id],
         });
       }
 
@@ -83,6 +100,7 @@ export class NotificationOutboxRepository {
           p.title,
           p.source_url,
           p.ends_at,
+          p.published_at,
           p.source_name,
           c.name AS clinic_name,
           c.site_url AS clinic_site_url
@@ -116,7 +134,8 @@ export class NotificationOutboxRepository {
         UPDATE notification_outbox
         SET status = 'sent',
             sent_at = ?,
-            last_error = NULL
+            last_error = NULL,
+            claimed_at = NULL
         WHERE id = ?
       `,
       args: [sentAt, outboxId],
@@ -128,7 +147,8 @@ export class NotificationOutboxRepository {
       sql: `
         UPDATE notification_outbox
         SET status = 'failed',
-            last_error = ?
+            last_error = ?,
+            claimed_at = NULL
         WHERE id = ?
       `,
       args: [errorMessage.slice(0, 500), outboxId],

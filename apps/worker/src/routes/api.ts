@@ -5,17 +5,29 @@ import type { WorkerBindings } from "../env";
 import { ensureDbReady } from "../lib/db";
 import { DoctorsService } from "../services/doctors-service";
 import { PromotionsService } from "../services/promotions-service";
+import { SearchAiService } from "../services/search-ai-service";
 import { errorJson, parsePositiveInt } from "../utils/http";
 import { normalizeText } from "../utils/normalize";
+import { verifyTelegramInitData } from "../utils/telegram-auth";
 
 const api = new Hono<{ Bindings: WorkerBindings }>();
 const doctorsService = new DoctorsService();
 const promotionsService = new PromotionsService();
+const searchAiService = new SearchAiService();
 
 const doctorQuerySchema = z.object({
   q: z.string().optional(),
   specialty: z.string().optional(),
   clinic: z.string().optional(),
+});
+
+const searchUnderstandSchema = z.object({
+  q: z.string().trim().min(2).max(200),
+  provider: z.enum(["auto", "cloudflare", "groq"]).optional(),
+});
+
+const telegramSessionSchema = z.object({
+  init_data: z.string().trim().min(1).max(8192),
 });
 
 api.get("/doctors", async (c) => {
@@ -63,6 +75,64 @@ api.get("/promotions", async (c) => {
   });
 
   return c.json(result);
+});
+
+api.get("/search/understand", async (c) => {
+  const query = searchUnderstandSchema.safeParse({
+    q: c.req.query("q"),
+    provider: c.req.query("provider") ?? undefined,
+  });
+
+  if (!query.success) {
+    return errorJson(c, 400, "INVALID_SEARCH_QUERY", query.error.message, false);
+  }
+
+  const result = await searchAiService.understandQuery(
+    c.env,
+    query.data.q,
+    query.data.provider ?? "auto",
+  );
+
+  return c.json(result);
+});
+
+api.post("/telegram/session", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const parsed = telegramSessionSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return errorJson(c, 400, "INVALID_TELEGRAM_INIT_DATA", parsed.error.message, false);
+  }
+
+  const botToken = c.env.BOT_TOKEN?.trim();
+  if (!botToken) {
+    return errorJson(c, 503, "BOT_TOKEN_MISSING", "telegram bot token is not configured", false);
+  }
+
+  try {
+    const session = await verifyTelegramInitData({
+      botToken,
+      initData: parsed.data.init_data,
+      maxAgeSeconds: parsePositiveInt(
+        c.env.TELEGRAM_INIT_DATA_MAX_AGE_SECONDS,
+        3600,
+        86400,
+      ),
+    });
+
+    return c.json({
+      ok: true,
+      session,
+    });
+  } catch (error) {
+    return errorJson(
+      c,
+      401,
+      "TELEGRAM_INIT_DATA_INVALID",
+      error instanceof Error ? error.message : "telegram init data is invalid",
+      false,
+    );
+  }
 });
 
 export default api;

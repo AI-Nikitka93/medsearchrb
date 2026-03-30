@@ -1,14 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createClient } from "@libsql/client";
+import { createClient } from "@libsql/client/web";
 
 const workerRoot = process.cwd();
 const repoRoot = path.resolve(workerRoot, "..", "..");
 const migrationsDir = path.join(repoRoot, "db", "migrations");
 const envFiles = [
-  path.join(repoRoot, ".env"),
   path.join(repoRoot, ".env.txt"),
+  path.join(repoRoot, ".env"),
+  path.join(repoRoot, ".env.local"),
   path.join(workerRoot, ".dev.vars"),
 ];
 
@@ -31,9 +32,7 @@ function loadEnvFile(filePath) {
 
     const key = trimmed.slice(0, eqIndex).trim();
     const value = trimmed.slice(eqIndex + 1).trim();
-    if (!(key in process.env)) {
-      process.env[key] = value;
-    }
+    process.env[key] = value;
   }
 }
 
@@ -118,23 +117,20 @@ for (const fileName of migrationFiles) {
   const fullPath = path.join(migrationsDir, fileName);
   const sqlText = fs.readFileSync(fullPath, "utf8");
   const statements = splitSqlStatements(sqlText);
-  const tx = await client.transaction("write");
 
   try {
     for (const statement of statements) {
-      await tx.execute(statement);
+      await client.execute(statement);
     }
-    await tx.execute({
+    await client.execute({
       sql: `
         INSERT INTO schema_migrations (file_name, applied_at)
         VALUES (?, ?)
       `,
       args: [fileName, new Date().toISOString()],
     });
-    await tx.commit();
     console.log(`Applied migration: ${fileName}`);
   } catch (error) {
-    await tx.rollback();
     console.error(`Failed migration: ${fileName}`);
     console.error(error);
     process.exit(1);

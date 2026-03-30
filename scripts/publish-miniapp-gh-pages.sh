@@ -5,6 +5,8 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 publish_dir="$(mktemp -d)"
 remote_snapshot_file="data/catalog-overview.json"
+miniapp_root="$repo_root/apps/miniapp"
+expected_base_path="${NEXT_PUBLIC_BASE_PATH:-/medsearchrb}"
 
 resolve_python() {
   if command -v python >/dev/null 2>&1; then
@@ -36,6 +38,37 @@ cleanup() {
 trap cleanup EXIT
 
 git -C "$repo_root" worktree prune >/dev/null 2>&1 || true
+
+miniapp_bundle_uses_expected_base_path() {
+  local html_file="$miniapp_root/out/index.html"
+
+  if [[ ! -f "$html_file" ]]; then
+    return 1
+  fi
+
+  if grep -q 'href="/_next/' "$html_file" || grep -q 'src="/_next/' "$html_file"; then
+    return 1
+  fi
+
+  if [[ -n "$expected_base_path" ]] && ! grep -q "${expected_base_path}/_next/" "$html_file"; then
+    return 1
+  fi
+
+  return 0
+}
+
+if ! miniapp_bundle_uses_expected_base_path; then
+  echo "REBUILD_MINIAPP_WITH_BASE_PATH"
+  (
+    cd "$miniapp_root"
+    MSYS2_ARG_CONV_EXCL='*' NEXT_PUBLIC_BASE_PATH="$expected_base_path" npm run build
+  )
+fi
+
+if ! miniapp_bundle_uses_expected_base_path; then
+  echo "Mini App bundle still has invalid asset paths for GitHub Pages publish" >&2
+  exit 1
+fi
 
 extract_generated_at() {
   local file_path="$1"

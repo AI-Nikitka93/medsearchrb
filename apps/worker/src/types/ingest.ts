@@ -67,6 +67,7 @@ export const promotionRecordSchema = z.object({
   url: z.url(),
   clinic_external_id: z.string().nullable().optional(),
   valid_until: z.string().nullable().optional(),
+  published_at: z.string().nullable().optional(),
   source_url: z.url().nullable().optional(),
   captured_at: z.string().min(1),
 });

@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 .env
+.env.local
+.env.worker.local
 .env.txt
 .dev.vars
 node_modules/
@@ -15,3 +17,6 @@ dist/
 build/
 *.tsbuildinfo
 *.log
+
+.wrangler/
+.codex-tmp/

@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import type { WorkerBindings } from "../src/env";
 import { ensureDbReady } from "../src/lib/db";
+import { loadRootEnvFiles } from "./lib/load-root-env";
 
 type RuntimeEnv = WorkerBindings & {
   TURSO_DATABASE_URL: string;
@@ -87,32 +87,10 @@ function loadRootEnv(): RuntimeEnv {
     return process.env as unknown as RuntimeEnv;
   }
 
-  const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-  const root = path.resolve(scriptDir, "../../..");
-  const candidatePaths = [path.join(root, ".env.txt"), path.join(root, ".env")];
-  const envPath = candidatePaths.find((candidate) => fs.existsSync(candidate));
-
-  if (!envPath) {
-    throw new Error("Cannot find .env.txt or .env in project root");
-  }
-
-  const data = fs.readFileSync(envPath, "utf8");
-  const env = Object.fromEntries(
-    data
-      .split(/\r?\n/u)
-      .map((line) => line.trim())
-      .filter((line) => line && !line.startsWith("#") && line.includes("="))
-      .map((line) => {
-        const delimiter = line.indexOf("=");
-        return [
-          line.slice(0, delimiter).trim(),
-          line.slice(delimiter + 1).trim().replace(/^"|"$/gu, ""),
-        ];
-      }),
-  ) as Partial<RuntimeEnv>;
+  const env = loadRootEnvFiles(import.meta.url) as Partial<RuntimeEnv>;
 
   if (!env.TURSO_DATABASE_URL || !env.TURSO_AUTH_TOKEN) {
-    throw new Error("Missing Turso bindings in root env file");
+    throw new Error("Missing Turso bindings in root env file set (.env.local/.env/.env.txt)");
   }
 
   return env as RuntimeEnv;

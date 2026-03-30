@@ -49,7 +49,7 @@ jobs:
           MAX_DOCTORS_PER_SOURCE: "0"
         run: >
           python -m apps.scrapers.main
-          --sources centrsna doctortut eclinic forestmed kaskad kravira lighthouse lifecity lode medart medavenu mrtby neomedical nordin sante smartmedical supramed
+          --sources aquaminsk centrsna doctortut eclinic forestmed gurumed idealmed kaskad kravira lighthouse lifecity lode medart medavenu medera mrtby neomedical nordin paracels sante smartmedical supramed
           --output-mode file
           --log-level INFO
 

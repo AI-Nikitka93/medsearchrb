@@ -1,4 +1,9 @@
 import type { SqlExecutor } from "../lib/db";
+import {
+  isExcludedCatalogQuery,
+  isMedicalSpecialtyName,
+  isMinskClinicAddress,
+} from "../utils/normalize";
 
 export type DoctorListFilters = {
   q?: string;
@@ -18,6 +23,68 @@ type DoctorRow = {
   clinics_csv: string;
   promo_title: string | null;
 };
+
+const NON_MEDICAL_SPECIALTY_SQL_PATTERNS = [
+  "%парикмах%",
+  "%барбер%",
+  "%бровист%",
+  "%визаж%",
+  "%стилист%",
+  "%мастер%",
+  "%маникюр%",
+  "%педикюр%",
+  "%шугар%",
+  "%депиляц%",
+  "%эпиляц%",
+  "%ресниц%",
+  "%перманентн%",
+  "%макияж%",
+  "%косметик%",
+  "%косметолог%",
+  "%дерматокосмет%",
+  "%массаж%",
+  "%йог%",
+  "%инструктор%",
+  "%администратор%",
+  "%медрегистратор%",
+  "%нутрициолог%",
+  "%подолог%",
+  "%подиатр%",
+  "%липокоррек%",
+  "%пирсинг%",
+  "%узкопрофильн%",
+  "%специалист по%",
+  "%уходу за телом%",
+  "%грудному вскармливанию%",
+  "%тренер%",
+  "%преподавател%",
+  "%воспитател%",
+  "%спа%",
+  "%тату%",
+  "%ветеринар%",
+];
+
+const NON_MEDICAL_CLINIC_SQL_PATTERNS = [
+  "%ветеринар%",
+  "%ветцентр%",
+  "%ветклиник%",
+  "%ветмед%",
+  "%ветмир%",
+  "%доктор вет%",
+  "%альфа-вет%",
+  "%wellvet%",
+  "%animal clinic%",
+  "%энимал%",
+  "%pets health%",
+  "%zoohelp%",
+  "%зооклиник%",
+  "%зоовет%",
+  "%девять жизней%",
+  "%питомец%",
+  "%главное хвост%",
+  "%базылевск%",
+  "%умная ветеринар%",
+];
 
 export class DoctorsReadRepository {
   async list(db: SqlExecutor, filters: DoctorListFilters) {
@@ -59,7 +126,7 @@ export class DoctorsReadRepository {
                   SUM(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN reviews_count ELSE 0 END),
                   1
                 )
-              ELSE ROUND(MAX(rating_avg), 1)
+              ELSE ROUND(MAX(CASE WHEN rating_avg IS NOT NULL AND reviews_count > 0 THEN rating_avg END), 1)
             END AS rating_avg,
             SUM(reviews_count) AS reviews_count
           FROM latest_reviews
@@ -118,6 +185,7 @@ export class DoctorsReadRepository {
         WHERE (id = ? OR slug = ?)
           AND is_hidden = 0
           AND opt_out = 0
+          AND ${this.medicalSpecialtyExistsClause("doctors")}
         LIMIT 1
       `,
       args: [doctorIdOrSlug, doctorIdOrSlug],
@@ -133,6 +201,7 @@ export class DoctorsReadRepository {
         FROM doctor_specialties ds
         INNER JOIN specialties s ON s.id = ds.specialty_id
         WHERE ds.doctor_id = ?
+          AND ${this.medicalSpecialtySqlClause("s")}
         ORDER BY ds.is_primary DESC, s.sort_order ASC, s.name ASC
       `,
       args: [doctorId],
@@ -166,6 +235,7 @@ export class DoctorsReadRepository {
           AND dc.is_active = 1
           AND c.is_hidden = 0
           AND c.opt_out = 0
+          AND ${this.medicalClinicSqlClause("c")}
         ORDER BY c.name ASC
       `,
       args: [doctorId],
@@ -191,7 +261,15 @@ export class DoctorsReadRepository {
           FROM reviews_summary
           WHERE doctor_id = ?
         )
-        SELECT source_name, source_page_url, rating_avg, reviews_count, captured_at
+        SELECT
+          source_name,
+          source_page_url,
+          CASE
+            WHEN reviews_count > 0 THEN rating_avg
+            ELSE NULL
+          END AS rating_avg,
+          reviews_count,
+          captured_at
         FROM ranked_reviews
         WHERE row_num = 1
         ORDER BY reviews_count DESC, source_name ASC
@@ -212,13 +290,15 @@ export class DoctorsReadRepository {
           p.ends_at,
           c.id AS clinic_id,
           c.slug AS clinic_slug,
-          c.name AS clinic_name
+          c.name AS clinic_name,
+          c.address AS clinic_address
         FROM promotions p
         INNER JOIN clinics c ON c.id = p.clinic_id
         WHERE p.is_active = 1
           AND p.is_hidden = 0
           AND c.is_hidden = 0
           AND c.opt_out = 0
+          AND ${this.medicalClinicSqlClause("c")}
           AND (p.doctor_id = ? OR p.doctor_id IS NULL)
           AND EXISTS (
             SELECT 1
@@ -236,21 +316,33 @@ export class DoctorsReadRepository {
   }
 
   private buildListWhere(filters: DoctorListFilters) {
-    const whereClauses = ["d.is_hidden = 0", "d.opt_out = 0"];
+    const whereClauses = [
+      "d.is_hidden = 0",
+      "d.opt_out = 0",
+      this.medicalSpecialtyExistsClause("d"),
+    ];
     const args: Array<string | number> = [];
 
     if (filters.q) {
-      whereClauses.push(`
-        (
+      const includeClinicQuery = !isExcludedCatalogQuery(filters.q);
+      const queryConditions = [
+        `
           d.normalized_name LIKE ?
-          OR EXISTS (
+        `,
+        `
+          EXISTS (
             SELECT 1
             FROM doctor_specialties ds_q
             INNER JOIN specialties s_q ON s_q.id = ds_q.specialty_id
             WHERE ds_q.doctor_id = d.id
               AND s_q.normalized_name LIKE ?
           )
-          OR EXISTS (
+        `,
+      ];
+
+      if (includeClinicQuery) {
+        queryConditions.push(`
+          EXISTS (
             SELECT 1
             FROM doctor_clinics dc_q
             INNER JOIN clinics c_q ON c_q.id = dc_q.clinic_id
@@ -258,11 +350,21 @@ export class DoctorsReadRepository {
               AND dc_q.is_active = 1
               AND c_q.is_hidden = 0
               AND c_q.opt_out = 0
+              AND ${this.medicalClinicSqlClause("c_q")}
               AND c_q.normalized_name LIKE ?
           )
+        `);
+      }
+
+      whereClauses.push(`
+        (
+          ${queryConditions.join("\n          OR ")}
         )
       `);
-      args.push(`%${filters.q}%`, `%${filters.q}%`, `%${filters.q}%`);
+      args.push(`%${filters.q}%`, `%${filters.q}%`);
+      if (includeClinicQuery) {
+        args.push(`%${filters.q}%`);
+      }
     }
 
     if (filters.specialty) {
@@ -288,6 +390,7 @@ export class DoctorsReadRepository {
             AND dc_c.is_active = 1
             AND c_c.is_hidden = 0
             AND c_c.opt_out = 0
+            AND ${this.medicalClinicSqlClause("c_c")}
             AND (c_c.slug = ? OR c_c.normalized_name = ?)
         )
       `);
@@ -307,6 +410,7 @@ export class DoctorsReadRepository {
         FROM doctor_specialties ds
         INNER JOIN specialties s ON s.id = ds.specialty_id
         WHERE ds.doctor_id IN (${this.placeholders(doctorIds.length)})
+          AND ${this.medicalSpecialtySqlClause("s")}
         ORDER BY ds.doctor_id ASC, ds.is_primary DESC, s.sort_order ASC, s.name ASC
       `,
       args: doctorIds,
@@ -317,7 +421,7 @@ export class DoctorsReadRepository {
       const doctorId = String(row.doctor_id);
       const names = grouped.get(doctorId) ?? [];
       const specialtyName = String(row.name);
-      if (!names.includes(specialtyName)) {
+      if (isMedicalSpecialtyName(specialtyName) && !names.includes(specialtyName)) {
         names.push(specialtyName);
       }
       grouped.set(doctorId, names);
@@ -331,13 +435,14 @@ export class DoctorsReadRepository {
   private async getClinicsCsv(db: SqlExecutor, doctorIds: string[]) {
     const result = await db.execute({
       sql: `
-        SELECT dc.doctor_id, c.name
+        SELECT dc.doctor_id, c.name, c.address
         FROM doctor_clinics dc
         INNER JOIN clinics c ON c.id = dc.clinic_id
         WHERE dc.doctor_id IN (${this.placeholders(doctorIds.length)})
           AND dc.is_active = 1
           AND c.is_hidden = 0
           AND c.opt_out = 0
+          AND ${this.medicalClinicSqlClause("c")}
         ORDER BY dc.doctor_id ASC, c.name ASC
       `,
       args: doctorIds,
@@ -348,7 +453,10 @@ export class DoctorsReadRepository {
       const doctorId = String(row.doctor_id);
       const clinics = grouped.get(doctorId) ?? [];
       const clinicName = String(row.name);
-      if (!clinics.includes(clinicName)) {
+      if (
+        isMinskClinicAddress(row.address ? String(row.address) : null) &&
+        !clinics.includes(clinicName)
+      ) {
         clinics.push(clinicName);
       }
       grouped.set(doctorId, clinics);
@@ -362,7 +470,7 @@ export class DoctorsReadRepository {
   private async getPromoTitles(db: SqlExecutor, doctorIds: string[]) {
     const result = await db.execute({
       sql: `
-        SELECT dc.doctor_id, p.title, p.ends_at, p.updated_at
+        SELECT dc.doctor_id, p.title, p.ends_at, p.updated_at, c.address
         FROM doctor_clinics dc
         INNER JOIN promotions p ON p.clinic_id = dc.clinic_id
         INNER JOIN clinics c ON c.id = p.clinic_id
@@ -372,6 +480,7 @@ export class DoctorsReadRepository {
           AND p.is_hidden = 0
           AND c.is_hidden = 0
           AND c.opt_out = 0
+          AND ${this.medicalClinicSqlClause("c")}
           AND (p.doctor_id = dc.doctor_id OR p.doctor_id IS NULL)
         ORDER BY dc.doctor_id ASC, COALESCE(p.ends_at, '9999-12-31T00:00:00Z') ASC, p.updated_at DESC
       `,
@@ -381,7 +490,10 @@ export class DoctorsReadRepository {
     const promotions = new Map<string, string>();
     for (const row of result.rows) {
       const doctorId = String(row.doctor_id);
-      if (!promotions.has(doctorId)) {
+      if (
+        isMinskClinicAddress(row.address ? String(row.address) : null) &&
+        !promotions.has(doctorId)
+      ) {
         promotions.set(doctorId, String(row.title));
       }
     }
@@ -391,5 +503,39 @@ export class DoctorsReadRepository {
 
   private placeholders(count: number) {
     return Array.from({ length: count }, () => "?").join(", ");
+  }
+
+  private medicalSpecialtyExistsClause(doctorTableAlias: string) {
+    return `
+      EXISTS (
+        SELECT 1
+        FROM doctor_specialties ds_guard
+        INNER JOIN specialties s_guard ON s_guard.id = ds_guard.specialty_id
+        WHERE ds_guard.doctor_id = ${doctorTableAlias}.id
+          AND ${this.medicalSpecialtySqlClause("s_guard")}
+      )
+    `;
+  }
+
+  private medicalSpecialtySqlClause(specialtyTableAlias: string) {
+    const normalizedName = `COALESCE(${specialtyTableAlias}.normalized_name, LOWER(${specialtyTableAlias}.name), '')`;
+
+    return [
+      `${normalizedName} <> ''`,
+      ...NON_MEDICAL_SPECIALTY_SQL_PATTERNS.map(
+        (pattern) => `${normalizedName} NOT LIKE '${pattern}'`,
+      ),
+    ].join(" AND ");
+  }
+
+  private medicalClinicSqlClause(clinicTableAlias: string) {
+    const normalizedName = `COALESCE(${clinicTableAlias}.normalized_name, LOWER(${clinicTableAlias}.name), '')`;
+
+    return [
+      `${normalizedName} <> ''`,
+      ...NON_MEDICAL_CLINIC_SQL_PATTERNS.map(
+        (pattern) => `${normalizedName} NOT LIKE '${pattern}'`,
+      ),
+    ].join(" AND ");
   }
 }

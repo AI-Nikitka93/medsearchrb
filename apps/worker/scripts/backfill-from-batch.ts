@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import type { WorkerBindings } from "../src/env";
 import { ensureDbReady } from "../src/lib/db";
 import { IngestService } from "../src/services/ingest-service";
 import type { SourceBatch, SourceBatchEnvelope } from "../src/types/ingest";
+import { loadRootEnvFiles } from "./lib/load-root-env";
 
 type RuntimeEnv = WorkerBindings & {
   TURSO_DATABASE_URL: string;
@@ -65,26 +65,7 @@ function parseArgs() {
 }
 
 function loadRootEnv(): RuntimeEnv {
-  const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-  const root = path.resolve(scriptDir, "../../..");
-  const candidatePaths = [path.join(root, ".env.txt"), path.join(root, ".env")];
-  const envPath = candidatePaths.find((candidate) => fs.existsSync(candidate));
-  const fileEnv = envPath
-    ? (Object.fromEntries(
-        fs
-          .readFileSync(envPath, "utf8")
-          .split(/\r?\n/u)
-          .map((line) => line.trim())
-          .filter((line) => line && !line.startsWith("#") && line.includes("="))
-          .map((line) => {
-            const delimiter = line.indexOf("=");
-            return [
-              line.slice(0, delimiter).trim(),
-              line.slice(delimiter + 1).trim().replace(/^"|"$/gu, ""),
-            ];
-          }),
-      ) as Partial<RuntimeEnv>)
-    : {};
+  const fileEnv = loadRootEnvFiles(import.meta.url) as Partial<RuntimeEnv>;
 
   const env = {
     ...fileEnv,
@@ -95,13 +76,13 @@ function loadRootEnv(): RuntimeEnv {
 
   if (!env.TURSO_DATABASE_URL || !env.TURSO_AUTH_TOKEN) {
     throw new Error(
-      "Missing Turso bindings. Provide TURSO_DATABASE_URL and TURSO_AUTH_TOKEN via environment or root .env.txt/.env",
+      "Missing Turso bindings. Provide TURSO_DATABASE_URL and TURSO_AUTH_TOKEN via environment or root .env.local/.env/.env.txt",
     );
   }
 
   if (!env.INGEST_SHARED_SECRET) {
     throw new Error(
-      "Missing INGEST_SHARED_SECRET. Provide it via environment or root .env.txt/.env",
+      "Missing INGEST_SHARED_SECRET. Provide it via environment or root .env.local/.env/.env.txt",
     );
   }
 

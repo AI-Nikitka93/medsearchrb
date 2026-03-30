@@ -1,0 +1,1960 @@
+{
+  "summary": {
+    "generated_at": "2026-03-29T21:47:20.140Z",
+    "source_snapshot_generated_at": "2026-03-29T19:37:35.698Z",
+    "ready_to_add_count": 36,
+    "verified_news_only_count": 35,
+    "homepage_signal_only_count": 165,
+    "review_existing_count": 28
+  },
+  "ready_to_add": [
+    {
+      "clinic_name": "«Клиника эстетической стоматологии»",
+      "clinic_slug": "klinika-esteticheskoy-stomatologii-e3c33752e5",
+      "site_url": "https://superdent.by/",
+      "site_host": "superdent.by",
+      "address": "Минск, пер. Казарменный, д. 3",
+      "doctors_count": 27,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://superdent.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "rocket-jquery-load :t .join string ==typeof arguments 0 arguments 0 instanceof string?arguments 0 =t arguments 0 : object ==typeof arguments 0 &&object.keys arguments 0 .foreach e= delete object.assign arguments 0 t e :a",
+        ": & this.parentnode.dataset.query e.setattribute src t.replace id this.parentnode.dataset.src e.setattribute frameborder 0 e.setattribute allowfullscreen 1 e.setattribute allow accelerometer autoplay encrypted-media gyro",
+        "[promo-page] rocket-jquery-load :t .join string ==typeof arguments 0 arguments 0 instanceof string?arguments 0 =t arguments 0 : object ==typeof arguments 0 &&object.keys arguments 0 .foreach e= delete object.assign arguments 0 t e :a",
+        "[promo-page] : & this.parentnode.dataset.query e.setattribute src t.replace id this.parentnode.dataset.src e.setattribute frameborder 0 e.setattribute allowfullscreen 1 e.setattribute allow accelerometer autoplay encrypted-media gyro"
+      ],
+      "minsk_evidence": [
+        "Минск, пер. Казарменный, д. 3"
+      ],
+      "priority_score": 287,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Парацельс» на Маяковского",
+      "clinic_slug": "meditsinskiy-tsentr-paratsels-na-mayakovskogo-616008541d",
+      "site_url": "https://www.narkolog.by/",
+      "site_host": "narkolog.by",
+      "address": "Минск, ул. Маяковского, д. 129а/1",
+      "doctors_count": 23,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.narkolog.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5kw5zj2 window.datalayer = window.datalayer function gtag datalayer.push argu",
+        "[promo-page] main_user_consent_request_url_confirm : ознакомьтесь с текстом по ссылке window.bx top.bx .message language_id : ru format_date : dd.mm.yyyy format_datetime : dd.mm.yyyy hh:mi:ss cookie_prefix : bitrix_sm server_tz_offse",
+        "[promo-page] маяковского 129а/1 zakaz narkolog.by круглосуточно частный медицинский центр парацельс &mdash акции акции выгодные спецпредложения и накопительные скидки для наших пациентов хотите узнать подробнее об условиях акций?"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Маяковского, д. 129а/1"
+      ],
+      "priority_score": 283,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Мед-Практика»",
+      "clinic_slug": "meditsinskiy-tsentr-med-praktika-35f9968e2e",
+      "site_url": "https://med-praktika.by/",
+      "site_host": "med-praktika.by",
+      "address": "Минск, ул. Максима Богдановича, д. 27",
+      "doctors_count": 18,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://med-praktika.by/novosti/akcii-s-zabotoj-o-zhenskom-zdorove/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "[promo-page] // var gtm4wp_datalayer_name = datalayer var datalayer = datalayer // акции с заботой о женском здоровье - med-praktika.by context : https://schema.org graph : type : webpage id : https://med-praktika.by/novosti/akcii-s-",
+        "[promo-page] breadcrumb : id : https://med-praktika.by/novosti/akcii-s-zabotoj-o-zhenskom-zdorove/ breadcrumb inlanguage : ru-ru potentialaction : type : readaction target : https://med-praktika.by/novosti/akcii-s-zabotoj-o-zhenskom-",
+        "[promo-page] n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Максима Богдановича, д. 27"
+      ],
+      "priority_score": 278,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника Гуру» на Дзержинского (ранее «КиндерМед»)",
+      "clinic_slug": "klinika-guru-na-dzerzhinskogo-ranee-kindermed-039beb4eb2",
+      "site_url": "https://gurumed.by/",
+      "site_host": "gurumed.by",
+      "address": "Минск, просп. Дзержинского, д. 123",
+      "doctors_count": 13,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://gurumed.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "js_core_no_data : - нет данных - js_core_window_close : закрыть js_core_window_expand : развернуть js_core_window_narrow : свернуть в окно js_core_window_save : сохранить js_core_window_cancel : отменить js_core_window_c",
+        "- вс.: с 9:00 до 18:00 запись онлайн услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечение",
+        "- вс.: с 9:00 до 18:00 заказать звонок услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечен",
+        "- вс.: с 9:00 до 18:00 услуги .cls-1 fill-rule: evenodd услуги косметология .cls-1 fill-rule: evenodd косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста вол",
+        "[promo-page] акции if window.bx window.bx= if window.bx.message window.bx.message=function mess if typeof mess=== object for let i in mess bx.message i =mess i return true window.bx top.bx .message js_core_loading : загрузка..."
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Дзержинского, д. 123",
+        "Минск, ул. Первомайская, д. 22/1",
+        "Минск, ул. М. Богдановича, д. 6"
+      ],
+      "priority_score": 273,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника Гуру» на Первомайской",
+      "clinic_slug": "klinika-guru-na-pervomayskoy-3e07903d81",
+      "site_url": "https://gurumed.by/",
+      "site_host": "gurumed.by",
+      "address": "Минск, ул. Первомайская, д. 22/1",
+      "doctors_count": 11,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://gurumed.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "js_core_no_data : - нет данных - js_core_window_close : закрыть js_core_window_expand : развернуть js_core_window_narrow : свернуть в окно js_core_window_save : сохранить js_core_window_cancel : отменить js_core_window_c",
+        "- вс.: с 9:00 до 18:00 запись онлайн услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечение",
+        "- вс.: с 9:00 до 18:00 заказать звонок услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечен",
+        "- вс.: с 9:00 до 18:00 услуги .cls-1 fill-rule: evenodd услуги косметология .cls-1 fill-rule: evenodd косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста вол",
+        "[promo-page] акции if window.bx window.bx= if window.bx.message window.bx.message=function mess if typeof mess=== object for let i in mess bx.message i =mess i return true window.bx top.bx .message js_core_loading : загрузка..."
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Дзержинского, д. 123",
+        "Минск, ул. Первомайская, д. 22/1",
+        "Минск, ул. М. Богдановича, д. 6"
+      ],
+      "priority_score": 271,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Облака»",
+      "clinic_slug": "kosmetologiya-oblaka-4431bbc89a",
+      "site_url": "https://oblaka-salon.by/",
+      "site_host": "oblaka-salon.by",
+      "address": "Минск, ул. Революционная, д. 13",
+      "doctors_count": 11,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://oblaka-salon.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "кальварийская 16 этаж 2 кабинет 226 375 29 607-52-31 0 запись на прием позвонить услуги &nbsp центра обучение о центре отзывы специалисты косметика до/после акции все услуги лазерная косметология лазерная шлифовка лица s",
+        "как правило требуется проведение 4-6 сеансов лазерного удаления волос узнать подробнее 95 клиентов приходят по рекомендациям 32 вида различных услуг в нашем центре 92 клиентов посещают нас регулярно 22 года средний враче",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-p5wq3w8n context : https://schema.org type : breadcrumblist itemlistelement :",
+        "[promo-page] кальварийская 16 этаж 2 кабинет 226 375 29 607-52-31 0 запись на прием позвонить услуги &nbsp центра обучение о центре отзывы специалисты косметика до/после акции все услуги лазерная косметология лазерная шлифовка лица s"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Революционная, д. 13"
+      ],
+      "priority_score": 271,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Дентополис»",
+      "clinic_slug": "stomatologiya-dentopolis-6c277285db",
+      "site_url": "https://dentopolis.by/",
+      "site_host": "dentopolis.by",
+      "address": "Минск, ул. Уручская, д. 7",
+      "doctors_count": 11,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://dentopolis.by/discounts",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "уручье минск 375 29 686-95-22 записаться наш чат-бот о нас о клинике команда акции оборудование гарантии вакансии как переслать 3d-снимок услуги имплантация имплантация имплантация по протоколу all-on-4 / 6 синус-лифтинг",
+        "кратчайшие сроки лечения подробнее лечение зубов под микроскопом использование в ежедневной практике микроскопов немецкого производства flexion от cj optik подробнее современное оборудование более 5000 операций врачи с б",
+        "срок действия &mdash бессрочный подробнее все акции основные услуги имплантация подробнее протезирование подробнее хирургия подробнее терапия подробнее иностранным гражданам подробнее 3d-снимки зубов подробнее наши врачи",
+        "уручье минск 375 29 686-95-22 главная о нас о клинике команда акции оборудование гарантии вакансии как переслать 3d-снимок услуги имплантация имплантация имплантация по протоколу all-on-4 / 6 синус-лифтинг имплантация зу",
+        "[promo-page] акции и скидки в стоматологии дентополис в минске -- function m e t r i k a m i = m i function m i .a = m i .a .push arguments m i .l = 1 new date k = e.createelement t a = e.getelementsbytagname t 0 k.async = 1 k.src = "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Уручская, д. 7"
+      ],
+      "priority_score": 271,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Блоссом Клиник»",
+      "clinic_slug": "meditsinskiy-tsentr-blossom-klinik-7092788ed4",
+      "site_url": "https://blossomclinic.by/",
+      "site_host": "blossomclinic.by",
+      "address": "Минск, ул. Кирова, д. 18",
+      "doctors_count": 10,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://blossomclinic.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "минск ул.кирова сайт в разработке временно не работаем услуги ультразвуковая диагностика комплексы узи скидки узи детям узи сердца узи сосудов узи брюшной полости узи печени и желчного пузыря узи поджелудочной железы узи",
+        "акции специалисты центра контакты обработка персональных данных публичная оферта лазерная косметология аппаратная косметология косметология терапевтическая дерматология онкология проктология психотерапия хирургия window.",
+        "[promo-page] var litespeed_docref=sessionstorage.getitem litespeed_docref litespeed_docref&& object.defineproperty document referrer get:function return litespeed_docref sessionstorage.removeitem litespeed_docref скидки и акции медиц",
+        "[promo-page] минск ул.кирова сайт в разработке временно не работаем услуги ультразвуковая диагностика комплексы узи скидки узи детям узи сердца узи сосудов узи брюшной полости узи печени и желчного пузыря узи поджелудочной железы узи"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Кирова, д. 18"
+      ],
+      "priority_score": 270,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Эра»",
+      "clinic_slug": "meditsinskiy-tsentr-era-10d1c59fbf",
+      "site_url": "https://medera.by/",
+      "site_host": "medera.by",
+      "address": "Минск, ул. Пионерская, д. 32",
+      "doctors_count": 10,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://medera.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-khm8zwt перейти к содержанию услуги и цены врачи акции 375 29 3390344 контакты скульптурирование тела accent prime комбинируя технологии кото",
+        "эстетическая дерматология лазерная эпиляция эта методика позволяет безболезненно удалить ненужные волосы мужчинам и женщинам коррекция фигуры комплексы процедур помогающие вернуть привлекательность и придающие внешности ",
+        "проводимые нами акции позволят вам получить необходимые процедуры по более привлекательной цене.",
+        "новости медцентра 24 ноя черная пятница дарим подарки при покупке абонементов на lpg-массаж воспользуйтесь предложением до 30 ноября включительно и подарите себе возможность не только уменьшить объемы тела избавиться от ",
+        "[promo-page] скидки и акции медцентра эра медицинский центр эра context : https: / /schema.org graph : type : breadcrumblist id : https: / /medera.by /promotions / breadcrumblist itemlistelement : type : listitem id : https: / /meder"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Пионерская, д. 32"
+      ],
+      "priority_score": 270,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника Гуру» на Богдановича (ранее «Вита»)",
+      "clinic_slug": "klinika-guru-na-bogdanovicha-ranee-vita-5f39b8445b",
+      "site_url": "https://gurumed.by/",
+      "site_host": "gurumed.by",
+      "address": "Минск, ул. М. Богдановича, д. 6",
+      "doctors_count": 9,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://gurumed.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "js_core_no_data : - нет данных - js_core_window_close : закрыть js_core_window_expand : развернуть js_core_window_narrow : свернуть в окно js_core_window_save : сохранить js_core_window_cancel : отменить js_core_window_c",
+        "- вс.: с 9:00 до 18:00 запись онлайн услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечение",
+        "- вс.: с 9:00 до 18:00 заказать звонок услуги косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста волос удаление татуажа перманента удаление татуировок лечен",
+        "- вс.: с 9:00 до 18:00 услуги .cls-1 fill-rule: evenodd услуги косметология .cls-1 fill-rule: evenodd косметология фотоомоложение омоложение кожи light & bright фракционное омоложение candela nordlys стимуляция роста вол",
+        "[promo-page] акции if window.bx window.bx= if window.bx.message window.bx.message=function mess if typeof mess=== object for let i in mess bx.message i =mess i return true window.bx top.bx .message js_core_loading : загрузка..."
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Дзержинского, д. 123",
+        "Минск, ул. Первомайская, д. 22/1",
+        "Минск, ул. М. Богдановича, д. 6"
+      ],
+      "priority_score": 269,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Республиканский центр медицинской реабилитации",
+      "clinic_slug": "respublikanskiy-tsentr-meditsinskoy-reabilitatsii-c31380f635",
+      "site_url": "https://makaenka17med.by/",
+      "site_host": "makaenka17med.by",
+      "address": "Минск, ул. Макаенка, д. 17",
+      "doctors_count": 9,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://makaenka17med.by/akcii-vremya-podarkov-dekabr-2025/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "московская запись на прием меню наши услуги цены акции специалисты центр история центра структура администрация идеологическая работа новости и акции отзывы вакансии профсоюзный комитет противодействие коррупции пресса о",
+        "оставить отзыв новости и акции центра все новости 24 марта 2026 изменение графика работы процедур минерально-жемчужных ванн.",
+        "узнать больше 11 марта 2026 акция ищем участников клинического исследования узнать больше 4 марта 2026 м22 фотоомоложение: успейте преобразить кожу пока сезон в разгаре узнать больше для вашего удобства мы создали раздел",
+        "макаенка 17 колл-центр: 375 17 215-27-70 гор 375 29 686-27-70 а1 375 29 249-97-70 мтс 375 29 765-09-76 стоматология и косметология режим работы колл-центра: пн-пт 07:30-21:00 сб 07:30 -15:00 почта: center makaenka17med.b",
+        "[promo-page] акция время подарков скидка 5 массаж за 0 01 коп."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Макаенка, д. 17"
+      ],
+      "priority_score": 269,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Пародент»",
+      "clinic_slug": "stomatologiya-parodent-ff0150238d",
+      "site_url": "https://parodent.by/",
+      "site_host": "parodent.by",
+      "address": "Минск, ул. Семенова, д. 11",
+      "doctors_count": 9,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://parodent.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "potentialaction : type : searchaction target : type : entrypoint urltemplate : https://parodent.by/?s= search_term_string query-input : type : propertyvaluespecification valuerequired :true valuename : search_term_string",
+        "[promo-page] window._wca = window._wca акции - parodent.by context : https://schema.org graph : type : webpage id : https://parodent.by/akcii/ url : https://parodent.by/akcii/ name : акции - parodent.by ispartof : id : https://parode",
+        "[promo-page] дополнительную информацию об акциях и скидочных позициях можно получить в наших социальных сетях breadcrumb : id : https://parodent.by/akcii/ breadcrumb inlanguage : ru-ru potentialaction : type : readaction target : htt",
+        "[promo-page] potentialaction : type : searchaction target : type : entrypoint urltemplate : https://parodent.by/?s= search_term_string query-input : type : propertyvaluespecification valuerequired :true valuename : search_term_string"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Семенова, д. 11"
+      ],
+      "priority_score": 269,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Стоматология имени Жадовича»",
+      "clinic_slug": "stomatologiya-imeni-zhadovicha-c20205f9dd",
+      "site_url": "https://minskdentist.by/",
+      "site_host": "minskdentist.by",
+      "address": "Минск, просп. Дзержинского, д. 78",
+      "doctors_count": 7,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://minskdentist.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "&l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5rw68ts7 function if /bot google yandex baidu bing msn duckduckbot teoma slur",
+        "t_onready function t_onfuncload t396_init function t396_init 685728687 rec685728690 .t396__artboard height:280px background-color: 74b0e8 rec685728690 .t396__filter height:280px rec685728690 .t396__carrier height:280px b",
+        "записаться rec749334006 .t-btnflex.t-btnflex_type_button color: ffffff background-color: ff8562 --border-width:0px border-style:none important border-radius:20px box-shadow:none important font-family:circerounded text-tr",
+        "для получения скидки необходимо предоставить документ подтверждающий дату рождения.",
+        "[promo-page] скидки и акции стоматологии в минске услуги по выгодным ценам tildafonts= 1779 1780 1781 window.tildafontsswap= y function t_onready func if document.readystate = loading func else document.addeventlistener domcontentloa"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Дзержинского, д. 78"
+      ],
+      "priority_score": 267,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Biovin» (Биовин)",
+      "clinic_slug": "meditsinskiy-tsentr-biovin-biovin-875a8aff2b",
+      "site_url": "https://biovin-clinic.by/",
+      "site_host": "biovin-clinic.by",
+      "address": "Минск, ул. Калиновского, д. 82/2",
+      "doctors_count": 7,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://biovin-clinic.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "js_core_no_data : - нет данных - js_core_window_close : закрыть js_core_window_expand : развернуть js_core_window_narrow : свернуть в окно js_core_window_save : сохранить js_core_window_cancel : отменить js_core_window_c",
+        "82/2 режим работы 09:00 - 21:00 ежедневно запись онлайн клиника о клинике новости отзывы способы оплаты страховое обслуживание подарочные сертификаты цены консультация врача-специалиста лазерная эпиляция нитевой лифтинг ",
+        "82/2 режим работы 09:00 - 21:00 ежедневно запись онлайн if typeof topmenuaction == undefined topmenuaction клиника о клинике новости отзывы способы оплаты страховое обслуживание подарочные сертификаты цены консультация в",
+        "82/2 режим работы 09:00 - 21:00 ежедневно клиника .cls-1 fill-rule: evenodd клиника о клинике новости отзывы способы оплаты страховое обслуживание подарочные сертификаты цены .cls-1 fill-rule: evenodd цены консультация в",
+        "[promo-page] акции и скидки на услуги косметологии в biovin if window.bx window.bx= if window.bx.message window.bx.message=function mess if typeof mess=== object for let i in mess bx.message i =mess i return true window.bx top.bx .me"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Калиновского, д. 82/2"
+      ],
+      "priority_score": 267,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Поликлиника центра медицинской реабилитации",
+      "clinic_slug": "poliklinika-tsentra-meditsinskoy-reabilitatsii-39e708bcbd",
+      "site_url": "https://makaenka17med.by/",
+      "site_host": "makaenka17med.by",
+      "address": "Минск, ул. Макаенка, д. 17",
+      "doctors_count": 5,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://makaenka17med.by/akcii-vremya-podarkov-dekabr-2025/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "московская запись на прием меню наши услуги цены акции специалисты центр история центра структура администрация идеологическая работа новости и акции отзывы вакансии профсоюзный комитет противодействие коррупции пресса о",
+        "оставить отзыв новости и акции центра все новости 24 марта 2026 изменение графика работы процедур минерально-жемчужных ванн.",
+        "узнать больше 11 марта 2026 акция ищем участников клинического исследования узнать больше 4 марта 2026 м22 фотоомоложение: успейте преобразить кожу пока сезон в разгаре узнать больше для вашего удобства мы создали раздел",
+        "макаенка 17 колл-центр: 375 17 215-27-70 гор 375 29 686-27-70 а1 375 29 249-97-70 мтс 375 29 765-09-76 стоматология и косметология режим работы колл-центра: пн-пт 07:30-21:00 сб 07:30 -15:00 почта: center makaenka17med.b",
+        "[promo-page] акция время подарков скидка 5 массаж за 0 01 коп."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Макаенка, д. 17"
+      ],
+      "priority_score": 265,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Реабилитационный центр «Элеос»",
+      "clinic_slug": "reabilitatsionnyy-tsentr-eleos-96a2cb2b7a",
+      "site_url": "https://eleos.by/",
+      "site_host": "eleos.by",
+      "address": "Минск, ул. Ф. Скорины, д. 11",
+      "doctors_count": 5,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://eleos.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "читать далее программа реабилитации после covid19 программа реабилитации для пациентов перенесших коронавирусную инфекцию в том числе внебольничную пневмонию ассоциированную с covid-19.цель читать далее акция тест на ант",
+        "петра мстиславца e-mail eleosmedcenter gmail.com о нас о центре врачи программы и акции новости отзывы контакты политика конфиденциальности публичная оферта услуги стационар терапия кардиология диагностика анализы космет",
+        "[promo-page] программы и акции реабилитационный центр элеос - более двадцати направлений от лабораторной диагностики до хирургического лечения function d w c w c = w c .push function try w.yacounter32236054 = new ya.metrika id:322360"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Ф. Скорины, д. 11"
+      ],
+      "priority_score": 265,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Здоровье»",
+      "clinic_slug": "meditsinskiy-tsentr-zdorove-f2d630f49c",
+      "site_url": "https://zdorovje.by/",
+      "site_host": "zdorovje.by",
+      "address": "Минск, ул. К. Чорного, д. 8а",
+      "doctors_count": 4,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://zdorovje.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "вирусы простого герпеса уреаплазмоз и микоплазмоз анализ на впч хламидиоз кандидоз трихомониаз рекомендации к обследованию у гинеколога для женщин полезные статьи гинекология переключатель меню гинекологический массаж ко",
+        "скидки на данные исследования составляют до 10 .",
+        "скидки 10 на услуги предоставляются именинникам при предъявлении паспорта .",
+        "[promo-page] акция - медицинский центр здоровье context : https://schema.org graph : type : webpage id : https://zdorovje.by/sale/ url : https://zdorovje.by/sale/ name : акция - медицинский центр здоровье ispartof : id : https://zdor",
+        "[promo-page] breadcrumb : id : https://zdorovje.by/sale/ breadcrumb inlanguage : ru-ru potentialaction : type : readaction target : https://zdorovje.by/sale/ type : breadcrumblist id : https://zdorovje.by/sale/ breadcrumb itemlistele"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. К. Чорного, д. 8а"
+      ],
+      "priority_score": 264,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Linii» (Линии) на Дзержинского",
+      "clinic_slug": "meditsinskiy-tsentr-linii-linii-na-dzerzhinskogo-f311fbecc2",
+      "site_url": "https://linii.by/",
+      "site_host": "linii.by",
+      "address": "Минск, ул. Дзержинского, д. 123",
+      "doctors_count": 4,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://linii.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "заказать звонок чат в telegram чат в viber if window.location.hash = && window.location.hash = top.bx.ajax.history.checkredirectstart bxajaxid 8559c92a0bdd703eeba45989dca259d2 заказать звонок function _processform_8backi",
+        "[promo-page] &l= l : j.async = true j.src = https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-wcd9k544 function m e t r i k a m i = m i function m i .a = m i .a .push ",
+        "[promo-page] n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "[promo-page] дзержинского 123 записаться на прием главная акции акции самые актуальные акции и выгодные предложения медицинского центра linii."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Дзержинского, д. 123",
+        "Минск, ул. Олешева, д. 1"
+      ],
+      "priority_score": 264,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Майстэрня Усмешки»",
+      "clinic_slug": "stomatologiya-maysternya-usmeshki-edc7ac8741",
+      "site_url": "https://usmeshka.com/",
+      "site_host": "usmeshka.com",
+      "address": "Минск, ул. Франциска Скорины, д. 12",
+      "doctors_count": 4,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://usmeshka.com/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "скорины 12 помещение 2 валео-центр время работы: 09:00 20:00 без выходных телефоны для записи: 375 29 1-859-859 375 33 6-759-759 заказать звонок главная услуги врачи работы цены акции отзывы контакты правовая информация ",
+        "мы предоставим пациенту все возможные варианты решения возникшей проблемы и подберем наиболее выгодный план лечения.",
+        "[promo-page] function d w c w c =w c .push function try w.yacounter39179810=new ya.metrika id:39179810 clickmap:true tracklinks:true accuratetrackbounce:true webvisor:true catch e var n=d.getelementsbytagname script 0 s=d.createeleme",
+        "[promo-page] скорины 12 помещение 2 валео-центр время работы: 09:00 20:00 без выходных телефоны для записи: 375 29 1-859-859 375 33 6-759-759 заказать звонок главная услуги врачи работы цены акции отзывы контакты правовая информация ",
+        "[promo-page] при наличии неотложный вопросов просим писать на почту: m.usmeshki gmail.com x заказать звонок ваше имя: ваш телефон: комментарий: поля обязательные для заполнения мы перезвоним вам в ближайшее время x задать вопрос ваше"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Франциска Скорины, д. 12"
+      ],
+      "priority_score": 264,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Областной центр «Психиатрия-наркология»",
+      "clinic_slug": "oblastnoy-tsentr-psihiatriya-narkologiya-e3cc0b55ee",
+      "site_url": "https://mokc.by/",
+      "site_host": "mokc.by",
+      "address": "Минск, ул. Петруся Бровки, д. 7",
+      "doctors_count": 3,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://mokc.by/content/nashi-aktsii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "главная акции все акции группа по управлению импульсивным поведением гневом опубликовано 13 февраля 2026 в группе вы научитесь: быть здесь и сейчас понимать и принимать свои потребности управлять cвоими эмоциями строить ",
+        "темы занятий: читать полностью все акции важно если вы житель минского района подробно про справки можно узнать здесь или позвонить в регистратуру: 375 29 101-73-73 375 29 899-04-01 375 17 311-00-99 медицинский осмотр сп",
+        "[promo-page] акции клинический центр психиатрия наркология перейти к основному содержанию footer position: fixed / фиксированное положение / right: 30px bottom: 0 / правый нижний угол / padding: 10px / поля вокруг текста / background",
+        "[promo-page] плещеницы реабилитация реабилитационный центр &quot исток&quot как это работает коллектив экскурсия истории примите участие в гуманитарных проектах наши цены платные услуги для граждан рб платные услуги для иностранных г",
+        "[promo-page] дальше группа по управлению импульсивным поведением гневом 13 февраля 2026 в группе вы научитесь: быть здесь и сейчас понимать и принимать свои потребности управлять cвоими эмоциями строить отношения с другими людьми спр"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Петруся Бровки, д. 7"
+      ],
+      "priority_score": 263,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника ЛинЛайн» на Декабристов",
+      "clinic_slug": "klinika-linlayn-na-dekabristov-f9a402e072",
+      "site_url": "https://linline-club.by/",
+      "site_host": "linline-club.by",
+      "address": "Минск, ул. Декабристов, д. 5",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://linline-club.by/about-us/prices",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "&l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение ",
+        "узнать больше наши услуги современные решения в сфере лазерной медицины и эстетической косметологии 50 услуг лазерной и эстетической косметологии лазерные процедуры 20 услуг глубокое фракционное неодимовое омоложение nd ",
+        "подробнее современная лазерная косметология и хирургия в минске записаться на прием я согласен с политикой конфиденциальности отправить заявку или позвонить 375 29 626-39-43 все акции наши акции выгодные предложения на п",
+        "постоянно отбеливаю веснушки лазером и второй раз делаю фракционное омоложение с плазма-лифтингом.",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Декабристов, д. 5",
+        "Минск, ул. Сурганова, д. 18",
+        "Минск, ул. Червякова, д. 8"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника ЛинЛайн» на Сурганова",
+      "clinic_slug": "klinika-linlayn-na-surganova-7033e27f2e",
+      "site_url": "https://linline-club.by/",
+      "site_host": "linline-club.by",
+      "address": "Минск, ул. Сурганова, д. 18",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://linline-club.by/about-us/prices",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "&l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение ",
+        "узнать больше наши услуги современные решения в сфере лазерной медицины и эстетической косметологии 50 услуг лазерной и эстетической косметологии лазерные процедуры 20 услуг глубокое фракционное неодимовое омоложение nd ",
+        "подробнее современная лазерная косметология и хирургия в минске записаться на прием я согласен с политикой конфиденциальности отправить заявку или позвонить 375 29 626-39-43 все акции наши акции выгодные предложения на п",
+        "постоянно отбеливаю веснушки лазером и второй раз делаю фракционное омоложение с плазма-лифтингом.",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Декабристов, д. 5",
+        "Минск, ул. Сурганова, д. 18",
+        "Минск, ул. Червякова, д. 8"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "«Клиника ЛинЛайн» на Червякова",
+      "clinic_slug": "klinika-linlayn-na-chervyakova-7cefb531bb",
+      "site_url": "https://linline-club.by/",
+      "site_host": "linline-club.by",
+      "address": "Минск, ул. Червякова, д. 8",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://linline-club.by/about-us/prices",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "&l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение ",
+        "узнать больше наши услуги современные решения в сфере лазерной медицины и эстетической косметологии 50 услуг лазерной и эстетической косметологии лазерные процедуры 20 услуг глубокое фракционное неодимовое омоложение nd ",
+        "подробнее современная лазерная косметология и хирургия в минске записаться на прием я согласен с политикой конфиденциальности отправить заявку или позвонить 375 29 626-39-43 все акции наши акции выгодные предложения на п",
+        "постоянно отбеливаю веснушки лазером и второй раз делаю фракционное омоложение с плазма-лифтингом.",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-k2gldmm услуги лазерные процедуры глубокое фракционное неодимовое омоложение "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Декабристов, д. 5",
+        "Минск, ул. Сурганова, д. 18",
+        "Минск, ул. Червякова, д. 8"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Молекула»",
+      "clinic_slug": "kosmetologiya-molekula-5b5ed65b39",
+      "site_url": "https://molecula.by/",
+      "site_host": "molecula.by",
+      "address": "Минск, ул. Филимонова, д. 55/3",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://molecula.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "display:block clear:both visibility:hidden line-height:0 height:0 .owl-carousel .owl-stage-outer position:relative overflow:hidden -webkit-transform:translate3d 0 0 0 .owl-carousel .owl-item .owl-carousel .owl-wrapper -m",
+        "media min-width: 992px premium-modal-93f4874 .premium-modal-box-modal-dialog width: 535px о нас услуги цены специалисты акции отзывы контакты о нас услуги цены специалисты акции отзывы контакты центр эстетической медицин",
+        "наши специалисты .elementor-1783 .elementor-element.elementor-element-b0bbe1a .elementor-element-populated margin:0 5 0 5 .elementor-1783 .elementor-element.elementor-element-cc2f3c7 img width:340px height:469px border-r",
+        "[promo-page] // акции - molecula.by context : https://schema.org graph : type : website id : https://molecula.by/ website url : https://molecula.by/ name : molecula.by description : u0415 u0449 u0451 u043e u0434 u0438 u043d u0441 u04",
+        "[promo-page] display:block clear:both visibility:hidden line-height:0 height:0 .owl-carousel .owl-stage-outer position:relative overflow:hidden -webkit-transform:translate3d 0 0 0 .owl-carousel .owl-item .owl-carousel .owl-wrapper -m"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Филимонова, д. 55/3"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Скинлюкс»",
+      "clinic_slug": "kosmetologiya-skinlyuks-a5933c3139",
+      "site_url": "https://skinlux.by/",
+      "site_host": "skinlux.by",
+      "address": "Минск, ул. Кульман, д. 13",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://skinlux.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "кульман 13 пн сб: 9:00 21:00 вс: 10:00 18:00 375 29 356-55-93 заказать звонок записаться на прием 375 29 356-55-93 все услуги аппаратная косметология smas-лифтинг hydraclean активная клеточная терапия indiba быстрая реаб",
+        "минус 10 лет без хирургического вмешательства smas-лифтинг скидка 15 в день рождения именинники приглашаем к нам и дарим в подарок скидку 15 к дню рождению.",
+        "в течение 5 дней до и после него 15 скидка к дню рождения 01 / 01 icon-insta icon-tg icon-fb центр врачебной косметологии скинлюкс наш центр является одним из немногих кто предлагает специальные программы и проводит реаб",
+        "98 удовлетворенных посетителей 12 лет средний врачебный стаж наших врачей 83 посетителей возвращаются к нам 62 вида различных процедур узнать больше о центре скинлюкс эксклюзивные предложения 04.03.2026 - топ-процедура м",
+        "[promo-page] var litespeed_docref=sessionstorage.getitem litespeed_docref litespeed_docref&& object.defineproperty document referrer get:function return litespeed_docref sessionstorage.removeitem litespeed_docref комплексные программ"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Кульман, д. 13"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Linii» (Линии) на Олешева (ранее «Баттерфляй»)",
+      "clinic_slug": "meditsinskiy-tsentr-linii-linii-na-olesheva-ranee-batterflyay-238c6a01dd",
+      "site_url": "https://linii.by/",
+      "site_host": "linii.by",
+      "address": "Минск, ул. Олешева, д. 1",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://linii.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "заказать звонок чат в telegram чат в viber if window.location.hash = && window.location.hash = top.bx.ajax.history.checkredirectstart bxajaxid 8559c92a0bdd703eeba45989dca259d2 заказать звонок function _processform_8backi",
+        "[promo-page] &l= l : j.async = true j.src = https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-wcd9k544 function m e t r i k a m i = m i function m i .a = m i .a .push ",
+        "[promo-page] n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "[promo-page] дзержинского 123 записаться на прием главная акции акции самые актуальные акции и выгодные предложения медицинского центра linii."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Дзержинского, д. 123",
+        "Минск, ул. Олешева, д. 1"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Дентлайн Люкс»",
+      "clinic_slug": "stomatologiya-dentlayn-lyuks-70b918428c",
+      "site_url": "https://dentlinelux.by/",
+      "site_host": "dentlinelux.by",
+      "address": "Минск, просп. Дзержинского, д. 69/2",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://dentlinelux.by/sale/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "&l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-n65chqbg function if /bot google yandex baidu bing msn duckduckbot teoma slur",
+        "rec680920881 .t549__uptitle color: 3b3b3b font-family: ubuntu rec680920881 .t549__title font-size:22px color: 3b3b3b font-family: ubuntu media screen and max-width:480px orientation:landscape and max-height:480px rec6809",
+        "[promo-page] акции и скидки специальные предложения стоматологии дентлайн люкс function t_onready func if document.readystate = loading func else document.addeventlistener domcontentloaded func function t_onfuncload funcname okfunc t",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-n65chqbg function if /bot google yandex baidu bing msn duckduckbot teoma slur",
+        "[promo-page] true : false link = link.replace / /g if ismobile e.style.cursor = pointer e.addeventlistener click e = e.preventdefault if false if symbolopenpage window.open link else window.open link _self else if symbolopenpage wind"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Дзержинского, д. 69/2"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Скайдент»",
+      "clinic_slug": "stomatologiya-skaydent-debb79510d",
+      "site_url": "https://skydent.by/",
+      "site_host": "skydent.by",
+      "address": "Минск, ул. Москвина, д. 4",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://skydent.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-ptz7479 акции if window.bx window.bx= if window.bx.message window.bx.message=",
+        "[promo-page] пт.: с 9:00 до 21:00 суббота:&nbsp 9:00 до&nbsp 18:00 воскресенье: 9:00 до&nbsp 18:00 акции главная &mdash акции выгодные спецпредложения и накопительные скидки для наших пациентов хотите узнать подробнее об условиях акц"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Москвина, д. 4"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «ЭверестДент» на Одоевского",
+      "clinic_slug": "stomatologiya-everestdent-na-odoevskogo-caa7fa1888",
+      "site_url": "https://everestdent.by/",
+      "site_host": "everestdent.by",
+      "address": "Минск, ул. Одоевского, д. 101А",
+      "doctors_count": 2,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://everestdent.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "116 tiktok instagram одноклассники ваша улыбка всегда на высоте 375 29 623-72-37 info everestdent.by мы на карте в минске расчет стоимости записаться на прием бесплатная онлайн-консультация по снимку сертификат стб 9001-",
+        "регулярно делаем скидки и рекламные акции.",
+        "[promo-page] акции и скидки на стоматологические услуги эверестдент context : https://schema.org graph : type : place id : https://everestdent.by/ place geo : type : geocoordinates latitude : 53.89971074844038 longitude : 27.48452761",
+        "[promo-page] 116 tiktok instagram одноклассники ваша улыбка всегда на высоте 375 29 623-72-37 info everestdent.by мы на карте в минске расчет стоимости записаться на прием бесплатная онлайн-консультация по снимку сертификат стб 9001-",
+        "[promo-page] для иностранных граждан акции и скидки не действуют."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Одоевского, д. 101А"
+      ],
+      "priority_score": 262,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Доктор Фейс»",
+      "clinic_slug": "kosmetologiya-doktor-feys-8c2a1e2734",
+      "site_url": "https://doctorface.by/",
+      "site_host": "doctorface.by",
+      "address": "Минск, ул. Раковская, д. 25/2",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://doctorface.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "htc cl : cl window document navigator html --theme-base-color: 23babf --theme-base-opacity-color: 23babf1a --theme-more-color: 23babf --theme-border-radius:4px --theme-outer-border-radius:4px --theme-button-border-radius",
+        "раковская 25/2 режим работы пн-пт с 9:00 до 21:00 суббота: с 9:00 до 18:00 воскресенье: с 9:00 до 15:00 заказать звонок услуги инъекционная косметология коррекция формы и объема губ препаратами контурная пластика препара",
+        "раковская 25/2 режим работы пн-пт с 9:00 до 21:00 суббота: с 9:00 до 18:00 воскресенье: с 9:00 до 15:00 услуги .cls-1 fill-rule: evenodd услуги инъекционная косметология .cls-1 fill-rule: evenodd инъекционная косметологи",
+        "график работы в праздничные дни 29 декабря 2025 лазерное со2 удаление папиллом и родинок: безопасное решение в минске изменение условий записи к нашим врачам: крук наталия ивановна самая безболезненная лазерная эпиляция ",
+        "[promo-page] комплексы омоложения лица в минске с скидками фотоомоложение лазер плазма function w d var v = w.framecachevars = cache_mode : htmlcache storageblocks : dynamicblocks : d1u6to : d41d8cd98f00 options-block : d41d8cd98f00 "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Раковская, д. 25/2"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Эс-Тет»",
+      "clinic_slug": "kosmetologiya-es-tet-9c2ffff23b",
+      "site_url": "https://s-tetmed.by/",
+      "site_host": "s-tetmed.by",
+      "address": "Минск, ул. Скрыганова, д. 4Б",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://s-tetmed.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "1: n e ud83c uddfa ud83c uddf3 ud83c uddfa u200b ud83c uddf3 && n e ud83c udff4 udb40 udc67 udb40 udc62 udb40 udc65 udb40 udc6e udb40 udc67 udb40 udc7f ud83c udff4 u200b udb40 udc67 u200b udb40 udc62 u200b udb40 udc65 u2",
+        "узнать больше акция января на биоревитализацию&nbsp &nbsp -10 любым препаратом любой зоны узнать больше акция января на&nbsp смас-лифтинг лицо полностью подбородок 600 линий: 1190 руб лицо полностью подбородок 800 линий:",
+        "узнать больше акция января на лазерную эпиляцию комплекс хl - 116 руб подмышки глубокое бикини ноги и руки полностью одна малая зона в подарок узнать больше клиника косметологии в минске s-tet один из лучших специализиро",
+        "подпишитесь на рассылку лучшей клиники косметологии минска и будьте в курсе акций скажи привет своим красоте и здоровью получайте уведомления о наших скидках и специальных предложениях просто оставив адрес электронной по",
+        "[promo-page] акции - s-tet центр красоты и здоровья кожи context : https://schema.org graph : type : webpage id : https://s-tetmed.by/akcii/ url : https://s-tetmed.by/akcii/ name : акции - s-tet центр красоты и здоровья кожи ispartof"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Скрыганова, д. 4Б"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Эстетическая медицина»",
+      "clinic_slug": "kosmetologiya-esteticheskaya-meditsina-d607e15afa",
+      "site_url": "https://filler.by/",
+      "site_host": "filler.by",
+      "address": "Минск, ул. Максима Горецкого, д. 7",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://filler.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "u041e u0442 u0437 u044b u0432 u044b u043a u043b u0438 u0435 u043d u0442 u043e u0432 u043e u0432 u0440 u0430 u0447 u0430 u0445 u0438 u043c u0435 u0434 u0446 u0435 u043d u0442 u0440 u0435 inlanguage : ru-ru ispartof : id :",
+        "подробнее слайд 1 скидка в день рождения подробнее специализируемся на инъекционной медицинской косметологии.",
+        "акции -5 на любые процедуры в день рождения подробнее....",
+        "[promo-page] акции filler.by акции filler.by var mytheme_urls = theme_base_url: https://filler.by/wp-content/themes/spalab/ framework_base_url: https://filler.by/wp-content/themes/spalab/framework/ ajaxurl: https://filler.by/wp-admin",
+        "[promo-page] inlanguage : ru-ru ispartof : id : https: / /filler.by / website breadcrumb : id : https: / /filler.by /promotions / breadcrumblist datepublished : 2019-05-17t13:16:18 03:00 datemodified : 2019-05-31t18:20:21 03:00 type "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Максима Горецкого, д. 7"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Косметология «Sapphire» (Сапфир)",
+      "clinic_slug": "kosmetologiya-sapphire-sapfir-baefdc028c",
+      "site_url": "https://sapphiremed.by/",
+      "site_host": "sapphiremed.by",
+      "address": "Минск, ул. Интернациональная, д. 16",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://sapphiremed.by/akcii.html",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "минск интернациональная 16 адрес клиники заказать обратный звонок 375 44 701-31-31 375 44 701-31-31 а1 о нас услуги лазерная эпиляция мужская лазерная эпиляция мужская лазерная эпиляция классическое бикини мужская лазерн",
+        "[promo-page] акции - sapphiremed.by window.datalayer = window.datalayer function gtag datalayer.push arguments gtag js new date gtag config g-2962bl9bsz function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 ",
+        "[promo-page] минск интернациональная 16 адрес клиники заказать обратный звонок 375 44 701-31-31 375 44 701-31-31 а1 о нас услуги лазерная эпиляция мужская лазерная эпиляция мужская лазерная эпиляция классическое бикини мужская лазерн"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Интернациональная, д. 16"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Анна Перенна»",
+      "clinic_slug": "stomatologiya-anna-perenna-cccefe59b9",
+      "site_url": "https://anna-perenna.by/",
+      "site_host": "anna-perenna.by",
+      "address": "Минск, просп. Машерова д. 17/4",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://anna-perenna.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "n.callmethod.apply n arguments :n.queue.push arguments if f._fbq f._fbq=n n.push=n n.loaded= 0 n.version= 2.0 n.queue= t=b.createelement e t.async= 0 t.src=v s=b.getelementsbytagname e 0 s.parentnode.insertbefore t s win",
+        "заголовок &times наши услуги анна перенна стоматологический центр консультация от 22 руб 30 мин осмотр и рекомендации время 30 мин выдается заключение врач любой .fresco-area::before display: none important стоматолог-те",
+        "прайс-лист открыть прайс-лист акции и предложения керамические виниры -30 850 руб вместо 1250 руб проф.",
+        "услуги консультация гигиена пломбирование имплантация детская виниры коронки лечение каналов протезирование хирургия информация о нас вопрос-ответ прайс-лист акции контакты 375 44 715-15-00 375 17 286-30-17 info anna-per",
+        "[promo-page] акции семейная стоматология context : https: / /schema.org graph : type : breadcrumblist id : https: / /anna-perenna.by /akcii / breadcrumblist itemlistelement : type : listitem id : https: / /anna-perenna.by listitem po"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Машерова д. 17/4"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Весоль»",
+      "clinic_slug": "stomatologiya-vesol-e7cb77ecf3",
+      "site_url": "https://vesol.by/",
+      "site_host": "vesol.by",
+      "address": "Минск, ул. Бельского, д. 14",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://vesol.by/akcii.html",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "бельского 14 будни 8:00 - 21:00 суббота 8:00 - 16:00 воскресенье - выходной vesol.st-2020 yandex.by перезвоните мне меню о нас вакансии корпоративным клиентам оборудование сертификаты лицензия статьи галерея услуги импла",
+        "главный врач стоматологического центра весоль стаж более 25 лет мехович ефрем иванович специализация ведущий врач стоматолог-ортопед 1-ой квалификационной категории стаж с 2012 года помогаем восстановить зубы иностранцам",
+        "консультация cо скидкой 30 с 23 февраля 12 13 14 проводится акция 15 10 и 5 скидки на терапию и профгигиену имплантация зубов со скидкой cкидка 20 ко дню рождения на профессиональную чистку и гигиену полости рта как грам",
+        "минск проспект независимости 87а унп 100854643 лицензия политика конфиденциальности публичный договор о нас цены врачи акции отзывы для иностранцев работы контакты имплантация зубов протезирование зубов эстетическая стом",
+        "[promo-page] акции function w d s l i w l =w l w l .push gtm.start : new date .gettime event: gtm.js var f=d.getelementsbytagname s 0 j=d.createelement s dl=l = datalayer ?"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Бельского, д. 14"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    },
+    {
+      "clinic_name": "Стоматология «Дентистри»",
+      "clinic_slug": "stomatologiya-dentistri-99f129fa1d",
+      "site_url": "https://dentistry.by/",
+      "site_host": "dentistry.by",
+      "address": "Минск, ул. Матусевича, д. 56",
+      "doctors_count": 1,
+      "current_status": "no_source_match",
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://dentistry.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "[promo-page] form.antibot :not .antibot-message display: none important context : https://schema.org type : breadcrumblist itemlistelement : type : listitem position : 1 name : главная item : https://dentistry.by/ type : listitem pos",
+        "[promo-page] матусевича 56 09:00-21:00 пн-сб 375 29 252-57-62 главная акции клиники акции клиники 375 29 252-57-62 г."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Матусевича, д. 56"
+      ],
+      "priority_score": 261,
+      "recommendation": "add_source"
+    }
+  ],
+  "review_existing": [
+    {
+      "clinic_name": "Медицинский центр «Нордин» на Сурганова",
+      "clinic_slug": "meditsinskiy-tsentr-nordin-na-surganova-d99b94beb4",
+      "site_url": "https://nordin.by/",
+      "site_host": "nordin.by",
+      "address": "Минск, ул. Сурганова, д. 47Б",
+      "doctors_count": 232,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "nordin"
+      ],
+      "promo_sync_sources": [
+        "nordin"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://nordin.by/shares/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "вск: 8.00-21.00 колл-центр: пн-пт: 07.00-22.00 сб-вс: 08.00-21.00 мрт - круглосуточно хирургический стационар записаться на прием контактные телефоны: режим работы: операционное отделение: пн-вс: 09.00-21.00 заказать зво",
+        "ударно-волновая терапия увт эффективный подход в лечении хронических заболеваний опорно-двигательного аппарата подробнее тест векслера: диагностика интеллектуального развития детей оцените интеллектуальную сферу ребенка ",
+        "новости и акции центра новости 20 мар 2026 счастье женщины начинается с заботы о здоровье: визит депутата натальи сергеевны дергач в нордин акции и скидки 05 мар 2026 акция в нордине : при проверке зрения диагностика син",
+        "читать новости смотреть акции youtube-поликлиника смотреть все мрт - безопасная экспертная диагностика в нордине 05:05 увеличение губ гиалуроновой кислотой 05:04 головная боль: виды и причины 06:07 смотреть все фитнес-це",
+        "[promo-page] все акции медицинского центра нордин margin:0 padding:0 font:inherit :after :before box-sizing:border-box will-change:all aside footer header nav section display:block body html -webkit-text-size-adjust:100 html -ms-text"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Сурганова, д. 47Б",
+        "Минск, ул. Бехтерева, 7",
+        "Минск, ул. Бехтерева, д. 7"
+      ],
+      "priority_score": 472,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Центр здорового сна»",
+      "clinic_slug": "meditsinskiy-tsentr-tsentr-zdorovogo-sna-107ec1d51f",
+      "site_url": "https://centrsna.by/",
+      "site_host": "centrsna.by",
+      "address": "Минск, просп. Независимости, д. 72а",
+      "doctors_count": 87,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "centrsna"
+      ],
+      "promo_sync_sources": [
+        "centrsna"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://centrsna.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/centrsnaby social_facebook : https://www.facebook.com/centrsnaby/ social_twitter : social_youtube ",
+        "9.00-18.00 запись онлайн поиск по сайту услуги аллергология консультация аллерголога консультация детского аллерголога аллергия на животных аллергия на холод аллергия на пыльцу поллиноз пищевая аллергия андрология консул",
+        "9:00-18:00 info centrsna.by записаться на прием записаться на прием услуги назад услуги аллергология назад аллергология консультация аллерголога консультация детского аллерголога аллергия на животных аллергия на холод ал",
+        "станция метро академия наук info centrsna.by facebook вконтакте instagram youtube одноклассники скидка 10 на услуги физиотерапии ударно-волновая терапия увт высокоинтенсивное магнитное лечение и лазерная терапия по досту",
+        "[promo-page] новости и акции - центр здорового сна function w d s l i w l =w l w l .push gtm.start : new date .gettime event: gtm.js var f=d.getelementsbytagname s 0 j=d.createelement s dl=l = datalayer ?"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Независимости, д. 72а",
+        "Минск"
+      ],
+      "priority_score": 327,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Томография",
+      "clinic_slug": "tomografiya-b4eff422d2",
+      "site_url": "https://mrt.by",
+      "site_host": "mrt.by",
+      "address": "Минск",
+      "doctors_count": 86,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "mrtby"
+      ],
+      "promo_sync_sources": [
+        "mrtby"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://mrt.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "братьев райт 1 получить результаты заказать звонок написать в telegram написать в viber услуги для взрослых услуги для детей лечение боли диагностика акции получить результаты кабинет услуги и цены мрт узи неврология орт",
+        "братьев райт 1 заказать звонок написать в telegram написать в viber записаться программа лояльности для детей увлекательная детская книга &quot приключение котенка томо в медицинском центре&quot подробнее мрт ночью дешев",
+        "этот прибор включает в себя все необходимые функции для комфортной работы.&nbsp подробнее весь раздел блог / новости все акции новости наш опыт / статьи политика в отношении обработки cookie утверждено приказ директора о",
+        "приглашаем на семинар: клиническая и инструментальная диагностика позиционного головокружения документы мы ценим время наших пациентов сенсация &quot томография&quot снижает цены на консультации врачей уже сегодня пригла",
+        "[promo-page] акции мц томография 375 29 395 32 32 375 33 395 32 32 375 17 395 32 32 по вопросам сотрудничества: 375 29 259 72 43 ул."
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Революционная, д. 13",
+        "Минск, ул. Жилуновича, д. 11А"
+      ],
+      "priority_score": 326,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Томография» на Революционной",
+      "clinic_slug": "meditsinskiy-tsentr-tomografiya-na-revolyutsionnoy-1f781dc923",
+      "site_url": "https://mrt.by/",
+      "site_host": "mrt.by",
+      "address": "Минск, ул. Революционная, д. 13",
+      "doctors_count": 67,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "mrtby"
+      ],
+      "promo_sync_sources": [
+        "mrtby"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://mrt.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "братьев райт 1 получить результаты заказать звонок написать в telegram написать в viber услуги для взрослых услуги для детей лечение боли диагностика акции получить результаты кабинет услуги и цены мрт узи неврология орт",
+        "братьев райт 1 заказать звонок написать в telegram написать в viber записаться программа лояльности для детей увлекательная детская книга &quot приключение котенка томо в медицинском центре&quot подробнее мрт ночью дешев",
+        "этот прибор включает в себя все необходимые функции для комфортной работы.&nbsp подробнее весь раздел блог / новости все акции новости наш опыт / статьи политика в отношении обработки cookie утверждено приказ директора о",
+        "приглашаем на семинар: клиническая и инструментальная диагностика позиционного головокружения документы мы ценим время наших пациентов сенсация &quot томография&quot снижает цены на консультации врачей уже сегодня пригла",
+        "[promo-page] акции мц томография 375 29 395 32 32 375 33 395 32 32 375 17 395 32 32 по вопросам сотрудничества: 375 29 259 72 43 ул."
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Революционная, д. 13",
+        "Минск, ул. Жилуновича, д. 11А"
+      ],
+      "priority_score": 307,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Центр здорового сна",
+      "clinic_slug": "tsentr-zdorovogo-sna-6757dfe24f",
+      "site_url": "https://centrsna.by",
+      "site_host": "centrsna.by",
+      "address": "Минск",
+      "doctors_count": 51,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "centrsna"
+      ],
+      "promo_sync_sources": [
+        "centrsna"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://centrsna.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/centrsnaby social_facebook : https://www.facebook.com/centrsnaby/ social_twitter : social_youtube ",
+        "9.00-18.00 запись онлайн поиск по сайту услуги аллергология консультация аллерголога консультация детского аллерголога аллергия на животных аллергия на холод аллергия на пыльцу поллиноз пищевая аллергия андрология консул",
+        "9:00-18:00 info centrsna.by записаться на прием записаться на прием услуги назад услуги аллергология назад аллергология консультация аллерголога консультация детского аллерголога аллергия на животных аллергия на холод ал",
+        "станция метро академия наук info centrsna.by facebook вконтакте instagram youtube одноклассники скидка 10 на услуги физиотерапии ударно-волновая терапия увт высокоинтенсивное магнитное лечение и лазерная терапия по досту",
+        "[promo-page] новости и акции - центр здорового сна function w d s l i w l =w l w l .push gtm.start : new date .gettime event: gtm.js var f=d.getelementsbytagname s 0 j=d.createelement s dl=l = datalayer ?"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Независимости, д. 72а",
+        "Минск"
+      ],
+      "priority_score": 291,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Санте»",
+      "clinic_slug": "meditsinskiy-tsentr-sante-d39a004a97",
+      "site_url": "https://sante.by/",
+      "site_host": "sante.by",
+      "address": "Минск, ул. Тростенецкая, д. 3",
+      "doctors_count": 49,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "sante"
+      ],
+      "promo_sync_sources": [
+        "sante"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://sante.by/promotions",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "медицинский центр в минске sante частный многопрофильный медицинский центр в городе минск nprogress pointer-events:none nprogress .bar position:fixed z-index:1031 top:0 left:0 width:100 height:3px border-radius:5px backg",
+        "гематология гематология гематология заболевания крови генетические отклонения по невынашиванию беременности маммология маммология маммология лечение мастопатии терапия терапия терапия консультация терапевта медицинское о",
+        "гематология заболевания крови генетические отклонения по невынашиванию беременности маммология лечение мастопатии терапия консультация терапевта медицинское обследование в минске педиатрия педиатр-гастроэнтеролог педиатр",
+        "настроить принять отклонить телефоны 375 29 342-82-82 375 33 342-82-82 375 17 342-82-82 время работы пн - пт : c 8:00 до 21:00 сб : c 8:00 до 17:00 вс : c 9:00 до 16:00 карта сайта о центре медицинский туризм в республик",
+        "[promo-page] акции в медицинском центре sante nprogress pointer-events:none nprogress .bar position:fixed z-index:1031 top:0 left:0 width:100 height:3px border-radius:5px background:var --color-decor nprogress .peg position:absolute "
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Тростенецкая, д. 3"
+      ],
+      "priority_score": 289,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «МедАвеню» на Грибоедова",
+      "clinic_slug": "meditsinskiy-tsentr-medavenyu-na-griboedova-48c21955a5",
+      "site_url": "https://medavenu.by/",
+      "site_host": "medavenu.by",
+      "address": "Минск, ул. Грибоедова, д. 11",
+      "doctors_count": 39,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "medavenu"
+      ],
+      "promo_sync_sources": [
+        "medavenu"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://medavenu.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "богушевича 5 мин онлайн-запись -- онлайн-запись написать директору все услуги цены на услуги врачи о нас оборудование центра правовая информация реестр сертификатов заказать выписку пресс-центр новости фотогалерея ваканс",
+        ".main_slider margin:0 auto max-width:1920px .slide-back-0 background-image:url https://medavenu.by/wp-content/uploads/2023/05/kornov_akcziya.jpeg important background-position:right background-repeat:no-repeat background",
+        "оставить заявку .form_baner-cont padding-top:80px padding-bottom:80px background:white important border-bottom: 1px solid e0e0e0 .form_baner display:flex justify-content:space-between .form_block__left-top display:flex m",
+        "стаж более 30 лет записаться задать вопрос 0 малолеткина ольга леонидовна рейтинг врач акушер-гинеколог высшей квалификационной категории эксперт государственного комитета по науке и технологиям стаж с 2004 года кандидат",
+        "[promo-page] акции и скидки в медицинском центре медавеню function readcookie name const match = document.cookie.match new regexp name = return match ?"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Грибоедова, д. 11",
+        "Минск, ул. Клары Цеткин, д. 24"
+      ],
+      "priority_score": 279,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Томография» на Жилуновича",
+      "clinic_slug": "meditsinskiy-tsentr-tomografiya-na-zhilunovicha-e0c6822ba8",
+      "site_url": "https://mrt.by/",
+      "site_host": "mrt.by",
+      "address": "Минск, ул. Жилуновича, д. 11А",
+      "doctors_count": 38,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "mrtby"
+      ],
+      "promo_sync_sources": [
+        "mrtby"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://mrt.by/akcii",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "братьев райт 1 получить результаты заказать звонок написать в telegram написать в viber услуги для взрослых услуги для детей лечение боли диагностика акции получить результаты кабинет услуги и цены мрт узи неврология орт",
+        "братьев райт 1 заказать звонок написать в telegram написать в viber записаться программа лояльности для детей увлекательная детская книга &quot приключение котенка томо в медицинском центре&quot подробнее мрт ночью дешев",
+        "этот прибор включает в себя все необходимые функции для комфортной работы.&nbsp подробнее весь раздел блог / новости все акции новости наш опыт / статьи политика в отношении обработки cookie утверждено приказ директора о",
+        "приглашаем на семинар: клиническая и инструментальная диагностика позиционного головокружения документы мы ценим время наших пациентов сенсация &quot томография&quot снижает цены на консультации врачей уже сегодня пригла",
+        "[promo-page] акции мц томография 375 29 395 32 32 375 33 395 32 32 375 17 395 32 32 по вопросам сотрудничества: 375 29 259 72 43 ул."
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Революционная, д. 13",
+        "Минск, ул. Жилуновича, д. 11А"
+      ],
+      "priority_score": 278,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «МедАвеню» на Клары Цеткин",
+      "clinic_slug": "meditsinskiy-tsentr-medavenyu-na-klary-tsetkin-71ceb34af9",
+      "site_url": "https://medavenu.by/",
+      "site_host": "medavenu.by",
+      "address": "Минск, ул. Клары Цеткин, д. 24",
+      "doctors_count": 30,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "medavenu"
+      ],
+      "promo_sync_sources": [
+        "medavenu"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://medavenu.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "богушевича 5 мин онлайн-запись -- онлайн-запись написать директору все услуги цены на услуги врачи о нас оборудование центра правовая информация реестр сертификатов заказать выписку пресс-центр новости фотогалерея ваканс",
+        ".main_slider margin:0 auto max-width:1920px .slide-back-0 background-image:url https://medavenu.by/wp-content/uploads/2023/05/kornov_akcziya.jpeg important background-position:right background-repeat:no-repeat background",
+        "оставить заявку .form_baner-cont padding-top:80px padding-bottom:80px background:white important border-bottom: 1px solid e0e0e0 .form_baner display:flex justify-content:space-between .form_block__left-top display:flex m",
+        "стаж более 30 лет записаться задать вопрос 0 малолеткина ольга леонидовна рейтинг врач акушер-гинеколог высшей квалификационной категории эксперт государственного комитета по науке и технологиям стаж с 2004 года кандидат",
+        "[promo-page] акции и скидки в медицинском центре медавеню function readcookie name const match = document.cookie.match new regexp name = return match ?"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Грибоедова, д. 11",
+        "Минск, ул. Клары Цеткин, д. 24"
+      ],
+      "priority_score": 270,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Супрамед»",
+      "clinic_slug": "meditsinskiy-tsentr-supramed-8ffada189f",
+      "site_url": "https://supramed.by/",
+      "site_host": "supramed.by",
+      "address": "Минск, просп. Жукова, д. 44",
+      "doctors_count": 29,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "supramed"
+      ],
+      "promo_sync_sources": [
+        "supramed"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://supramed.by/sales/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "минск проспект жукова 44 новости акции отзывы блог версия для слабовидящих ru eng -- 7344 375 17 388-01-10 многоканальный 375 29 699-31-31 мобильный а1 375 33 699-31-31 мобильный мтс 375 25 699-31-31 мобильный life viber",
+        "все врачи врачебный стаж с 2004 года лапицкая наталья георгиевна первая категория рефлексотерапевт физиотерапевт записаться на прием врачебный стаж с 2004 года затолокина екатерина андреевна высшая категория физиотерапев",
+        "[promo-page] акции медицинского центра супрамед function w d var v = w.framecachevars = cache_mode : htmlcache storageblocks : dynamicblocks : lkgdqn : ffca511d11cf nhc5wl : f20671220d1d xevopk : 25c987a3c4cf qy5hv2 : f20671220d1d g8",
+        "[promo-page] минск проспект жукова 44 новости акции отзывы блог версия для слабовидящих ru eng -- 7344 375 17 388-01-10 многоканальный 375 29 699-31-31 мобильный а1 375 33 699-31-31 мобильный мтс 375 25 699-31-31 мобильный life viber",
+        "[promo-page] минск проспект жукова 44 375 17 388-01-10 многоканальный 375 29 699-31-31 мобильный а1 375 33 699-31-31 мобильный мтс 375 25 699-31-31 мобильный life заказать звонок главная акции акции выгодные спецпредложения и накопит"
+      ],
+      "minsk_evidence": [
+        "Минск, просп. Жукова, д. 44",
+        "Минск, просп. Жукова, 44"
+      ],
+      "priority_score": 269,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «E-clinic» (Е-клиник) на Комсомольской",
+      "clinic_slug": "meditsinskiy-tsentr-e-clinic-e-klinik-na-komsomolskoy-d36e3571a1",
+      "site_url": "https://e-clinic.by/",
+      "site_host": "e-clinic.by",
+      "address": "Минск, ул. Комсомольская, д. 12",
+      "doctors_count": 24,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "eclinic"
+      ],
+      "promo_sync_sources": [
+        "eclinic"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://e-clinic.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : social_facebook : https://www.facebook.com/profile.php?id=100094347431238&locale=ru_ru social_twitter : social_yo",
+        "9:00-18:00 .cls-1 fill: fff fill-rule: evenodd услуги косметология аппаратная консультация косметолога smas-лифтинг лица smas-лифтинг тела ipl-терапия фотолечение фотоомоложение микроигольчатый rf-лифтинг morpheus 8 микр",
+        "обратитесь за помощью подробнее консультация косметика-эстетиста бесплатно при покупке от 1 косметического продукта из нашего ассортимента подробнее лифтинг нитями aesthefill со скидкой 10 на работу косметолога aesthefil",
+        "подробнее rf-лифтинг со скидкой -10 на работу врача-косметолога на 2 и более зон.",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : social_facebook : https://www.facebook.com/profile.php?id=100094347431238&locale=ru_ru social_twitter : social_yo"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Комсомольская, д. 12",
+        "Минск, ул. Ленина, д. 5"
+      ],
+      "priority_score": 264,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Лодэ» на проспекте Независимости 58а",
+      "clinic_slug": "meditsinskiy-tsentr-lode-na-prospekte-nezavisimosti-58a-effbf82986",
+      "site_url": "https://www.lode.by/",
+      "site_host": "lode.by",
+      "address": "Минск, проспект Независимости, д. 58А",
+      "doctors_count": 22,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lode"
+      ],
+      "promo_sync_sources": [
+        "lode"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.lode.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "lode function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 new date for var j = 0 j font-face font-family:roboto src:url /local/assets/fonts/roboto/roboto.ttf format truetype font-weight:300 fon",
+        "false speed: 1000 spacebetween: 0 pagination: el: slider-main-pagination type: bullets clickable:true navigation: false сеть медицинских центров лодэ - 33 года создаем качественную медицину -- популярные услуги гинеколог",
+        "от 2149.28 byn подробнее речевая диагностика плюс программа для детей с речевыми нарушениями в возрасте от 3 лет и старше 516.41 byn подробнее if top.bx.ajax.history.bhashcollision top.bx.ajax.history.checkredirectfinish",
+        "скидка до 15 до 28.02.2026 закончилась cпециальные условия на программы эко и отложенного материнства до 31.03.2026 -- подарочные сертификаты купить наша команда -- наши врачи все врачи все направления акушерка консульта",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5qfc6rj акции if window.bx window.bx= if window.bx.message window.bx.message="
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, проспект Независимости, д. 58А",
+        "Минск, ул. Гикало, д. 1"
+      ],
+      "priority_score": 262,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Маяк Здоровья»",
+      "clinic_slug": "meditsinskiy-tsentr-mayak-zdorovya-2d75b14478",
+      "site_url": "https://lighthouse.by/",
+      "site_host": "lighthouse.by",
+      "address": "Минск, ул. Кирилла Туровского, д. 14",
+      "doctors_count": 22,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lighthouse"
+      ],
+      "promo_sync_sources": [
+        "lighthouse"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://lighthouse.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "u0417 u0430 u043f u0438 u0441 u0430 u0442 u044c u0441 u044f u043d u0430 u0438 u0441 u0441 u043b u0435 u0434 u043e u0432 u0430 u043d u0438 u0435 u260e 375172150289 inlanguage : ru-ru potentialaction : type : readaction ta",
+        "кирилла туровского 14 пн-пт: 8-20.30&nbsp сб: 8-18&nbsp вс: 9-16 375 17 215 02 89 375 29 652-93-27 найти 7289 все операторы онлайн запись закрыть на главную о нас отзывы документы вакансии услуги эндокринология гинеколог",
+        "там много полезного детский эндокринолог: диагностика и лечение гормональных нарушений у детей омоложение интимной зоны ultra vera: hifu-технология для здоровья и уверенности ключевое правило для здорового сердца и сосуд",
+        "туровского 14 7289 a1 мтс life 375 17 215-02-89 375 29 28-226-28 375 29 652-93-27 375 29 652-93-27 375 29 652-93-27 пн-пт 08:00 - 20:30 сб: 08:00 - 18:00 вс: 09:00 - 16:00 info lighthouse.by lighthouse_med положение о ск",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-w3h4n6s9 акции archive - маяк здоровья context : https://schema.org graph : t"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. К. Туровского, 14",
+        "Минск, ул. Кирилла Туровского, д. 14"
+      ],
+      "priority_score": 262,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «НеоМедикал»",
+      "clinic_slug": "meditsinskiy-tsentr-neomedikal-55bd3a34bb",
+      "site_url": "https://neomedical.by/",
+      "site_host": "neomedical.by",
+      "address": "Минск, ул. Романовская Слобода, д. 26",
+      "doctors_count": 20,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "neomedical"
+      ],
+      "promo_sync_sources": [
+        "neomedical"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://neomedical.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "романовская слобода 26 7231 пн-вс: с 8.00 до 21.00 меню меню о нас вакансии галерея оставить отзыв вопрос-ответ услуги гинекология биопсия шейки матки консультация гинеколога радиочастотная терапия эстетическая гинеколог",
+        "романовская слобода 26 7231 08:00 21:00 ежедневно о нас услуги цены оборудование новости акции врачи контакты о вакцинации профилактика ори договор оферты представленная информация о стоимости услуг носит исключительно и",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-wncjtfk7 function m e t r i k a m i =m i function m i .a=m i .a .push argumen",
+        "[promo-page] романовская слобода 26 7231 пн-вс: с 8.00 до 21.00 меню меню о нас вакансии галерея оставить отзыв вопрос-ответ услуги гинекология биопсия шейки матки консультация гинеколога радиочастотная терапия эстетическая гинеколог",
+        "[promo-page] подробнее 17 апреля 2023 акция &quot плазмолифтинг 4 1&quot акция действует с 17 апреля 2023 года по 17 мая 2023 года."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Романовская Слобода, д. 26",
+        "Минск, ул. Романовская Слобода, 26"
+      ],
+      "priority_score": 260,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Кравира» на проспекте Победителей",
+      "clinic_slug": "meditsinskiy-tsentr-kravira-na-prospekte-pobediteley-9a5dfffb57",
+      "site_url": "https://kravira.by/",
+      "site_host": "kravira.by",
+      "address": "Минск, проспект Победителей, д. 45",
+      "doctors_count": 19,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "kravira"
+      ],
+      "promo_sync_sources": [
+        "kravira"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://kravira.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w",
+        "сдача анализов общий анализ мочи коагулограмма биохимические исследования иммунологические исследования гормональное обследование иммуногистохимия мазок на флору анализ квант 21 эстетическая хирургия лазерная хирургия он",
+        "&quot паспорт здоровья для женщин&quot &quot паспорт здоровья для мужчин&quot сheck-up гинекологический программа снижение веса ежегодная справка школьника выдача справки в школу check-up &quot урологический&quot договор",
+        "&bull &quot паспорт здоровья для женщин&quot &bull &quot паспорт здоровья для мужчин&quot &bull сheck-up гинекологический &bull программа снижение веса &bull ежегодная справка школьника выдача справки в школу &bull check",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w"
+      ],
+      "minsk_evidence": [
+        "Минск, проспект Победителей, д. 45",
+        "Минск, ул. Захарова, д. 50",
+        "Минск, ул. Скрипникова, д. 11Б"
+      ],
+      "priority_score": 259,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Неомедикал",
+      "clinic_slug": "neomedikal-704644a957",
+      "site_url": "https://neomedical.by",
+      "site_host": "neomedical.by",
+      "address": "Минск, ул. Романовская Слобода, 26",
+      "doctors_count": 15,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "neomedical"
+      ],
+      "promo_sync_sources": [
+        "neomedical"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://neomedical.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "романовская слобода 26 7231 пн-вс: с 8.00 до 21.00 меню меню о нас вакансии галерея оставить отзыв вопрос-ответ услуги гинекология биопсия шейки матки консультация гинеколога радиочастотная терапия эстетическая гинеколог",
+        "романовская слобода 26 7231 08:00 21:00 ежедневно о нас услуги цены оборудование новости акции врачи контакты о вакцинации профилактика ори договор оферты представленная информация о стоимости услуг носит исключительно и",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-wncjtfk7 function m e t r i k a m i =m i function m i .a=m i .a .push argumen",
+        "[promo-page] романовская слобода 26 7231 пн-вс: с 8.00 до 21.00 меню меню о нас вакансии галерея оставить отзыв вопрос-ответ услуги гинекология биопсия шейки матки консультация гинеколога радиочастотная терапия эстетическая гинеколог",
+        "[promo-page] подробнее 17 апреля 2023 акция &quot плазмолифтинг 4 1&quot акция действует с 17 апреля 2023 года по 17 мая 2023 года."
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Романовская Слобода, д. 26",
+        "Минск, ул. Романовская Слобода, 26"
+      ],
+      "priority_score": 255,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "SMART MEDICAL",
+      "clinic_slug": "smart-medical-f86239703a",
+      "site_url": "https://smartmedical.by",
+      "site_host": "smartmedical.by",
+      "address": "Минск",
+      "doctors_count": 13,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "smartmedical"
+      ],
+      "promo_sync_sources": [
+        "smartmedical"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://smartmedical.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/club201765444 social_facebook : https://www.facebook.com/smartmedicalby-105671074827291 social_twi",
+        "удаление полипов полипэктомия раздельное диагностическое выскабливание кульдоцентез детская гинекология узи органов малого таза для девочек подростковый гинеколог детский гинеколог детская урология лечение варикоцеле при",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-w4s9b5r полезные новости акции if window.bx window.bx= if window.bx.message w",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/club201765444 social_facebook : https://www.facebook.com/smartmedicalby-105671074827291 social_twi",
+        "[promo-page] удаление полипов полипэктомия раздельное диагностическое выскабливание кульдоцентез детская гинекология узи органов малого таза для девочек подростковый гинеколог детский гинеколог детская урология лечение варикоцеле при"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, просп. Победителей, д. 119"
+      ],
+      "priority_score": 253,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «МедАвеню» на Заславской",
+      "clinic_slug": "meditsinskiy-tsentr-medavenyu-na-zaslavskoy-5521c25749",
+      "site_url": "https://medavenu.by/",
+      "site_host": "medavenu.by",
+      "address": "Минск, ул. Заславская, д. 23А",
+      "doctors_count": 12,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "medavenu"
+      ],
+      "promo_sync_sources": [
+        "medavenu"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://medavenu.by/akcii/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "богушевича 5 мин онлайн-запись -- онлайн-запись написать директору все услуги цены на услуги врачи о нас оборудование центра правовая информация реестр сертификатов заказать выписку пресс-центр новости фотогалерея ваканс",
+        ".main_slider margin:0 auto max-width:1920px .slide-back-0 background-image:url https://medavenu.by/wp-content/uploads/2023/05/kornov_akcziya.jpeg important background-position:right background-repeat:no-repeat background",
+        "оставить заявку .form_baner-cont padding-top:80px padding-bottom:80px background:white important border-bottom: 1px solid e0e0e0 .form_baner display:flex justify-content:space-between .form_block__left-top display:flex m",
+        "стаж более 30 лет записаться задать вопрос 0 малолеткина ольга леонидовна рейтинг врач акушер-гинеколог высшей квалификационной категории эксперт государственного комитета по науке и технологиям стаж с 2004 года кандидат",
+        "[promo-page] акции и скидки в медицинском центре медавеню function readcookie name const match = document.cookie.match new regexp name = return match ?"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Грибоедова, д. 11",
+        "Минск, ул. Клары Цеткин, д. 24"
+      ],
+      "priority_score": 252,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «E-clinic» (Е-клиник) на Ленина",
+      "clinic_slug": "meditsinskiy-tsentr-e-clinic-e-klinik-na-lenina-1d4185f265",
+      "site_url": "https://e-clinic.by/",
+      "site_host": "e-clinic.by",
+      "address": "Минск, ул. Ленина, д. 5",
+      "doctors_count": 12,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "eclinic"
+      ],
+      "promo_sync_sources": [
+        "eclinic"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://e-clinic.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : social_facebook : https://www.facebook.com/profile.php?id=100094347431238&locale=ru_ru social_twitter : social_yo",
+        "9:00-18:00 .cls-1 fill: fff fill-rule: evenodd услуги косметология аппаратная консультация косметолога smas-лифтинг лица smas-лифтинг тела ipl-терапия фотолечение фотоомоложение микроигольчатый rf-лифтинг morpheus 8 микр",
+        "обратитесь за помощью подробнее консультация косметика-эстетиста бесплатно при покупке от 1 косметического продукта из нашего ассортимента подробнее лифтинг нитями aesthefill со скидкой 10 на работу косметолога aesthefil",
+        "подробнее rf-лифтинг со скидкой -10 на работу врача-косметолога на 2 и более зон.",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : social_facebook : https://www.facebook.com/profile.php?id=100094347431238&locale=ru_ru social_twitter : social_yo"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, ул. Комсомольская, д. 12",
+        "Минск, ул. Ленина, д. 5"
+      ],
+      "priority_score": 252,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Кравира» на Захарова",
+      "clinic_slug": "meditsinskiy-tsentr-kravira-na-zaharova-9a0c079e92",
+      "site_url": "https://kravira.by/",
+      "site_host": "kravira.by",
+      "address": "Минск, ул. Захарова, д. 50",
+      "doctors_count": 11,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "kravira"
+      ],
+      "promo_sync_sources": [
+        "kravira"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://kravira.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w",
+        "сдача анализов общий анализ мочи коагулограмма биохимические исследования иммунологические исследования гормональное обследование иммуногистохимия мазок на флору анализ квант 21 эстетическая хирургия лазерная хирургия он",
+        "&quot паспорт здоровья для женщин&quot &quot паспорт здоровья для мужчин&quot сheck-up гинекологический программа снижение веса ежегодная справка школьника выдача справки в школу check-up &quot урологический&quot договор",
+        "&bull &quot паспорт здоровья для женщин&quot &bull &quot паспорт здоровья для мужчин&quot &bull сheck-up гинекологический &bull программа снижение веса &bull ежегодная справка школьника выдача справки в школу &bull check",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w"
+      ],
+      "minsk_evidence": [
+        "Минск, проспект Победителей, д. 45",
+        "Минск, ул. Захарова, д. 50",
+        "Минск, ул. Скрипникова, д. 11Б"
+      ],
+      "priority_score": 251,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Лодэ» на Гикало",
+      "clinic_slug": "meditsinskiy-tsentr-lode-na-gikalo-68949c6d92",
+      "site_url": "https://www.lode.by/",
+      "site_host": "lode.by",
+      "address": "Минск, ул. Гикало, д. 1",
+      "doctors_count": 9,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lode"
+      ],
+      "promo_sync_sources": [
+        "lode"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.lode.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "lode function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 new date for var j = 0 j font-face font-family:roboto src:url /local/assets/fonts/roboto/roboto.ttf format truetype font-weight:300 fon",
+        "false speed: 1000 spacebetween: 0 pagination: el: slider-main-pagination type: bullets clickable:true navigation: false сеть медицинских центров лодэ - 33 года создаем качественную медицину -- популярные услуги гинеколог",
+        "от 2149.28 byn подробнее речевая диагностика плюс программа для детей с речевыми нарушениями в возрасте от 3 лет и старше 516.41 byn подробнее if top.bx.ajax.history.bhashcollision top.bx.ajax.history.checkredirectfinish",
+        "скидка до 15 до 28.02.2026 закончилась cпециальные условия на программы эко и отложенного материнства до 31.03.2026 -- подарочные сертификаты купить наша команда -- наши врачи все врачи все направления акушерка консульта",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5qfc6rj акции if window.bx window.bx= if window.bx.message window.bx.message="
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, проспект Независимости, д. 58А",
+        "Минск, ул. Гикало, д. 1"
+      ],
+      "priority_score": 249,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Смарт Медикал»",
+      "clinic_slug": "meditsinskiy-tsentr-smart-medikal-ab90883bc0",
+      "site_url": "https://smartmedical.by/",
+      "site_host": "smartmedical.by",
+      "address": "Минск, просп. Победителей, д. 119",
+      "doctors_count": 8,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "smartmedical"
+      ],
+      "promo_sync_sources": [
+        "smartmedical"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://smartmedical.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/club201765444 social_facebook : https://www.facebook.com/smartmedicalby-105671074827291 social_twi",
+        "удаление полипов полипэктомия раздельное диагностическое выскабливание кульдоцентез детская гинекология узи органов малого таза для девочек подростковый гинеколог детский гинеколог детская урология лечение варикоцеле при",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-w4s9b5r полезные новости акции if window.bx window.bx= if window.bx.message w",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/club201765444 social_facebook : https://www.facebook.com/smartmedicalby-105671074827291 social_twi",
+        "[promo-page] удаление полипов полипэктомия раздельное диагностическое выскабливание кульдоцентез детская гинекология узи органов малого таза для девочек подростковый гинеколог детский гинеколог детская урология лечение варикоцеле при"
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, просп. Победителей, д. 119"
+      ],
+      "priority_score": 248,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Лодэ» на Притыцкого",
+      "clinic_slug": "meditsinskiy-tsentr-lode-na-pritytskogo-f1cdd56a4d",
+      "site_url": "https://www.lode.by/",
+      "site_host": "lode.by",
+      "address": "Минск, ул. Притыцкого, д. 140",
+      "doctors_count": 4,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lode"
+      ],
+      "promo_sync_sources": [
+        "lode"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.lode.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "lode function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 new date for var j = 0 j font-face font-family:roboto src:url /local/assets/fonts/roboto/roboto.ttf format truetype font-weight:300 fon",
+        "false speed: 1000 spacebetween: 0 pagination: el: slider-main-pagination type: bullets clickable:true navigation: false сеть медицинских центров лодэ - 33 года создаем качественную медицину -- популярные услуги гинеколог",
+        "от 2149.28 byn подробнее речевая диагностика плюс программа для детей с речевыми нарушениями в возрасте от 3 лет и старше 516.41 byn подробнее if top.bx.ajax.history.bhashcollision top.bx.ajax.history.checkredirectfinish",
+        "скидка до 15 до 28.02.2026 закончилась cпециальные условия на программы эко и отложенного материнства до 31.03.2026 -- подарочные сертификаты купить наша команда -- наши врачи все врачи все направления акушерка консульта",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5qfc6rj акции if window.bx window.bx= if window.bx.message window.bx.message="
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, проспект Независимости, д. 58А",
+        "Минск, ул. Гикало, д. 1"
+      ],
+      "priority_score": 244,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Стоматология «Лодэ»",
+      "clinic_slug": "stomatologiya-lode-382898b667",
+      "site_url": "https://www.lode.by/",
+      "site_host": "lode.by",
+      "address": "Минск, ул. Сурганова, д. 39",
+      "doctors_count": 4,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lode"
+      ],
+      "promo_sync_sources": [
+        "lode"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.lode.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "lode function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 new date for var j = 0 j font-face font-family:roboto src:url /local/assets/fonts/roboto/roboto.ttf format truetype font-weight:300 fon",
+        "false speed: 1000 spacebetween: 0 pagination: el: slider-main-pagination type: bullets clickable:true navigation: false сеть медицинских центров лодэ - 33 года создаем качественную медицину -- популярные услуги гинеколог",
+        "от 2149.28 byn подробнее речевая диагностика плюс программа для детей с речевыми нарушениями в возрасте от 3 лет и старше 516.41 byn подробнее if top.bx.ajax.history.bhashcollision top.bx.ajax.history.checkredirectfinish",
+        "скидка до 15 до 28.02.2026 закончилась cпециальные условия на программы эко и отложенного материнства до 31.03.2026 -- подарочные сертификаты купить наша команда -- наши врачи все врачи все направления акушерка консульта",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5qfc6rj акции if window.bx window.bx= if window.bx.message window.bx.message="
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, проспект Независимости, д. 58А",
+        "Минск, ул. Гикало, д. 1"
+      ],
+      "priority_score": 244,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Кравира» на Скрипникова",
+      "clinic_slug": "meditsinskiy-tsentr-kravira-na-skripnikova-31f1e239a7",
+      "site_url": "https://kravira.by/",
+      "site_host": "kravira.by",
+      "address": "Минск, ул. Скрипникова, д. 11Б",
+      "doctors_count": 3,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "kravira"
+      ],
+      "promo_sync_sources": [
+        "kravira"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://kravira.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w",
+        "сдача анализов общий анализ мочи коагулограмма биохимические исследования иммунологические исследования гормональное обследование иммуногистохимия мазок на флору анализ квант 21 эстетическая хирургия лазерная хирургия он",
+        "&quot паспорт здоровья для женщин&quot &quot паспорт здоровья для мужчин&quot сheck-up гинекологический программа снижение веса ежегодная справка школьника выдача справки в школу check-up &quot урологический&quot договор",
+        "&bull &quot паспорт здоровья для женщин&quot &bull &quot паспорт здоровья для мужчин&quot &bull сheck-up гинекологический &bull программа снижение веса &bull ежегодная справка школьника выдача справки в школу &bull check",
+        "[promo-page] 0-9 4 0-9 1 2 : 0-9 1 2 validate_file_ext : png jpg jpeg gif doc docx xls xlsx txt pdf odt rtf social_vk : https://vk.com/mc_kravira social_facebook : https://fb.com/kravira.by social_twitter : social_youtube : https://w"
+      ],
+      "minsk_evidence": [
+        "Минск, проспект Победителей, д. 45",
+        "Минск, ул. Захарова, д. 50",
+        "Минск, ул. Скрипникова, д. 11Б"
+      ],
+      "priority_score": 243,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Лодэ» на проспекте Победителей",
+      "clinic_slug": "meditsinskiy-tsentr-lode-na-prospekte-pobediteley-1038b1efd6",
+      "site_url": "https://www.lode.by/",
+      "site_host": "lode.by",
+      "address": "Минск, проспект Победителей, д. 133",
+      "doctors_count": 3,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "lode"
+      ],
+      "promo_sync_sources": [
+        "lode"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://www.lode.by/promotions/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "lode function m e t r i k a m i =m i function m i .a=m i .a .push arguments m i .l=1 new date for var j = 0 j font-face font-family:roboto src:url /local/assets/fonts/roboto/roboto.ttf format truetype font-weight:300 fon",
+        "false speed: 1000 spacebetween: 0 pagination: el: slider-main-pagination type: bullets clickable:true navigation: false сеть медицинских центров лодэ - 33 года создаем качественную медицину -- популярные услуги гинеколог",
+        "от 2149.28 byn подробнее речевая диагностика плюс программа для детей с речевыми нарушениями в возрасте от 3 лет и старше 516.41 byn подробнее if top.bx.ajax.history.bhashcollision top.bx.ajax.history.checkredirectfinish",
+        "скидка до 15 до 28.02.2026 закончилась cпециальные условия на программы эко и отложенного материнства до 31.03.2026 -- подарочные сертификаты купить наша команда -- наши врачи все врачи все направления акушерка консульта",
+        "[promo-page] &l= l: j.async=true j.src= https://www.googletagmanager.com/gtm.js?id= i dl f.parentnode.insertbefore j f window document script datalayer gtm-5qfc6rj акции if window.bx window.bx= if window.bx.message window.bx.message="
+      ],
+      "minsk_evidence": [
+        "Минск",
+        "Минск, проспект Независимости, д. 58А",
+        "Минск, ул. Гикало, д. 1"
+      ],
+      "priority_score": 243,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Нордин» на Бехтерева",
+      "clinic_slug": "meditsinskiy-tsentr-nordin-na-behtereva-9feddc784e",
+      "site_url": "https://nordin.by/",
+      "site_host": "nordin.by",
+      "address": "Минск, ул. Бехтерева, д. 7",
+      "doctors_count": 2,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "nordin"
+      ],
+      "promo_sync_sources": [
+        "nordin"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://nordin.by/shares/",
+      "promo_page_verified": true,
+      "promo_page_kind": "promotions",
+      "promo_evidence": [
+        "вск: 8.00-21.00 колл-центр: пн-пт: 07.00-22.00 сб-вс: 08.00-21.00 мрт - круглосуточно хирургический стационар записаться на прием контактные телефоны: режим работы: операционное отделение: пн-вс: 09.00-21.00 заказать зво",
+        "ударно-волновая терапия увт эффективный подход в лечении хронических заболеваний опорно-двигательного аппарата подробнее тест векслера: диагностика интеллектуального развития детей оцените интеллектуальную сферу ребенка ",
+        "новости и акции центра новости 20 мар 2026 счастье женщины начинается с заботы о здоровье: визит депутата натальи сергеевны дергач в нордин акции и скидки 05 мар 2026 акция в нордине : при проверке зрения диагностика син",
+        "читать новости смотреть акции youtube-поликлиника смотреть все мрт - безопасная экспертная диагностика в нордине 05:05 увеличение губ гиалуроновой кислотой 05:04 головная боль: виды и причины 06:07 смотреть все фитнес-це",
+        "[promo-page] все акции медицинского центра нордин margin:0 padding:0 font:inherit :after :before box-sizing:border-box will-change:all aside footer header nav section display:block body html -webkit-text-size-adjust:100 html -ms-text"
+      ],
+      "minsk_evidence": [
+        "Минск, ул. Сурганова, д. 47Б",
+        "Минск, ул. Бехтерева, 7",
+        "Минск, ул. Бехтерева, д. 7"
+      ],
+      "priority_score": 242,
+      "recommendation": "review_existing_source"
+    },
+    {
+      "clinic_name": "Медицинский центр «Медарт»",
+      "clinic_slug": "meditsinskiy-tsentr-medart-8b82cfee7b",
+      "site_url": "https://medart.by/",
+      "site_host": "medart.by",
+      "address": "Минск, ул. Платонова, д. 1Б",
+      "doctors_count": 1,
+      "current_status": "source_in_sync_no_live_promo",
+      "matched_source_impls": [
+        "medart"
+      ],
+      "promo_sync_sources": [
+        "medart"
+      ],
+      "promo_signal": "yes",
+      "promo_signal_source": "promo_page",
+      "promo_page_url": "https://medart.by/news/",
+      "promo_page_verified": true,
+      "promo_page_kind": "news",
+      "promo_evidence": [
+        "лазерное удаление подошвенных бородавок лазерное удаление стержневой мозоли подошвенной бородавки до 5мм лазерное удаление стержневой мозоли подошвенной бородавки от 5 до 10мм лазерное удаление стержневой мозоли подошвен",
+        "со скрининговой дерматоскопией fotofinder консультация онколога-хирурга первой категории со скрининговой компьютерной дерматоскопией иссечение доброкачественного новообразования трепан биопсия молочной железы повторная п",
+        "акции и скидки узнать подробнее -- топ-7 услуг медицинского центра медарт 01 консультация трихолога с комплексной цифровой диагностикой волос foto finder vexia medicam 1000s 02 лазерное омоложение кожи губ liplase fotona",
+        "с заботой о пациентах акции медарт медцентр клиника в минске медицинская лаборатория в минске мы в соцсетях пациентам услуги цены специалисты акции контакты косметология блог о нас вакансии договор оферты положение о сер",
+        "[promo-page] лазерное удаление подошвенных бородавок лазерное удаление стержневой мозоли подошвенной бородавки до 5мм лазерное удаление стержневой мозоли подошвенной бородавки от 5 до 10мм лазерное удаление стержневой мозоли подошвен"
+      ],
+      "minsk_evidence": [
+        "ул. Платонова, 1-Б, 4 подъезд, 2 этаж, Минск",
+        "Минск, ул. Платонова, д. 1Б"
+      ],
+      "priority_score": 241,
+      "recommendation": "review_existing_source"
+    }
+  ]
+}

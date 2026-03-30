@@ -1,0 +1,127 @@
+name: worker-deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/worker-deploy.yml"
+      - "apps/worker/**"
+      - "db/migrations/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: medsearchrb-worker-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+      TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+      INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+      WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
+      PRIVACY_URL: ${{ secrets.PRIVACY_URL }}
+      SUPPORT_USERNAME: ${{ secrets.SUPPORT_USERNAME }}
+      BOT_DESCRIPTION: ${{ secrets.BOT_DESCRIPTION }}
+      BOT_SHORT_DESCRIPTION: ${{ secrets.BOT_SHORT_DESCRIPTION }}
+      TELEGRAM_CHANNEL_USERNAME: ${{ secrets.TELEGRAM_CHANNEL_USERNAME }}
+      TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required deploy secrets
+        shell: bash
+        run: |
+          required=(
+            CLOUDFLARE_API_TOKEN
+            TURSO_DATABASE_URL
+            TURSO_AUTH_TOKEN
+            INGEST_SHARED_SECRET
+            BOT_TOKEN
+            TELEGRAM_CHANNEL_ID
+            WEBAPP_URL
+            PRIVACY_URL
+            SUPPORT_USERNAME
+            BOT_DESCRIPTION
+            BOT_SHORT_DESCRIPTION
+          )
+
+          missing=()
+          for key in "${required[@]}"; do
+            if [ -z "${!key}" ]; then
+              missing+=("$key")
+            fi
+          done
+
+          if [ ${#missing[@]} -gt 0 ]; then
+            printf 'Missing GitHub secrets for worker deploy: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/worker/package-lock.json
+
+      - name: Install Worker dependencies
+        run: npm --prefix apps/worker ci --no-audit --prefer-offline
+
+      - name: Typecheck Worker
+        run: npm --prefix apps/worker run check
+
+      - name: Apply Turso migrations
+        run: npm --prefix apps/worker run db:migrate
+
+      - name: Show Cloudflare auth account
+        run: npm --prefix apps/worker exec wrangler whoami
+
+      - name: Sync Worker runtime secrets
+        shell: bash
+        working-directory: apps/worker
+        run: |
+          put_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -n "$value" ]; then
+              printf '%s' "$value" | npx wrangler secret put "$name"
+            fi
+          }
+
+          put_secret TURSO_DATABASE_URL "$TURSO_DATABASE_URL"
+          put_secret TURSO_AUTH_TOKEN "$TURSO_AUTH_TOKEN"
+          put_secret INGEST_SHARED_SECRET "$INGEST_SHARED_SECRET"
+          put_secret BOT_TOKEN "$BOT_TOKEN"
+          put_secret TELEGRAM_CHANNEL_ID "$TELEGRAM_CHANNEL_ID"
+          put_secret WEBAPP_URL "$WEBAPP_URL"
+          put_secret PRIVACY_URL "$PRIVACY_URL"
+          put_secret SUPPORT_USERNAME "$SUPPORT_USERNAME"
+          put_secret BOT_DESCRIPTION "$BOT_DESCRIPTION"
+          put_secret BOT_SHORT_DESCRIPTION "$BOT_SHORT_DESCRIPTION"
+          put_secret TELEGRAM_CHANNEL_USERNAME "$TELEGRAM_CHANNEL_USERNAME"
+
+          if [ -n "$TELEGRAM_WEBHOOK_SECRET" ]; then
+            put_secret TELEGRAM_WEBHOOK_SECRET "$TELEGRAM_WEBHOOK_SECRET"
+          else
+            put_secret TELEGRAM_WEBHOOK_SECRET "$INGEST_SHARED_SECRET"
+          fi
+
+          put_secret GROQ_API_KEY "$GROQ_API_KEY"
+
+      - name: Deploy Worker
+        working-directory: apps/worker
+        run: npx wrangler deploy

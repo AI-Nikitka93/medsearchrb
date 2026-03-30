@@ -1,0 +1,265 @@
+bucket,clinic_name,doctors_count,site_host,site_url,current_status,promo_signal,promo_signal_source,promo_page_url,promo_page_verified,promo_page_kind,priority_score
+ready_to_add,«Клиника эстетической стоматологии»,27,superdent.by,https://superdent.by/,no_source_match,yes,promo_page,https://superdent.by/akcii/,true,promotions,287
+ready_to_add,Медицинский центр «Парацельс» на Маяковского,23,narkolog.by,https://www.narkolog.by/,no_source_match,yes,promo_page,https://www.narkolog.by/sales/,true,promotions,283
+ready_to_add,Медицинский центр «Мед-Практика»,18,med-praktika.by,https://med-praktika.by/,no_source_match,yes,promo_page,https://med-praktika.by/novosti/akcii-s-zabotoj-o-zhenskom-zdorove/,true,promotions,278
+ready_to_add,«Клиника Гуру» на Дзержинского (ранее «КиндерМед»),13,gurumed.by,https://gurumed.by/,no_source_match,yes,promo_page,https://gurumed.by/sales/,true,promotions,273
+ready_to_add,«Клиника Гуру» на Первомайской,11,gurumed.by,https://gurumed.by/,no_source_match,yes,promo_page,https://gurumed.by/sales/,true,promotions,271
+ready_to_add,Косметология «Облака»,11,oblaka-salon.by,https://oblaka-salon.by/,no_source_match,yes,promo_page,https://oblaka-salon.by/akcii,true,promotions,271
+ready_to_add,Стоматология «Дентополис»,11,dentopolis.by,https://dentopolis.by/,no_source_match,yes,promo_page,https://dentopolis.by/discounts,true,promotions,271
+ready_to_add,Медицинский центр «Блоссом Клиник»,10,blossomclinic.by,https://blossomclinic.by/,no_source_match,yes,promo_page,https://blossomclinic.by/sale/,true,promotions,270
+ready_to_add,Медицинский центр «Эра»,10,medera.by,https://medera.by/,no_source_match,yes,promo_page,https://medera.by/promotions/,true,promotions,270
+ready_to_add,«Клиника Гуру» на Богдановича (ранее «Вита»),9,gurumed.by,https://gurumed.by/,no_source_match,yes,promo_page,https://gurumed.by/sales/,true,promotions,269
+ready_to_add,Республиканский центр медицинской реабилитации,9,makaenka17med.by,https://makaenka17med.by/,no_source_match,yes,promo_page,https://makaenka17med.by/akcii-vremya-podarkov-dekabr-2025/,true,promotions,269
+ready_to_add,Стоматология «Пародент»,9,parodent.by,https://parodent.by/,no_source_match,yes,promo_page,https://parodent.by/akcii/,true,promotions,269
+ready_to_add,«Стоматология имени Жадовича»,7,minskdentist.by,https://minskdentist.by/,no_source_match,yes,promo_page,https://minskdentist.by/sale/,true,promotions,267
+ready_to_add,Медицинский центр «Biovin» (Биовин),7,biovin-clinic.by,https://biovin-clinic.by/,no_source_match,yes,promo_page,https://biovin-clinic.by/sales/,true,promotions,267
+ready_to_add,Поликлиника центра медицинской реабилитации,5,makaenka17med.by,https://makaenka17med.by/,no_source_match,yes,promo_page,https://makaenka17med.by/akcii-vremya-podarkov-dekabr-2025/,true,promotions,265
+ready_to_add,Реабилитационный центр «Элеос»,5,eleos.by,https://eleos.by/,no_source_match,yes,promo_page,https://eleos.by/akcii,true,promotions,265
+ready_to_add,Медицинский центр «Здоровье»,4,zdorovje.by,https://zdorovje.by/,no_source_match,yes,promo_page,https://zdorovje.by/sale/,true,promotions,264
+ready_to_add,Медицинский центр «Linii» (Линии) на Дзержинского,4,linii.by,https://linii.by/,no_source_match,yes,promo_page,https://linii.by/sale/,true,promotions,264
+ready_to_add,Стоматология «Майстэрня Усмешки»,4,usmeshka.com,https://usmeshka.com/,no_source_match,yes,promo_page,https://usmeshka.com/akcii/,true,promotions,264
+ready_to_add,Областной центр «Психиатрия-наркология»,3,mokc.by,https://mokc.by/,no_source_match,yes,promo_page,https://mokc.by/content/nashi-aktsii,true,promotions,263
+ready_to_add,«Клиника ЛинЛайн» на Декабристов,2,linline-club.by,https://linline-club.by/,no_source_match,yes,promo_page,https://linline-club.by/about-us/prices,true,promotions,262
+ready_to_add,«Клиника ЛинЛайн» на Сурганова,2,linline-club.by,https://linline-club.by/,no_source_match,yes,promo_page,https://linline-club.by/about-us/prices,true,promotions,262
+ready_to_add,«Клиника ЛинЛайн» на Червякова,2,linline-club.by,https://linline-club.by/,no_source_match,yes,promo_page,https://linline-club.by/about-us/prices,true,promotions,262
+ready_to_add,Косметология «Молекула»,2,molecula.by,https://molecula.by/,no_source_match,yes,promo_page,https://molecula.by/akcii/,true,promotions,262
+ready_to_add,Косметология «Скинлюкс»,2,skinlux.by,https://skinlux.by/,no_source_match,yes,promo_page,https://skinlux.by/akcii/,true,promotions,262
+ready_to_add,Медицинский центр «Linii» (Линии) на Олешева (ранее «Баттерфляй»),2,linii.by,https://linii.by/,no_source_match,yes,promo_page,https://linii.by/sale/,true,promotions,262
+ready_to_add,Стоматология «Дентлайн Люкс»,2,dentlinelux.by,https://dentlinelux.by/,no_source_match,yes,promo_page,https://dentlinelux.by/sale/,true,promotions,262
+ready_to_add,Стоматология «Скайдент»,2,skydent.by,https://skydent.by/,no_source_match,yes,promo_page,https://skydent.by/sales/,true,promotions,262
+ready_to_add,Стоматология «ЭверестДент» на Одоевского,2,everestdent.by,https://everestdent.by/,no_source_match,yes,promo_page,https://everestdent.by/akcii/,true,promotions,262
+ready_to_add,Косметология «Доктор Фейс»,1,doctorface.by,https://doctorface.by/,no_source_match,yes,promo_page,https://doctorface.by/sales/,true,promotions,261
+ready_to_add,Косметология «Эс-Тет»,1,s-tetmed.by,https://s-tetmed.by/,no_source_match,yes,promo_page,https://s-tetmed.by/akcii/,true,promotions,261
+ready_to_add,Косметология «Эстетическая медицина»,1,filler.by,https://filler.by/,no_source_match,yes,promo_page,https://filler.by/promotions/,true,promotions,261
+ready_to_add,Косметология «Sapphire» (Сапфир),1,sapphiremed.by,https://sapphiremed.by/,no_source_match,yes,promo_page,https://sapphiremed.by/akcii.html,true,promotions,261
+ready_to_add,Стоматология «Анна Перенна»,1,anna-perenna.by,https://anna-perenna.by/,no_source_match,yes,promo_page,https://anna-perenna.by/akcii/,true,promotions,261
+ready_to_add,Стоматология «Весоль»,1,vesol.by,https://vesol.by/,no_source_match,yes,promo_page,https://vesol.by/akcii.html,true,promotions,261
+ready_to_add,Стоматология «Дентистри»,1,dentistry.by,https://dentistry.by/,no_source_match,yes,promo_page,https://dentistry.by/akcii,true,promotions,261
+verified_news_only,РНПЦ неврологии и нейрохирургии,80,neuro.by,https://neuro.by/,no_source_match,yes,promo_page,https://neuro.by/news.html,true,news,340
+verified_news_only,«Аква-Минск Клиника»,71,aquaminskclinic.by,https://aquaminskclinic.by/,no_source_match,yes,promo_page,https://aquaminskclinic.by/news/,true,news,331
+verified_news_only,Медицинский центр «Эксана» на Надеждинской,60,eksana.by,https://eksana.by/,no_source_match,yes,promo_page,https://eksana.by/news/,true,news,320
+verified_news_only,РНПЦ оториноларингологии,47,lor.by,https://lor.by/,no_source_match,yes,promo_page,https://lor.by/news/,true,news,307
+verified_news_only,Медицинский центр «Эксана» на Могилёвской,42,eksana.by,https://eksana.by/,no_source_match,yes,promo_page,https://eksana.by/news/,true,news,302
+verified_news_only,Медицинский центр «Конфиденс»,26,confidence.by,https://confidence.by/,no_source_match,yes,promo_page,https://confidence.by/news/,true,news,286
+verified_news_only,Медицинский центр «Эксана» на Партизанском проспекте,21,eksana.by,https://eksana.by/,no_source_match,yes,promo_page,https://eksana.by/news/,true,news,281
+verified_news_only,Медицинский центр «ИдеалМед» на Солнечной,18,idealmed.by,https://idealmed.by/,no_source_match,yes,promo_page,https://idealmed.by/news/.html,true,news,278
+verified_news_only,РНПЦ психического здоровья,14,mentalhealth.by,https://mentalhealth.by/,no_source_match,yes,promo_page,https://mentalhealth.by/news/,true,news,274
+verified_news_only,Медицинский центр «Буллфинч»,12,bullfinch.by,https://bullfinch.by/,no_source_match,yes,promo_page,https://bullfinch.by/news/,true,news,272
+verified_news_only,Медицинский центр «ИдеалМед» на Клары Цеткин,11,idealmed.by,https://idealmed.by/,no_source_match,yes,promo_page,https://idealmed.by/news/.html,true,news,271
+verified_news_only,Медицинский центр «Шайнэст» на Революционной,11,shine-est.by,https://www.shine-est.by/,no_source_match,yes,promo_page,https://www.shine-est.by/news,true,news,271
+verified_news_only,Медицинский центр «Прауд Клиник»,10,proudclinic.by,https://proudclinic.by/,no_source_match,yes,promo_page,https://proudclinic.by/news/,true,news,270
+verified_news_only,Медицинский центр «Корона»,9,mckorona.by,https://mckorona.by/,no_source_match,yes,promo_page,https://mckorona.by/news/,true,news,269
+verified_news_only,Медицинский центр «БолиВспине»,4,bolivspine.by,https://bolivspine.by/,no_source_match,yes,promo_page,https://bolivspine.by/news/,true,news,264
+verified_news_only,Медицинский центр «Династия Мед»,4,dinastia.by,https://dinastia.by/,no_source_match,yes,promo_page,https://dinastia.by/news/,true,news,264
+verified_news_only,Медицинский центр «Кардиан-мед»,4,cardianmed.by,https://cardianmed.by/,no_source_match,yes,promo_page,https://cardianmed.by/news/,true,news,264
+verified_news_only,Медицинский центр «Медстайл клиник»,4,medstyle.by,https://medstyle.by/,no_source_match,yes,promo_page,https://medstyle.by/news/,true,news,264
+verified_news_only,Медицинский центр «Полстар»,4,polstar.by,https://www.polstar.by/,no_source_match,yes,promo_page,https://www.polstar.by/news/,true,news,264
+verified_news_only,3-я больница им. Клумова,3,3gkb.by,https://3gkb.by/,no_source_match,yes,promo_page,https://3gkb.by/news/,true,news,263
+verified_news_only,Медицинский центр «ИдеалМед» на Аэродромной,3,idealmed.by,https://idealmed.by/,no_source_match,yes,promo_page,https://idealmed.by/news/.html,true,news,263
+verified_news_only,Центр гинекологии «Астра»,3,astramed.by,https://astramed.by/,no_source_match,yes,promo_page,https://astramed.by/blog/,true,news,263
+verified_news_only,Косметология «Нонстоп»,2,nonstop.by,https://nonstop.by/,no_source_match,yes,promo_page,https://nonstop.by/news/,true,news,262
+verified_news_only,Косметология «Labriz» (Лабриз),2,labriz.by,https://labriz.by/,no_source_match,yes,promo_page,https://labriz.by/news/,true,news,262
+verified_news_only,Медицинский центр «Кардиан»,2,cardianmed.by,https://cardianmed.by/,no_source_match,yes,promo_page,https://cardianmed.by/news/,true,news,262
+verified_news_only,Медицинский центр «Рам-клиник»,2,ramclinic.by,https://ramclinic.by/,no_source_match,yes,promo_page,https://ramclinic.by/novosti,true,news,262
+verified_news_only,Медицинский центр «Шайнэст» на Захарова,2,shine-est.by,https://www.shine-est.by/,no_source_match,yes,promo_page,https://www.shine-est.by/news,true,news,262
+verified_news_only,Наркология «Медтерра»,2,narkolog-minsk.by,https://narkolog-minsk.by/,no_source_match,yes,promo_page,https://narkolog-minsk.by/news/,true,news,262
+verified_news_only,Медицинский центр «Багена мед»,1,bagenamed.by,https://bagenamed.by/,no_source_match,yes,promo_page,https://bagenamed.by/news/,true,news,261
+verified_news_only,Медицинский центр «Шайнэст» на проспекте Дзержинского,1,shine-est.by,https://www.shine-est.by/,no_source_match,yes,promo_page,https://www.shine-est.by/news,true,news,261
+verified_news_only,МСЧ «МАЗ»,1,med.maz.by,https://med.maz.by/,no_source_match,yes,promo_page,https://med.maz.by/news,true,news,261
+verified_news_only,Офтальмологический центр «Вока»,1,voka.by,https://voka.by/,no_source_match,yes,promo_page,https://voka.by/news,true,news,261
+verified_news_only,Стоматология «Дентал Док»,1,dentaldoc.by,https://dentaldoc.by/,no_source_match,yes,promo_page,https://dentaldoc.by/news-sl/,true,news,261
+verified_news_only,Стоматология «Доктор рядом»,1,kdoktoru.by,https://kdoktoru.by/,no_source_match,yes,promo_page,https://kdoktoru.by/news/,true,news,261
+verified_news_only,Стоматология «ПолиМагия»,1,polimagia.by,https://polimagia.by/,no_source_match,yes,promo_page,https://polimagia.by/news/,true,news,261
+homepage_signal_only,Клиника «Мерси»,189,mercimed.by,https://mercimed.by/,no_source_match,yes,homepage,,false,none,319
+homepage_signal_only,1-я городская клиническая больница,71,1gkb.by,https://1gkb.by/,no_source_match,yes,homepage,,false,none,201
+homepage_signal_only,10-я городская клиническая больница,33,10gkb.by,https://www.10gkb.by/,no_source_match,yes,homepage,,false,none,163
+homepage_signal_only,РНПЦ травматологии и ортопедии,28,ortoped.by,https://ortoped.by/,no_source_match,yes,homepage,,false,none,158
+homepage_signal_only,2-я городская детская больница,23,2gdkb.by,https://2gdkb.by/,no_source_match,yes,homepage,,false,none,153
+homepage_signal_only,Медицинский центр «Экомедсервис»,23,ems.by,https://ems.by/,no_source_match,yes,homepage,,false,none,153
+homepage_signal_only,Центр МРТ «Ортоклиник»,22,ortoclinic.by,https://ortoclinic.by/,no_source_match,yes,homepage,,false,none,152
+homepage_signal_only,Медицинский центр «Rclinic»,21,rclinic.by,https://rclinic.by/,no_source_match,yes,homepage,,false,none,151
+homepage_signal_only,Психологический центр «Парацельс» на Короля,19,healthymind.by,https://healthymind.by/,no_source_match,yes,homepage,,false,none,149
+homepage_signal_only,Детский медицинский центр «Бэйби Босс»,17,babyboss.by,https://babyboss.by/,no_source_match,yes,homepage,,false,none,147
+homepage_signal_only,Медицинский центр «Элар»,17,ellar-med.by,https://ellar-med.by/,no_source_match,yes,homepage,,false,none,147
+homepage_signal_only,«Центр семейной стоматологии»,16,medexpert.by,https://medexpert.by/,no_source_match,yes,homepage,,false,none,146
+homepage_signal_only,Медицинский центр «Имред» на Семашко,15,imred.by,https://imred.by/,no_source_match,yes,homepage,,false,none,145
+homepage_signal_only,Медицинский центр «Медик Плюс»,12,medicplus.by,https://medicplus.by/,no_source_match,yes,homepage,,false,none,142
+homepage_signal_only,Медицинский центр «Димеда»,11,dimeda.by,https://dimeda.by/,no_source_match,yes,homepage,,false,none,141
+homepage_signal_only,Медицинский центр «Золотое Сечение Мед»,11,zsmed.by,https://zsmed.by/,no_source_match,yes,homepage,,false,none,141
+homepage_signal_only,Медицинский центр «Неовит»,11,neovit.by,https://neovit.by/,no_source_match,yes,homepage,,false,none,141
+homepage_signal_only,Медицинский центр «Авиценна»,10,avicenna.by,https://avicenna.by/,no_source_match,yes,homepage,,false,none,140
+homepage_signal_only,Стоматология «Фабрика Улыбки»,10,perfectsmile.by,https://www.perfectsmile.by/,no_source_match,yes,homepage,,false,none,140
+homepage_signal_only,Центр исследования сердца,10,kardiolita.by,https://kardiolita.by/,no_source_match,yes,homepage,,false,none,140
+homepage_signal_only,Медицинский центр «Антес Мед»,9,antes.by,https://antes.by/,no_source_match,yes,homepage,,false,none,139
+homepage_signal_only,Стоматология «Ортосмайл»,9,ortosmile.by,https://ortosmile.by/,no_source_match,yes,homepage,,false,none,139
+homepage_signal_only,Центр пограничных состояний и психотерапии,9,mgkpd.by,https://mgkpd.by/,no_source_match,yes,homepage,,false,none,139
+homepage_signal_only,Женская консультация поликлиники №17,8,17gp.by,https://17gp.by/,no_source_match,yes,homepage,,false,none,138
+homepage_signal_only,Медицинский центр «Верба»,8,verba.by,https://verba.by/,no_source_match,yes,homepage,,false,none,138
+homepage_signal_only,«Центр урологии и андрологии»,7,uroandro.by,https://uroandro.by/,no_source_match,yes,homepage,,false,none,137
+homepage_signal_only,8-я поликлиника,7,8gp.by,https://8gp.by/,no_source_match,yes,homepage,,false,none,137
+homepage_signal_only,Косметология «Орсо» (Orso),7,orsomed.by,https://orsomed.by/,no_source_match,yes,homepage,,false,none,137
+homepage_signal_only,Медицинский центр «Роден»,7,roden.by,https://www.roden.by/,no_source_match,yes,homepage,,false,none,137
+homepage_signal_only,Университетская стоматологическая поликлиника,7,belstom.by,https://www.belstom.by/,no_source_match,yes,homepage,,false,none,137
+homepage_signal_only,«Клиника Гравита»,6,gravita.by,https://gravita.by/,no_source_match,yes,homepage,,false,none,136
+homepage_signal_only,30-я поликлиника,6,30gp.by,https://30gp.by/,no_source_match,yes,homepage,,false,none,136
+homepage_signal_only,5-я городская клиническая больница,6,5gkb.by,https://www.5gkb.by/,no_source_match,yes,homepage,,false,none,136
+homepage_signal_only,8-я стоматологическая поликлиника,6,8gksp.by,https://8gksp.by/,no_source_match,yes,homepage,,false,none,136
+homepage_signal_only,Медицинский центр «Горизонт»,6,horizont-med.by,https://horizont-med.by/,no_source_match,yes,homepage,,false,none,136
+homepage_signal_only,«Клиника Дермисс»,5,dermiss.by,https://dermiss.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,17-я детская поликлиника,5,17gdp.by,https://17gdp.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,34-я поликлиника,5,34poliklinika.by,https://34poliklinika.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,37-я поликлиника,5,37gp.by,https://www.37gp.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Женская консультация поликлиники №11,5,11gp.by,https://11gp.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Женская консультация поликлиники №2,5,2crp.by,https://2crp.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Клинический центр пластической хирургии на Богдановича,5,clinicalcenter.by,https://clinicalcenter.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Медицинский центр «Анатомия»,5,anatomiya.by,https://anatomiya.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Медицинский центр «Имред» на Волгоградской,5,imred.by,https://imred.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Медицинский центр «Любимый доктор» на Матусевича,5,lubimydoctor.by,https://lubimydoctor.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Медицинский центр «Марлен»,5,marlen.by,https://marlen.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,Стоматология «Профи-Дент» на проспекте Победителей,5,profident.by,https://profident.by/,no_source_match,yes,homepage,,false,none,135
+homepage_signal_only,«Клиника Астарта»,4,astartamed.by,https://astartamed.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,«Центр современной педиатрии»,4,pediatrics.by,https://pediatrics.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,10-я стоматологическая поликлиника,4,10gsp.by,https://10gsp.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,12-я стоматологическая поликлиника,4,12stom.by,https://www.12stom.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,14-я центральная районная поликлиника на Фроликова,4,14crp.by,https://14crp.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,3-я городская детская больница,4,3gdkb.by,https://3gdkb.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Городской роддом №2,4,gor-roddom2.by,https://www.gor-roddom2.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Косметология «Космед»,4,cosmed.by,https://cosmed.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Косметология «Красивые люди»,4,estetic-center.by,https://estetic-center.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Стоматология «Аликс-Мед»,4,aliks-med.by,https://www.aliks-med.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Стоматология «Здоровая улыбка»,4,xn--80aaccjrzgyav3b7g6b.xn--90ais,https://xn--80aaccjrzgyav3b7g6b.xn--90ais/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Стоматология «Новая улыбка»,4,prosmile.by,https://prosmile.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Стоматология «СолДент»,4,soldent.by,https://soldent.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,Стоматология «СоюзСтомСервис»,4,stoma.by,https://stoma.by/,no_source_match,yes,homepage,,false,none,134
+homepage_signal_only,«Клиника Доктор ЛОР»,3,doctorlor.by,https://doctorlor.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,«Центр лечения алкоголизма»,3,alkogolizm.by,https://alkogolizm.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,1-я детская поликлиника,3,1gdp.by,https://1gdp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,10-я поликлиника,3,10gp.by,https://10gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,11-я городская клиническая больница,3,11gkb.by,https://www.11gkb.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,17-я поликлиника,3,17gp.by,https://17gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,20-я поликлиника,3,20gp.by,https://www.20gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,22-я поликлиника,3,22gp.by,https://22gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,25-я детская поликлиника,3,25gdp.by,https://25gdp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,31-я поликлиника,3,31gp.by,https://31gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,39-я поликлиника,3,39gkp.by,https://39gkp.by/ru,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,40-я поликлиника,3,40gkp.by,https://40gkp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Больница скорой медицинской помощи (БСМП),3,bsmp.by,https://bsmp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Женская консультация поликлиники №22,3,22gp.by,https://22gp.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Клинический центр пластической хирургии на Жиновича,3,clinicalcenter.by,https://clinicalcenter.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Косметология «НьюСкин»,3,newskin.by,https://newskin.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Косметология «Теорема»,3,teomed.by,https://teomed.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Медицинский центр «Пандерм»,3,panderm.by,https://panderm.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Медицинский центр «Праксис»,3,praxis.by,https://praxis.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Медицинский центр «Femine» (Фемин),3,femineclinic.by,https://femineclinic.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Отделение клеточной терапии Института биофизики НАН,3,ibce.by,https://ibce.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Стоматология «Дентко»,3,dentko.by,https://dentko.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Стоматология «Доктор Смайл»,3,doctorsmile.by,https://doctorsmile.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Стоматология «Звезда Стом»,3,zvezdastom.by,https://zvezdastom.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Стоматология «Профи-Дент» на Притыцкого,3,profident.by,https://profident.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,Центр гинекологии «Еваклиник» на Интернациональной,3,evaclinic.by,https://evaclinic.by/,no_source_match,yes,homepage,,false,none,133
+homepage_signal_only,11-я поликлиника,2,11gp.by,https://11gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,11-я стоматологическая поликлиника,2,11stom.by,https://11stom.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,13-я стоматологическая поликлиника,2,13gsp.by,https://13gsp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,15-я поликлиника,2,15gp.by,https://15gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,16-я детская поликлиника,2,16gdp.by,https://16gdp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,2-я поликлиника,2,2crp.by,https://2crp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,28-я поликлиника,2,28gp.by,https://28gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,29-я поликлиника,2,29gp.by,https://29gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,3-я детская поликлиника,2,3gdp.by,https://3gdp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,35-я поликлиника,2,35gp.by,https://35gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,4-я поликлиника на проспекте Победителей 93,2,4gp.by,https://4gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,4-я стоматологическая поликлиника,2,4stom.by,https://4stom.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,5-я детская поликлиника,2,5gdp.by,https://5gdp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,6-я центральная районная поликлиника,2,poliklinika6.by,https://www.poliklinika6.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Гинекологическая больница,2,ggb.by,https://ggb.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Женская консультация поликлиники №30,2,30gp.by,https://30gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Женская консультация поликлиники №35,2,35gp.by,https://35gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Женская консультация поликлиники №37,2,37gp.by,https://www.37gp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Женская консультация ЦРП №14,2,14crp.by,https://14crp.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Женская консультация №4 ГКБ №1,2,1gkb.by,https://1gkb.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Клинический центр психиатрии и психотерапии,2,mgkpd.by,https://mgkpd.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Косметология «МедЭстет Клиник»,2,medestet.by,https://medestet.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Медицинский центр «Исцеление»,2,netzavisimosti.by,https://netzavisimosti.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Медицинский центр «Любимый доктор» на Рафиева,2,lubimydoctor.by,https://lubimydoctor.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Медицинский центр «Терра Медика» на Волгоградской,2,terramedika.by,https://terramedika.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Медицинский центр «Sport Science» (Спорт Саенс),2,scisport.by,https://scisport.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Роддом №5,2,5gkb.by,https://www.5gkb.by/rodilnyj-dom-5/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Стоматология «Космос Плюс»,2,kosmosplus.by,https://kosmosplus.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Стоматология «Миладентал»,2,miladental.by,https://miladental.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Стоматология «Умкабелмед»,2,umkastom.com,https://umkastom.com/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,Стоматология «Элит-Дантист»,2,elitdantist.by,https://elitdantist.by/,no_source_match,yes,homepage,,false,none,132
+homepage_signal_only,«Центр УЗИ доктора Лукашевича»,1,bestuzi.by,https://bestuzi.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,1-я детская стоматологическая поликлиника,1,detstom.by,https://detstom.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,14-я детская поликлиника,1,14gdkp.by,https://14gdkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,21-я центральная районная поликлиника,1,21med.by,https://www.21med.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,23-я поликлиника,1,23gp.by,https://23gp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,25-я центральная районная поликлиника,1,25crp.by,https://25crp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,26-я поликлиника,1,26poliklinika.by,https://26poliklinika.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,27-я поликлиника,1,27gp.by,https://27gp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,3-я центральная районная поликлиника на Воронянского,1,3crkp.by,https://www.3crkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,32-я поликлиника,1,32gkp.by,https://32gkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,33-я студенческая поликлиника на Сурганова,1,33gsp.by,https://33gsp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,4-я детская поликлиника,1,4gdkp.by,https://4gdkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,6-я детская поликлиника,1,6gdkp.by,https://6gdkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,8-я детская поликлиника,1,8gdp.by,https://8gdp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,9-я поликлиника,1,9gp.by,https://9gp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Женская консультация поликлиники №26,1,26poliklinika.by,https://26poliklinika.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Женская консультация поликлиники №32,1,32gkp.by,https://32gkp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Женская консультация поликлиники №34,1,34poliklinika.by,https://34poliklinika.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Женская консультация поликлиники №4,1,4gp.by,https://4gp.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Клинический центр дерматовенерологии на Прилукской,1,kvd.by,https://kvd.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Косметология «Фрау Марта»,1,fraumarta.by,https://fraumarta.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Косметология «Evos» (Эвос) на Мястровская,1,evos.by,https://evos.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Медицинская служба гражданской авиации,1,aviamed.by,https://aviamed.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Медицинский центр «Вивальди Медика»,1,vivaldimedica.by,https://www.vivaldimedica.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Медицинский центр «Линоко»,1,linoko.by,https://linoko.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Медицинский центр «Сантана»,1,santanamed.by,https://santanamed.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,МСЧ им. Вавилова,1,msc-vavilova.by,https://msc-vavilova.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Областной клинический роддом,1,krdmo.by,https://krdmo.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Областной кожно-венерологический диспансер,1,mokvd.by,https://www.mokvd.by/ru/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Офтальмологический центр «Оптимед»,1,optimed.by,https://www.optimed.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Поликлиника РНПЦ травматологии и ортопедии,1,ortoped.by,https://ortoped.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Роддом №1,1,1gkb.by,https://1gkb.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Вашли»,1,vashli.by,https://vashli.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Дентал Клиник»,1,dental-clinic.by,https://dental-clinic.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Дентология»,1,dentologia.by,https://dentologia.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Зубная симфония»,1,dentalsymphony.by,https://www.dentalsymphony.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Мастодонт»,1,mastodont.by,https://mastodont.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Норимед»,1,norimed.by,https://norimed.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «ПраймДент»,1,primedent.by,https://primedent.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Премиумдент»,1,premiumdent.by,https://premiumdent.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Роял Дент»,1,royaldent.by,https://royaldent.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Смайлград»,1,smilegrad.by,https://smilegrad.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Стомас»,1,stomas.by,https://stomas.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Стомика»,1,stomika.by,https://stomika.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Триомед»,1,triomed.by,https://triomed.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «ЭленСмайл»,1,elensmile.by,https://elensmile.by/,no_source_match,yes,homepage,,false,none,131
+homepage_signal_only,Стоматология «Юо Дентал»,1,dentacentr.by,https://dentacentr.by/,no_source_match,yes,homepage,,false,none,131
+review_existing,Медицинский центр «Нордин» на Сурганова,232,nordin.by,https://nordin.by/,source_in_sync_no_live_promo,yes,promo_page,https://nordin.by/shares/,true,promotions,472
+review_existing,Медицинский центр «Центр здорового сна»,87,centrsna.by,https://centrsna.by/,source_in_sync_no_live_promo,yes,promo_page,https://centrsna.by/news/,true,news,327
+review_existing,Томография,86,mrt.by,https://mrt.by,source_in_sync_no_live_promo,yes,promo_page,https://mrt.by/akcii,true,promotions,326
+review_existing,Медицинский центр «Томография» на Революционной,67,mrt.by,https://mrt.by/,source_in_sync_no_live_promo,yes,promo_page,https://mrt.by/akcii,true,promotions,307
+review_existing,Центр здорового сна,51,centrsna.by,https://centrsna.by,source_in_sync_no_live_promo,yes,promo_page,https://centrsna.by/news/,true,news,291
+review_existing,Медицинский центр «Санте»,49,sante.by,https://sante.by/,source_in_sync_no_live_promo,yes,promo_page,https://sante.by/promotions,true,promotions,289
+review_existing,Медицинский центр «МедАвеню» на Грибоедова,39,medavenu.by,https://medavenu.by/,source_in_sync_no_live_promo,yes,promo_page,https://medavenu.by/akcii/,true,promotions,279
+review_existing,Медицинский центр «Томография» на Жилуновича,38,mrt.by,https://mrt.by/,source_in_sync_no_live_promo,yes,promo_page,https://mrt.by/akcii,true,promotions,278
+review_existing,Медицинский центр «МедАвеню» на Клары Цеткин,30,medavenu.by,https://medavenu.by/,source_in_sync_no_live_promo,yes,promo_page,https://medavenu.by/akcii/,true,promotions,270
+review_existing,Медицинский центр «Супрамед»,29,supramed.by,https://supramed.by/,source_in_sync_no_live_promo,yes,promo_page,https://supramed.by/sales/,true,promotions,269
+review_existing,Медицинский центр «E-clinic» (Е-клиник) на Комсомольской,24,e-clinic.by,https://e-clinic.by/,source_in_sync_no_live_promo,yes,promo_page,https://e-clinic.by/news/,true,news,264
+review_existing,Медицинский центр «Лодэ» на проспекте Независимости 58а,22,lode.by,https://www.lode.by/,source_in_sync_no_live_promo,yes,promo_page,https://www.lode.by/promotions/,true,promotions,262
+review_existing,Медицинский центр «Маяк Здоровья»,22,lighthouse.by,https://lighthouse.by/,source_in_sync_no_live_promo,yes,promo_page,https://lighthouse.by/promotions/,true,promotions,262
+review_existing,Медицинский центр «НеоМедикал»,20,neomedical.by,https://neomedical.by/,source_in_sync_no_live_promo,yes,promo_page,https://neomedical.by/akcii/,true,promotions,260
+review_existing,Медицинский центр «Кравира» на проспекте Победителей,19,kravira.by,https://kravira.by/,source_in_sync_no_live_promo,yes,promo_page,https://kravira.by/news/,true,news,259
+review_existing,Неомедикал,15,neomedical.by,https://neomedical.by,source_in_sync_no_live_promo,yes,promo_page,https://neomedical.by/akcii/,true,promotions,255
+review_existing,SMART MEDICAL,13,smartmedical.by,https://smartmedical.by,source_in_sync_no_live_promo,yes,promo_page,https://smartmedical.by/news/,true,news,253
+review_existing,Медицинский центр «МедАвеню» на Заславской,12,medavenu.by,https://medavenu.by/,source_in_sync_no_live_promo,yes,promo_page,https://medavenu.by/akcii/,true,promotions,252
+review_existing,Медицинский центр «E-clinic» (Е-клиник) на Ленина,12,e-clinic.by,https://e-clinic.by/,source_in_sync_no_live_promo,yes,promo_page,https://e-clinic.by/news/,true,news,252
+review_existing,Медицинский центр «Кравира» на Захарова,11,kravira.by,https://kravira.by/,source_in_sync_no_live_promo,yes,promo_page,https://kravira.by/news/,true,news,251
+review_existing,Медицинский центр «Лодэ» на Гикало,9,lode.by,https://www.lode.by/,source_in_sync_no_live_promo,yes,promo_page,https://www.lode.by/promotions/,true,promotions,249
+review_existing,Медицинский центр «Смарт Медикал»,8,smartmedical.by,https://smartmedical.by/,source_in_sync_no_live_promo,yes,promo_page,https://smartmedical.by/news/,true,news,248
+review_existing,Медицинский центр «Лодэ» на Притыцкого,4,lode.by,https://www.lode.by/,source_in_sync_no_live_promo,yes,promo_page,https://www.lode.by/promotions/,true,promotions,244
+review_existing,Стоматология «Лодэ»,4,lode.by,https://www.lode.by/,source_in_sync_no_live_promo,yes,promo_page,https://www.lode.by/promotions/,true,promotions,244
+review_existing,Медицинский центр «Кравира» на Скрипникова,3,kravira.by,https://kravira.by/,source_in_sync_no_live_promo,yes,promo_page,https://kravira.by/news/,true,news,243
+review_existing,Медицинский центр «Лодэ» на проспекте Победителей,3,lode.by,https://www.lode.by/,source_in_sync_no_live_promo,yes,promo_page,https://www.lode.by/promotions/,true,promotions,243
+review_existing,Медицинский центр «Нордин» на Бехтерева,2,nordin.by,https://nordin.by/,source_in_sync_no_live_promo,yes,promo_page,https://nordin.by/shares/,true,promotions,242
+review_existing,Медицинский центр «Медарт»,1,medart.by,https://medart.by/,source_in_sync_no_live_promo,yes,promo_page,https://medart.by/news/,true,news,241

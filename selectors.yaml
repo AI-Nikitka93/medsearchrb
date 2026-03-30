@@ -20,6 +20,11 @@
     primary:
       - "a[href*='/clinic/']"
 
+aquaminsk:
+  promotions:
+    primary:
+      - ".item-views.list.image_left.news .item.wdate"
+
 centrsna:
   promotions:
     primary:
@@ -51,10 +56,20 @@ forestmed:
     primary:
       - "a[href*='/20']"
 
+gurumed:
+  promotions:
+    primary:
+      - "a[href*='/sales/']"
+
 happyderm:
   promotions:
     primary:
       - "a[href*='/news/']"
+
+idealmed:
+  promotions:
+    primary:
+      - "a[href*='/akczii-i-skidki/']"
 
 kaskad:
   promotions:
@@ -99,6 +114,11 @@ medart:
     primary:
       - "a[href*='/stocks/']"
 
+medera:
+  promotions:
+    primary:
+      - ".elementor-image-box-wrapper"
+
 mrtby:
   promotions:
     primary:
@@ -114,6 +134,11 @@ nordin:
     primary:
       - "a[href*='/shares/']"
       - "a[href*='/news/']"
+
+paracels:
+  promotions:
+    primary:
+      - "a[href*='/sales/']"
 
 sante:
   promotions:

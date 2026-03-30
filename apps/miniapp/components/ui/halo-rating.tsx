@@ -21,6 +21,19 @@ export function HaloRating({
   reviewCount,
   compact = false,
 }: HaloRatingProps) {
+  if (reviewCount <= 0) {
+    return (
+      <div
+        className={[
+          "inline-flex items-center gap-1 rounded-pill bg-surface text-subtle shadow-soft",
+          compact ? "px-2 py-1 text-xs font-semibold" : "px-3 py-2 text-sm font-bold",
+        ].join(" ")}
+      >
+        <span>Пока нет отзывов</span>
+      </div>
+    );
+  }
+
   if (rating === null) {
     return (
       <div
@@ -29,7 +42,7 @@ export function HaloRating({
           compact ? "px-2 py-1 text-xs font-semibold" : "px-3 py-2 text-sm font-bold",
         ].join(" ")}
       >
-        <span>Нет оценок</span>
+        <span>{reviewCount} отзывов</span>
       </div>
     );
   }

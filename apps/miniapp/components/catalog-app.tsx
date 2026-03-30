@@ -3,6 +3,7 @@
 import {
   useDeferredValue,
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   type ReactNode,
@@ -13,7 +14,11 @@ import {
   fetchDoctorDetail,
   fetchDoctors,
   fetchPromotions,
+  fetchSmartSearch,
+  fetchTelegramSession,
   type CatalogOverview,
+  type SmartSearchBestMatch,
+  type SmartSearchResponse,
 } from "@/lib/api";
 import { PrimaryButton } from "@/components/ui/button";
 import {
@@ -88,6 +93,12 @@ type ReviewSummaryItem = {
   reviews_count: number;
 };
 
+type SmartSearchState = {
+  status: LoadStatus;
+  error: string | null;
+  results: SmartSearchResponse | null;
+};
+
 const FALLBACK_SPECIALTIES = [
   { slug: "ginekolog", name: "Гинеколог", count: 0 },
   { slug: "uzi", name: "УЗИ", count: 0 },
@@ -119,8 +130,6 @@ function aggregateReviewSummary(reviews: ReviewSummaryItem[]) {
       if (review.rating_avg !== null && review.reviews_count > 0) {
         acc.weighted_score += review.rating_avg * review.reviews_count;
         acc.weighted_count += review.reviews_count;
-      } else if (review.rating_avg !== null) {
-        acc.fallback.push(review.rating_avg);
       }
       return acc;
     },
@@ -128,7 +137,6 @@ function aggregateReviewSummary(reviews: ReviewSummaryItem[]) {
       weighted_score: 0,
       weighted_count: 0,
       reviews_count: 0,
-      fallback: [] as number[],
     },
   );
 
@@ -136,9 +144,7 @@ function aggregateReviewSummary(reviews: ReviewSummaryItem[]) {
     rating_avg:
       base.weighted_count > 0
         ? Number((base.weighted_score / base.weighted_count).toFixed(1))
-        : base.fallback.length > 0
-          ? Math.max(...base.fallback)
-          : null,
+        : null,
     reviews_count: base.reviews_count,
   };
 }
@@ -153,6 +159,49 @@ function formatReviewSourceName(sourceName: string) {
       return "Doktora.by";
     default:
       return sourceName;
+  }
+}
+
+function formatSearchIntent(intent: SmartSearchResponse["intent"]) {
+  switch (intent) {
+    case "doctor":
+      return "Похоже, вы ищете врача";
+    case "specialty":
+      return "Похоже, вы ищете специальность";
+    case "clinic":
+      return "Похоже, вы ищете клинику";
+    case "promo":
+      return "Похоже, вы ищете акцию";
+    case "problem":
+      return "Похоже, вы ищете врача по проблеме";
+    default:
+      return "Лучшие совпадения";
+  }
+}
+
+function formatSearchMatchTitle(match: SmartSearchBestMatch) {
+  switch (match.kind) {
+    case "doctor":
+      return match.full_name;
+    case "clinic":
+      return match.name;
+    case "promotion":
+      return match.title;
+    case "specialty":
+      return match.name;
+  }
+}
+
+function formatSearchMatchSubtitle(match: SmartSearchBestMatch) {
+  switch (match.kind) {
+    case "doctor":
+      return `${match.specialty} • ${match.clinic}`;
+    case "clinic":
+      return match.address ?? `${match.doctors_count} врачей в каталоге`;
+    case "promotion":
+      return match.clinic_name;
+    case "specialty":
+      return `${formatCount(match.count)} врачей`;
   }
 }
 
@@ -390,7 +439,7 @@ function EmptyState({
   onAction?: () => void;
 }) {
   return (
-    <section className="rounded-lg bg-surface p-4 text-center shadow-card">
+    <section className="rounded-lg bg-surface p-4 text-center shadow-card" aria-live="polite">
       <div className="text-base font-bold text-text">{title}</div>
       <div className="mt-2 text-sm leading-6 text-subtle">{description}</div>
       {actionLabel && onAction ? (
@@ -404,7 +453,7 @@ function EmptyState({
 
 function LoadingState({ label }: { label: string }) {
   return (
-    <section className="rounded-lg bg-surface p-4 shadow-card">
+    <section className="rounded-lg bg-surface p-4 shadow-card" aria-live="polite" aria-busy="true">
       <div className="text-sm font-semibold text-text">{label}</div>
       <div className="mt-3 space-y-2">
         <div className="h-4 rounded-pill bg-section" />
@@ -425,7 +474,7 @@ function ErrorState({
   onRetry: () => void;
 }) {
   return (
-    <section className="rounded-lg bg-surface p-4 shadow-card">
+    <section className="rounded-lg bg-surface p-4 shadow-card" aria-live="assertive">
       <div className="text-base font-bold text-text">{title}</div>
       <div className="mt-2 text-sm leading-6 text-subtle">{message}</div>
       <div className="mt-4">
@@ -546,6 +595,55 @@ function FilterChip({
   );
 }
 
+function SearchGroup({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-link">
+        {title}
+      </div>
+      <div className="space-y-2">{children}</div>
+    </div>
+  );
+}
+
+function SearchResultButton({
+  title,
+  subtitle,
+  badge,
+  onClick,
+}: {
+  title: string;
+  subtitle: string;
+  badge?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="surface-card flex w-full items-start justify-between gap-3 rounded-lg px-3 py-3 text-left transition-transform duration-fast ease-standard hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link active:scale-[0.99]"
+    >
+      <div className="min-w-0">
+        <div className="truncate text-sm font-semibold text-text">{title}</div>
+        <div className="mt-1 text-sm leading-5 text-subtle">{subtitle}</div>
+      </div>
+      {badge ? (
+        <div className="shrink-0 rounded-pill bg-section px-2 py-1 text-[11px] font-semibold text-subtle shadow-soft">
+          {badge}
+        </div>
+      ) : (
+        <ArrowRightIcon />
+      )}
+    </button>
+  );
+}
+
 function SpecialtySheet({
   open,
   selectedFilter,
@@ -651,22 +749,54 @@ function SpecialtySheet({
 }
 
 function openExternalLink(url: string) {
-  const telegram = (
-    globalThis as typeof globalThis & {
-      Telegram?: {
-        WebApp?: {
-          openLink?: (href: string) => void;
-        };
-      };
-    }
-  ).Telegram;
+  triggerTelegramHaptic("selection");
+  const telegram = getTelegramWebApp();
 
-  if (telegram?.WebApp?.openLink) {
-    telegram.WebApp.openLink(url);
+  if (telegram?.openTelegramLink && /^https?:\/\/t\.me\//i.test(url)) {
+    telegram.openTelegramLink(url);
+    return;
+  }
+
+  if (telegram?.openLink) {
+    telegram.openLink(url);
     return;
   }
 
   window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function getTelegramWebApp() {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return window.Telegram?.WebApp;
+}
+
+function triggerTelegramHaptic(kind: "selection" | "light" = "selection") {
+  const haptics = getTelegramWebApp()?.HapticFeedback;
+  if (!haptics) {
+    return;
+  }
+
+  if (kind === "light") {
+    haptics.impactOccurred?.("light");
+    return;
+  }
+
+  haptics.selectionChanged?.();
+}
+
+function normalizeStartParam(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    return decodeURIComponent(value).trim();
+  } catch {
+    return value.trim();
+  }
 }
 
 export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
@@ -676,12 +806,15 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [specialtySheetOpen, setSpecialtySheetOpen] = useState(false);
   const [specialtySearch, setSpecialtySearch] = useState("");
+  const [telegramDisplayName, setTelegramDisplayName] = useState<string | null>(null);
 
   const promotionsRef = useRef<HTMLElement | null>(null);
+  const appliedStartParamRef = useRef<string | null>(null);
 
   const [doctorsReloadKey, setDoctorsReloadKey] = useState(0);
   const [promotionsReloadKey, setPromotionsReloadKey] = useState(0);
   const [overviewReloadKey, setOverviewReloadKey] = useState(0);
+  const [smartSearchReloadKey, setSmartSearchReloadKey] = useState(0);
 
   const [doctorsStatus, setDoctorsStatus] = useState<LoadStatus>("loading");
   const [doctorsError, setDoctorsError] = useState<string | null>(null);
@@ -698,12 +831,18 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
       clinic: string;
       title: string;
       deadline?: string;
+      source_url: string;
     }>
   >([]);
 
   const [overviewStatus, setOverviewStatus] = useState<LoadStatus>("loading");
   const [overviewError, setOverviewError] = useState<string | null>(null);
   const [overview, setOverview] = useState<CatalogOverview | null>(null);
+  const [smartSearch, setSmartSearch] = useState<SmartSearchState>({
+    status: "idle",
+    error: null,
+    results: null,
+  });
 
   const [doctorDetails, setDoctorDetails] = useState<Record<string, DoctorDetailRecord>>({});
   const [detailState, setDetailState] = useState<DoctorDetailState>({
@@ -736,6 +875,23 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   const markPromotionsLoading = () => {
     setPromotionsStatus("loading");
     setPromotionsError(null);
+  };
+
+  const setSmartSearchPending = (nextQuery: string) => {
+    if (nextQuery.trim().length < 2) {
+      setSmartSearch({
+        status: "idle",
+        error: null,
+        results: null,
+      });
+      return;
+    }
+
+    setSmartSearch((current) => ({
+      status: "loading",
+      error: null,
+      results: current.results,
+    }));
   };
 
   useEffect(() => {
@@ -800,6 +956,37 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   }, [deferredQuery, doctorsReloadKey, selectedFilter]);
 
   useEffect(() => {
+    if (screen === "detail" || deferredQuery.length < 2) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    fetchSmartSearch(deferredQuery, controller.signal)
+      .then((results) => {
+        setSmartSearch({
+          status: "success",
+          error: null,
+          results,
+        });
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setSmartSearch({
+          status: "error",
+          error:
+            error instanceof Error ? error.message : "Не удалось обработать умный поиск",
+          results: null,
+        });
+      });
+
+    return () => controller.abort();
+  }, [deferredQuery, screen, smartSearchReloadKey]);
+
+  useEffect(() => {
     const controller = new AbortController();
 
     fetchPromotions({
@@ -814,6 +1001,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
             clinic: item.clinic.name,
             title: item.title,
             deadline: formatDeadline(item.ends_at),
+            source_url: item.source_url,
           })),
         );
         setPromotionsStatus("success");
@@ -914,8 +1102,43 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   }, [doctorDetails, screen, selectedDoctorId]);
 
   const selectedDoctor = selectedDoctorId ? doctorDetails[selectedDoctorId] ?? null : null;
+  const shouldPreferSmartDoctorResults =
+    screen === "list" &&
+    selectedFilter === "Все" &&
+    deferredQuery.length >= 2 &&
+    smartSearch.status === "success" &&
+    smartSearch.results?.query === deferredQuery;
+  const aiDoctorList = shouldPreferSmartDoctorResults && smartSearch.results
+    ? {
+        total: smartSearch.results.doctors.length,
+        items: smartSearch.results.doctors.map((doctor) => ({
+          id: doctor.id,
+          name: doctor.full_name,
+          specialty: doctor.specialty,
+          clinic: doctor.clinic,
+          rating: doctor.rating_avg,
+          reviewCount: doctor.reviews_count,
+          nextSlot: doctor.verified_clinic ? "Подобрано ИИ" : "Открыть карточку",
+          promoTitle: null,
+          initials: toInitials(doctor.full_name),
+        })),
+      }
+    : null;
+  const visibleDoctorList = aiDoctorList ?? doctorList;
+  const visibleDoctorsStatus =
+    screen === "list" &&
+    selectedFilter === "Все" &&
+    deferredQuery.length >= 2 &&
+    (smartSearch.status === "loading" ||
+      smartSearch.status === "idle" ||
+      smartSearch.results?.query !== deferredQuery)
+      ? ("loading" satisfies LoadStatus)
+      : shouldPreferSmartDoctorResults
+        ? ("success" satisfies LoadStatus)
+        : doctorsStatus;
+  const visibleDoctorsError = shouldPreferSmartDoctorResults ? null : doctorsError;
   const selectedDoctorListItem =
-    doctorList.items.find((item) => item.id === selectedDoctorId) ?? null;
+    visibleDoctorList.items.find((item) => item.id === selectedDoctorId) ?? null;
   const selectedClinicLabel = selectedDoctor
     ? selectedDoctor.clinics.length > 1
       ? `${selectedDoctor.clinics.length} клиники`
@@ -948,10 +1171,36 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   };
 
   const scrollToPromotions = () => {
+    triggerTelegramHaptic("selection");
     promotionsRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
+  };
+
+  const openSmartSearchBestMatch = (match: SmartSearchBestMatch | null) => {
+    if (!match) {
+      openList();
+      return;
+    }
+
+    switch (match.kind) {
+      case "doctor":
+        openDetail(match.id);
+        return;
+      case "specialty":
+        applySpecialtyFilter(match.name);
+        return;
+      case "clinic":
+        openList({
+          filter: "Все",
+          nextQuery: match.name,
+        });
+        return;
+      case "promotion":
+        openExternalLink(match.source_url);
+        return;
+    }
   };
 
   const openList = ({
@@ -961,6 +1210,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
     filter?: string;
     nextQuery?: string;
   } = {}) => {
+    triggerTelegramHaptic("selection");
     markDoctorsLoading();
 
     if (filter !== undefined) {
@@ -984,6 +1234,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   };
 
   const openDetail = (doctorId: string) => {
+    triggerTelegramHaptic("light");
     setSelectedDoctorId(doctorId);
     setDetailState({
       doctorId,
@@ -994,12 +1245,156 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
   };
 
   const resetFilters = () => {
+    triggerTelegramHaptic("selection");
     markDoctorsLoading();
     setSelectedFilter("Все");
     setQuery("");
     setSpecialtySheetOpen(false);
     setSpecialtySearch("");
   };
+
+  const handleHomeSearchSubmit = () => {
+    triggerTelegramHaptic("light");
+    if (smartSearch.results?.best_match) {
+      openSmartSearchBestMatch(smartSearch.results.best_match);
+      return;
+    }
+
+    openList();
+  };
+
+  const applyTelegramStartParam = useEffectEvent((startParam: string | null) => {
+    const normalizedStartParam = normalizeStartParam(startParam);
+    if (!normalizedStartParam) {
+      return;
+    }
+
+    if (appliedStartParamRef.current === normalizedStartParam) {
+      return;
+    }
+
+    appliedStartParamRef.current = normalizedStartParam;
+
+    const [rawMode, ...rest] = normalizedStartParam.split(":");
+    const mode = rawMode.toLowerCase();
+    const payload = rest.join(":").trim();
+
+    if (mode === "promo" || normalizedStartParam.toLowerCase() === "promo") {
+      requestAnimationFrame(() => {
+        setScreen("home");
+        promotionsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+      return;
+    }
+
+    if (mode === "specialty" && payload) {
+      applySpecialtyFilter(payload);
+      return;
+    }
+
+    if ((mode === "search" || mode === "doctor" || mode === "clinic") && payload) {
+      openList({
+        filter: "Все",
+        nextQuery: payload,
+      });
+      return;
+    }
+
+    openList({
+      filter: "Все",
+      nextQuery: normalizedStartParam.replaceAll("_", " "),
+    });
+  });
+
+  useEffect(() => {
+    const fallbackStartParam =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("tgWebAppStartParam") ??
+          new URLSearchParams(window.location.search).get("start");
+    const initData = getTelegramWebApp()?.initData?.trim();
+
+    if (!initData) {
+      const frame = requestAnimationFrame(() => {
+        applyTelegramStartParam(fallbackStartParam);
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+
+    const controller = new AbortController();
+
+    fetchTelegramSession(initData, controller.signal)
+      .then((response) => {
+        const firstName = response.session.user?.first_name?.trim();
+        setTelegramDisplayName(firstName || null);
+        applyTelegramStartParam(response.session.start_param ?? fallbackStartParam);
+      })
+      .catch(() => {
+        applyTelegramStartParam(fallbackStartParam);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const backButton = getTelegramWebApp()?.BackButton;
+    if (!backButton) {
+      return;
+    }
+
+    const handleBack = () => {
+      triggerTelegramHaptic("light");
+
+      if (specialtySheetOpen) {
+        setSpecialtySheetOpen(false);
+        setSpecialtySearch("");
+        return;
+      }
+
+      if (screen === "detail") {
+        setScreen("list");
+        return;
+      }
+
+      if (screen === "list") {
+        setScreen("home");
+      }
+    };
+
+    if (specialtySheetOpen || screen !== "home") {
+      backButton.show();
+    } else {
+      backButton.hide();
+    }
+
+    backButton.onClick?.(handleBack);
+    return () => {
+      backButton.offClick?.(handleBack);
+    };
+  }, [screen, specialtySheetOpen]);
+
+  useEffect(() => {
+    const webApp = getTelegramWebApp();
+    if (!webApp?.enableClosingConfirmation || !webApp?.disableClosingConfirmation) {
+      return;
+    }
+
+    const shouldProtectSession =
+      specialtySheetOpen || screen !== "home" || Boolean(query.trim()) || selectedFilter !== "Все";
+
+    if (shouldProtectSession) {
+      webApp.enableClosingConfirmation();
+    } else {
+      webApp.disableClosingConfirmation();
+    }
+
+    return () => {
+      webApp.disableClosingConfirmation?.();
+    };
+  }, [query, screen, selectedFilter, specialtySheetOpen]);
 
   return (
     <>
@@ -1013,6 +1408,11 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                     <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-link">
                       Medsearch BY
                     </div>
+                    {telegramDisplayName ? (
+                      <div className="mt-1 text-sm font-semibold text-link">
+                        Привет, {telegramDisplayName}
+                      </div>
+                    ) : null}
                     <h1 className="mt-2 font-display text-[25px] font-bold leading-[1.05] text-text">
                       Быстрый поиск врача в Минске
                     </h1>
@@ -1028,10 +1428,10 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                 <div className="mt-3 flex flex-wrap gap-2 text-xs text-subtle">
                   <span className="rounded-pill bg-section px-3 py-2 shadow-soft">
                     <span className="font-semibold text-text">
-                      {overview
-                        ? formatCount(overview.doctors_total)
-                        : doctorList.total > 0
-                          ? formatCount(doctorList.total)
+                      {doctorList.total > 0
+                        ? formatCount(doctorList.total)
+                        : overview
+                          ? formatCount(overview.doctors_total)
                           : "..."}
                     </span>{" "}
                     врачей
@@ -1058,12 +1458,155 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
               <SearchInput
                 value={query}
                 onChange={(nextValue) => {
-                  markDoctorsLoading();
+                  setSmartSearchPending(nextValue);
                   setQuery(nextValue);
                 }}
-                onSubmit={() => openList()}
+                onSubmit={handleHomeSearchSubmit}
                 placeholder="Врач, специальность или клиника"
               />
+
+              {deferredQuery.length >= 2 ? (
+                <section className="space-y-2 rounded-lg bg-surface p-3 shadow-card">
+                  <SectionHeader
+                    eyebrow="Search V2"
+                    title={formatSearchIntent(
+                      smartSearch.results?.intent ?? "mixed",
+                    )}
+                  />
+
+                  {smartSearch.status === "loading" ? (
+                    <LoadingState label="Уточняем врача, клинику, направление и акции" />
+                  ) : null}
+
+                  {smartSearch.status === "error" && smartSearch.error ? (
+                    <ErrorState
+                      title="Умный поиск временно недоступен"
+                      message={smartSearch.error}
+                      onRetry={() => setSmartSearchReloadKey((current) => current + 1)}
+                    />
+                  ) : null}
+
+                  {smartSearch.status === "success" && smartSearch.results ? (
+                    <div className="space-y-3">
+                      {smartSearch.results.best_match ? (
+                        <SearchGroup title="Лучшее совпадение">
+                          <SearchResultButton
+                            title={formatSearchMatchTitle(smartSearch.results.best_match)}
+                            subtitle={formatSearchMatchSubtitle(
+                              smartSearch.results.best_match,
+                            )}
+                            badge={
+                              smartSearch.results.best_match.kind === "doctor"
+                                ? smartSearch.results.best_match.verified_clinic
+                                  ? "Подтверждено"
+                                  : `${smartSearch.results.best_match.reviews_count} отзывов`
+                                : smartSearch.results.best_match.kind === "specialty"
+                                  ? `${formatCount(smartSearch.results.best_match.count)} врачей`
+                                  : undefined
+                            }
+                            onClick={() =>
+                              openSmartSearchBestMatch(smartSearch.results?.best_match ?? null)
+                            }
+                          />
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.suggestions.length > 0 ? (
+                        <SearchGroup title="Подсказки">
+                          <div className="flex flex-wrap gap-2">
+                            {smartSearch.results.suggestions.map((suggestion) => (
+                              <FilterChip
+                                key={suggestion}
+                                label={suggestion}
+                                onClick={() => {
+                                  setSmartSearchPending(suggestion);
+                                  setQuery(suggestion);
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.doctors.length > 0 ? (
+                        <SearchGroup title="Врачи">
+                          {smartSearch.results.doctors.slice(0, 3).map((doctor) => (
+                            <SearchResultButton
+                              key={doctor.id}
+                              title={doctor.full_name}
+                              subtitle={`${doctor.specialty} • ${doctor.clinic}`}
+                              badge={
+                                doctor.verified_clinic
+                                  ? `${doctor.reviews_count} отзывов • сайт подтвержден`
+                                  : `${doctor.reviews_count} отзывов`
+                              }
+                              onClick={() => openDetail(doctor.id)}
+                            />
+                          ))}
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.specialties.length > 0 ? (
+                        <SearchGroup title="Специальности">
+                          <div className="flex flex-wrap gap-2">
+                            {smartSearch.results.specialties.map((specialty) => (
+                              <FilterChip
+                                key={specialty.slug}
+                                label={`${specialty.name} · ${formatCount(specialty.count)}`}
+                                onClick={() => applySpecialtyFilter(specialty.name)}
+                              />
+                            ))}
+                          </div>
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.clinics.length > 0 ? (
+                        <SearchGroup title="Клиники">
+                          {smartSearch.results.clinics.slice(0, 2).map((clinic) => (
+                            <SearchResultButton
+                              key={clinic.id}
+                              title={clinic.name}
+                              subtitle={
+                                clinic.address ??
+                                `${formatCount(clinic.doctors_count)} врачей • ${formatCount(clinic.promotions_count)} акций`
+                              }
+                              badge={clinic.verified ? "Сайт подтвержден" : undefined}
+                              onClick={() =>
+                                openList({
+                                  filter: "Все",
+                                  nextQuery: clinic.name,
+                                })
+                              }
+                            />
+                          ))}
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.promotions.length > 0 ? (
+                        <SearchGroup title="Акции">
+                          {smartSearch.results.promotions.slice(0, 2).map((promotion) => (
+                            <SearchResultButton
+                              key={promotion.id}
+                              title={promotion.title}
+                              subtitle={promotion.clinic_name}
+                              onClick={() => openExternalLink(promotion.source_url)}
+                            />
+                          ))}
+                        </SearchGroup>
+                      ) : null}
+
+                      {smartSearch.results.best_match === null ? (
+                        <EmptyState
+                          title="Ничего точного не нашли"
+                          description="Попробуйте фамилию врача, клинику, специальность или запрос вроде «щитовидка»."
+                          actionLabel="Открыть весь каталог"
+                          onAction={() => openList({ filter: "Все", nextQuery: "" })}
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
+                </section>
+              ) : null}
 
               <section className="space-y-2">
                 <SectionHeader title="Быстрый старт" />
@@ -1071,7 +1614,13 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                   <QuickActionCard
                     title="Все врачи"
                     subtitle="Открыть полный каталог"
-                    badge={overview ? `${formatCount(overview.doctors_total)}` : undefined}
+                    badge={
+                      doctorList.total > 0
+                        ? `${formatCount(doctorList.total)}`
+                        : overview
+                          ? `${formatCount(overview.doctors_total)}`
+                          : undefined
+                    }
                     icon={<ArrowRightIcon />}
                     onClick={() => openList({ filter: "Все", nextQuery: "" })}
                   />
@@ -1182,7 +1731,12 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                 {promotionsStatus === "success" && promotions.length > 0 ? (
                   <div className="space-y-2">
                     {promotions.map((promotion) => (
-                      <PromoBadge key={promotion.id} {...promotion} />
+                      <PromoBadge
+                        key={promotion.id}
+                        {...promotion}
+                        sourceUrl={promotion.source_url}
+                        onClick={() => openExternalLink(promotion.source_url)}
+                      />
                     ))}
                   </div>
                 ) : null}
@@ -1215,7 +1769,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                   </PrimaryButton>
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-display text-lg font-bold text-text">
-                      Найдено {doctorList.total} врачей
+                      Найдено {visibleDoctorList.total} врачей
                     </div>
                     <div className="truncate text-xs text-subtle">
                       {selectedFilter === "Все"
@@ -1229,6 +1783,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
               <SearchInput
                 value={query}
                 onChange={(nextValue) => {
+                  setSmartSearchPending(nextValue);
                   markDoctorsLoading();
                   setQuery(nextValue);
                 }}
@@ -1275,20 +1830,20 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                 </div>
               </section>
 
-              {doctorsStatus === "loading" && doctorList.items.length === 0 ? (
+              {visibleDoctorsStatus === "loading" && visibleDoctorList.items.length === 0 ? (
                 <LoadingState label="Загружаем врачей из облачного каталога" />
               ) : null}
 
-              {doctorsStatus === "loading" && doctorList.items.length > 0 ? (
+              {visibleDoctorsStatus === "loading" && visibleDoctorList.items.length > 0 ? (
                 <div className="rounded-pill bg-section px-3 py-2 text-center text-xs font-medium text-subtle shadow-soft">
                   Обновляем список врачей...
                 </div>
               ) : null}
 
-              {doctorsStatus === "error" && doctorsError ? (
+              {visibleDoctorsStatus === "error" && visibleDoctorsError ? (
                 <ErrorState
                   title="Не удалось загрузить врачей"
-                  message={doctorsError}
+                  message={visibleDoctorsError}
                   onRetry={() => {
                     markDoctorsLoading();
                     setDoctorsReloadKey((current) => current + 1);
@@ -1296,7 +1851,7 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                 />
               ) : null}
 
-              {doctorsStatus === "success" && doctorList.items.length === 0 ? (
+              {visibleDoctorsStatus === "success" && visibleDoctorList.items.length === 0 ? (
                 <EmptyState
                   title="Ничего не найдено"
                   description="Сбросьте фильтры или откройте весь каталог, чтобы увидеть больше врачей."
@@ -1305,9 +1860,9 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                 />
               ) : null}
 
-              {doctorList.items.length > 0 ? (
+              {visibleDoctorList.items.length > 0 ? (
                 <section className="space-y-3">
-                  {doctorList.items.map((doctor) => (
+                  {visibleDoctorList.items.map((doctor) => (
                     <DoctorCard key={doctor.id} doctor={doctor} onSelect={openDetail} />
                   ))}
                 </section>
@@ -1446,9 +2001,11 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                                   {formatReviewSourceName(review.source_name)}
                                 </div>
                                 <div className="mt-1 text-sm text-subtle">
-                                  {review.rating_avg !== null
-                                    ? `Рейтинг ${review.rating_avg.toFixed(1)} • ${review.reviews_count} отзывов`
-                                    : `${review.reviews_count} отзывов`}
+                                  {review.reviews_count <= 0
+                                    ? "Отзывов пока нет"
+                                    : review.rating_avg !== null
+                                      ? `Рейтинг ${review.rating_avg.toFixed(1)} • ${review.reviews_count} отзывов`
+                                      : `${review.reviews_count} отзывов`}
                                 </div>
                               </div>
                               <PrimaryButton
@@ -1483,6 +2040,8 @@ export function CatalogApp({ initialScreen = "home" }: CatalogAppProps) {
                           clinic={promotion.clinic_name}
                           title={promotion.title}
                           deadline={formatDeadline(promotion.ends_at)}
+                          sourceUrl={promotion.source_url}
+                          onClick={() => openExternalLink(promotion.source_url)}
                         />
                       ))
                     )}

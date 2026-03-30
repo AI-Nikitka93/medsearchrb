@@ -1,6 +1,190 @@
-Дата и время: 2026-03-23 21:33
+Primary resume doc: `docs/EXECUTION_MAP.md`
+
+Дата и время: 2026-03-30 17:08
 Статус: IN_PROGRESS
-Причина: Основной production-контур жив (`bot + worker + mini app + promo/review/catalog workflows`), а следующий реальный шаг к `100/100` теперь зафиксирован как `Catalog Trust P0`. В репо добавлен runnable audit `npm --prefix apps/worker run catalog:audit`, и baseline показал ключевые узкие места: `3252` врачей, `151` групп дублей врачей (`302` строк), `149` врачей без активной клиники и только `22` врача с verified clinic link. Это делает doctor/clinic identity quality главным рабочим треком поверх уже стабилизированной инфраструктуры.
+Причина: Выполнение execution-map дошло до системного исправления promo pipeline. Старые operational blockers `401 ingest token is invalid` и Windows `catalog:backfill` больше не являются активными: env-loading нормализован, `db:migrate` снова работает, а `notification_outbox` научен reclaim-ить stale `processing`. `Аква-Минск Клиника` подтвержден в live Turso, Telegram channel и live API; прежнее расхождение `3/4` на общем promotions feed оказалось не багом, а pagination artifact (`per_page` ограничен `50`, поэтому 4-я запись попадает на `page=2`). Локальный `wrangler deploy` всё ещё упирается в Cloudflare account mismatch (`66f004...` vs `64b387...`), но теперь для worker подготовлен обходной production path через GitHub Actions workflow `worker-deploy` и helper `scripts/sync-worker-github-secrets.ps1`.
+Что уже сделано:
+- Добавлена миграция `db/migrations/0005_notification_outbox_claimed_at.sql`
+- Добавлена миграция `db/migrations/0006_promotions_published_at.sql`
+- `notification_outbox` получил `claimed_at` и stale-processing reclaim
+- promotions получили `published_at`, а channel dispatch теперь требует date evidence (`ends_at` или свежий `published_at`)
+- Обновлены:
+  - `apps/worker/src/repositories/notification-outbox-repository.ts`
+  - `apps/worker/src/repositories/catalog-write-repository.ts`
+  - `apps/worker/scripts/apply-migrations.mjs`
+  - несколько worker scripts были ранее переведены на shared root env loading
+- Подтверждено:
+  - локальный auth smoke к `POST /internal/ingest/source-batch` больше не даёт `401`; теперь route доходит до `400 INVALID_BATCH` при пустом payload
+  - локальный `npm --prefix apps/worker run catalog:backfill -- --batch-file ...latest-source-batch.json --chunk-size 50` отрабатывает успешно
+  - `npm run db:migrate` снова штатно проходит на Windows
+  - локальный dispatch обновлённым `PromotionChannelService` поднял stale outbox и довёл `Лазерное удаление гигромы` до `status=sent`, `attempt_count=2`
+  - публичный channel `https://t.me/s/medsearch_minsk` уже содержит все 4 `Аква-Минск` заголовка:
+    - `Инъекционные методы в косметологии...`
+    - `Нитевой лифтинг промежности`
+    - `Лазерное лечение геморроя`
+    - `Лазерное удаление гигромы`
+  - live DB подтверждает `4` active/visible `Аква-Минск` promotions
+  - live API `GET /api/v1/promotions?clinic=akva-minsk-klinika-00cbca01bc&page=1&per_page=50` подтверждает все `4` items
+  - общее `GET /api/v1/promotions?page=1&per_page=50` показывает только `3`, а 4-я запись уходит на `page=2`; это pagination artifact, а не data drift
+Что осталось:
+- Восстановить Cloudflare deploy path через правильный account/token и повторно выкатить worker
+- Дотянуть `published_at` в promo-scraper-ы, где дата реально доступна, чтобы новый channel guard был полноценно полезен
+- После deploy заново проверить `/api/v1/promotions`, Mini App и channel consistency
+Следующий шаг:
+- Начинать с deploy blocker по Cloudflare account, затем пройтись по promo-scraper-ам и добавить `published_at`
+
+Дата и время: 2026-03-30 03:05
+Статус: IN_PROGRESS
+Причина: Следующая попытка promo expansion ушла в mixed outcome: `Аква-Минск Клиника` была локально добавлена как узкий news-based source с service-promo фильтрацией, но live ingest упёрся в auth/runtime blockers, поэтому источник пока подтвержден только локально и не должен считаться live-published.
+Что уже сделано:
+- Повторно проверены official candidates из нового пользовательского списка:
+  - `https://aquaminskclinic.by/news/`
+  - `https://profimed.by/`
+  - `https://bullfinch.by/news/`
+  - `https://eleos.by/akcii`
+- Подтверждено:
+  - `Аква-Минск Клиника` имеет рабочий `news`-раздел и позволяет безопасно выделить только свежие service-promo публикации
+  - `Профимед` имеет живой офсайт, но явный promo/news route для ingestion не подтверждён
+  - `Bullfinch` имеет news archive, но это в основном старый архив `2015-2019`, не подходящий для live expansion
+  - `Элеос` имеет route `/akcii`, но страница сейчас выглядит почти пустой для автоматического promo extraction
+- Добавлен новый scraper:
+  - `apps/scrapers/scrapers/aquaminsk.py`
+- Обновлены:
+  - `apps/scrapers/scrapers/__init__.py`
+  - `config.yaml`
+  - `selectors.yaml`
+  - `.github/workflows/promo-sync.yml`
+- Локальный scrape подтвержден:
+  - `aquaminsk -> 4 promotions`
+  - состав локального batch: `Инъекционные методы в косметологии...`, `Нитевой лифтинг промежности`, `Лазерное лечение геморроя`, `Лазерное удаление гигромы`
+- Live blockers зафиксированы отдельно:
+  - direct `POST /internal/ingest/source-batch` сейчас отвечает `401 ingest token is invalid` при чтении секрета из локального env
+  - локальный `npm --prefix apps/worker run catalog:backfill` по-прежнему падает на Windows-side ошибке `TypeError: resp.body?.cancel is not a function`
+  - live API после попытки ingest остался без новых `Аква-Минск` записей: total всё ещё `69`, `AQUA_COUNT=0`
+Что осталось:
+- Разобраться, почему локальный `INGEST_SHARED_SECRET` больше не авторизует internal Worker route
+- Починить или обойти Windows-local Turso backfill path, чтобы не зависеть от live secret для одиночных source batch
+- Только после этого считать `aquaminsk` реально live-ready и проверять Telegram posting
+Следующий шаг:
+- Обновить project history и git QA journal с честной фиксацией: `aquaminsk` локально реализован и верифицирован, но live ingest пока заблокирован `401 + local backfill bug`
+
+Дата и время: 2026-03-30 01:40
+Статус: IN_PROGRESS
+Причина: Следующая волна promo expansion продолжилась не через guess по news-разделам, а через повторную internet-проверку official routes. В результате были найдены и реально подтверждены новые promo-source у `ИдеалМед` и `Эра`, а кандидаты `Мерси` и `Эксана` были дополнительно перепроверены и временно отложены как менее надёжные для этой итерации.
+Что уже сделано:
+- Повторно проверены official promo routes и robots:
+  - `https://idealmed.by/akczii-i-skidki.html`
+  - `https://medera.by/promotions/`
+  - `https://mercimed.by/stock/`
+  - `https://eksana.by/promo/`
+- Подтверждено:
+  - `ИдеалМед` имеет detail-based promo archive
+  - `Эра` имеет live promo landing page с множественными офферами
+  - `Мерси` имеет `stock`-раздел, но он сейчас выглядит в основном архивным
+  - `Эксана` имеет `promo` route, но текущая страница почти пустая и не содержит реальных promo cards
+- Добавлены новые scraper-ы:
+  - `apps/scrapers/scrapers/idealmed.py`
+  - `apps/scrapers/scrapers/medera.py`
+- Обновлены:
+  - `apps/scrapers/scrapers/__init__.py`
+  - `config.yaml`
+  - `selectors.yaml`
+  - `.github/workflows/promo-sync.yml`
+- Локальный scrape подтвержден:
+  - `idealmed -> 9 promotions`
+  - `medera -> 10 promotions`
+- Production ingest проверен через live Worker endpoint:
+  - combined envelope для двух sources вернул `500`, поэтому ingestion был изолирован по одному source
+  - `idealmed -> skipped=1` (source уже был зафиксирован как completed в live ingest path)
+  - `medera -> inserted=10, updated=1`
+- Live API после этой итерации уже отдает `69` акций total, из них `19` записей подтверждены для `ИдеалМед` и `Эра`
+Что осталось:
+- Решить, нужен ли отдельный manual flush этих новых акций в Telegram channel сейчас, или оставить отправку на существующий posting pipeline
+- Зафиксировать/запушить локальные workflow/code changes, иначе новые sources не войдут в будущий scheduled `promo-sync`
+- Продолжить следующую волну только после такой же ручной internet-верификации, а не по старому shortlist “как есть”
+Следующий шаг:
+- Обновить project history и git QA journal с evidence по `idealmed + medera`, отдельно отметить reject/hold для `merci + eksana`
+
+Дата и время: 2026-03-30 01:12
+Статус: IN_PROGRESS
+Причина: Promo expansion перешёл из аудита в execution: после strict shortlist были выбраны два нейтральных official medical source, реализованы, локально проверены и уже реально доставлены в live channel. Теперь проект находится в более сильной точке: не только есть verified backlog, но и есть подтверждённый рабочий шаблон для безопасного добавления новых клиник без ломки существующего promo-layer.
+Что уже сделано:
+- Добавлены новые scraper-ы:
+  - `apps/scrapers/scrapers/gurumed.py`
+  - `apps/scrapers/scrapers/paracels.py`
+- Обновлены:
+  - `apps/scrapers/scrapers/__init__.py`
+  - `config.yaml`
+  - `selectors.yaml`
+  - `.github/workflows/promo-sync.yml`
+- Robots + structure были вручную перепроверены перед добавлением:
+  - `https://gurumed.by/robots.txt`
+  - `https://www.narkolog.by/robots.txt`
+  - обе площадки отдают `200` и не содержат blanket-disallow для наших promo routes
+- Локальный scrape новых источников подтвержден:
+  - `gurumed -> 1 promotion`
+  - `paracels -> 2 promotions`
+- Live backfill подтвержден:
+  - `inserted=3`
+  - `updated=2`
+  - `errors=0`
+- Live outbox после backfill показал `pending=3`, после flush:
+  - `claimed=3`
+  - `sent=3`
+  - `failed=0`
+  - `skipped=0`
+- Публичный Telegram channel уже содержит новые посты:
+  - `https://t.me/medsearch_minsk/83` -> `Скидка в День рождения` (`gurumed`)
+  - `https://t.me/medsearch_minsk/84` -> `Бонусы постоянным клиентам` (`paracels`)
+  - `https://t.me/medsearch_minsk/85` -> `Лечение в рассрочку и в кредит` (`paracels`)
+Что осталось:
+- Продолжить adding sources только из verified `promotions` bucket
+- Предпочитать нейтральные medical centers перед косметологией/стоматологией, если пользователь явно хочет именно медцентры
+- Решить, нужна ли следующая волна источников уже сейчас, или сначала зафиксировать/push текущую волну в git и workflow
+Следующий шаг:
+- Выбрать ещё 1-2 медицинских verified sources из shortlist и пройти тот же безопасный цикл: robots -> local scrape -> live backfill -> channel verify
+
+Дата и время: 2026-03-30 00:47
+Статус: IN_PROGRESS
+Причина: Promo coverage expansion продолжает быть главным рабочим треком, но после повторной internet-верификации основная проблема переопределена точнее: теперь важно не просто находить hosts с promo/news сигналом, а различать `confirmed promotions`, `verified news-only` и `homepage signal only`. Это критично, чтобы не завышать покрытие и не подключать ложные источники по 404/general-news маршрутам.
+Что уже сделано:
+- Усилен script `apps/worker/scripts/promo-web-verify.ts`:
+  - added rejection for `404 / error page` false positives
+  - added `promo_signal_source`
+  - added `promo_page_verified`
+  - added `promo_page_kind = promotions | news | unknown | none`
+- Усилен script `apps/worker/scripts/promo-priority-report.ts`:
+  - `ready_to_add` теперь формируется только из `verified promotions`
+  - `verified_news_only` вынесен в отдельный bucket
+  - `homepage_signal_only` больше не смешивается с подтвержденными акциями
+- Новый internet baseline по официальным сайтам клиник Минска:
+  - `316` total hosts
+  - `299` fetchable
+  - `222` hosts with homepage/site promo signal
+  - `76` hosts with working verified promo/news page
+  - `41` hosts with verified page kind `promotions`
+  - `35` hosts with verified page kind `news`
+- Новый priority baseline:
+  - `36` clinics in `ready_to_add`
+  - `35` clinics in `verified_news_only`
+  - `165` clinics in `homepage_signal_only`
+  - `28` clinics in `review_existing`
+- Артефакты пересобраны:
+  - `docs/promo-web-verify.md`
+  - `docs/promo-web-verify.json`
+  - `docs/promo-priority-report.md`
+  - `docs/promo-priority-report.json`
+  - `docs/promo-priority-report.csv`
+Что осталось:
+- Взять top `ready_to_add` только из bucket `verified promotions`
+- Дополнительно вручную просмотреть несколько верхних кандидатов, чтобы подтвердить, что это именно медицинские центры Минска, а не пограничные косметологические/стоматологические кейсы
+- Не считать `verified_news_only` и `homepage_signal_only` эквивалентом “есть акции”, пока это не подтверждено отдельно
+Следующий шаг:
+- Сформировать shortlist следующей волны promo-source implementation только из verified `promotions` кандидатов и отдельно пометить policy-spots, которые требуют продуктового решения
+
+Дата и время: 2026-03-30 00:06
+Статус: IN_PROGRESS
+Причина: Production-контур жив, а текущий активный риск теперь формализован как backlog расширения promo-layer по клиникам Минска. После `promo:coverage` и `promo:web-verify` собран ещё и `promo:priority`, который переводит общую проблему в конкретный рабочий список: `247` verified-кандидатов на подключение и `28` existing-source кейсов для review. Это делает promo priority expansion главным рабочим треком поверх уже стабилизированного bot/worker/mini app.
 Что уже сделано:
 - Создана group `medsearch-primary` в регионе `aws-eu-west-1`
 - Создана база `medsearchrb`

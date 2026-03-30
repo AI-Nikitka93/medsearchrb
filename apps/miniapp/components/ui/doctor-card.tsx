@@ -52,7 +52,9 @@ export function DoctorCard({ doctor, onSelect }: DoctorCardProps) {
               {doctor.nextSlot ?? "Открыть карточку"}
             </span>
             <span className="text-xs text-subtle">
-              {doctor.reviewCount} отзывов
+              {doctor.reviewCount > 0
+                ? `${doctor.reviewCount} отзывов`
+                : "Оценка появится после первых отзывов"}
             </span>
           </div>
           {doctor.promoTitle ? (

@@ -792,7 +792,7 @@ export class CatalogWriteRepository {
   async findPromotionByFingerprint(db: SqlExecutor, fingerprintHash: string) {
     const result = await db.execute({
       sql: `
-        SELECT id, title, source_url, discount_label, ends_at
+        SELECT id, title, source_url, discount_label, ends_at, published_at
         FROM promotions
         WHERE fingerprint_hash = ?
         LIMIT 1
@@ -813,6 +813,7 @@ export class CatalogWriteRepository {
       sourceName: string;
       sourceUrl: string;
       endsAt: string | null;
+      publishedAt: string | null;
       fingerprintHash: string;
       lastSeenAt: string;
       isActive: number;
@@ -822,16 +823,17 @@ export class CatalogWriteRepository {
       sql: `
         INSERT INTO promotions (
           id, clinic_id, doctor_id, title, description_short, source_name, source_url,
-          discount_label, starts_at, ends_at, is_active, is_hidden,
+          discount_label, starts_at, ends_at, published_at, is_active, is_hidden,
           fingerprint_hash, last_seen_at, created_at, updated_at
         )
-        VALUES (?, ?, ?, ?, NULL, ?, ?, NULL, NULL, ?, ?, 0, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, NULL, ?, ?, NULL, NULL, ?, ?, ?, 0, ?, ?, ?, ?)
         ON CONFLICT(fingerprint_hash) DO UPDATE SET
           clinic_id = excluded.clinic_id,
           doctor_id = excluded.doctor_id,
           title = excluded.title,
           source_url = excluded.source_url,
           ends_at = excluded.ends_at,
+          published_at = excluded.published_at,
           is_active = excluded.is_active,
           last_seen_at = excluded.last_seen_at,
           updated_at = excluded.updated_at
@@ -844,6 +846,7 @@ export class CatalogWriteRepository {
         args.sourceName,
         args.sourceUrl,
         args.endsAt,
+        args.publishedAt,
         args.isActive,
         args.fingerprintHash,
         args.lastSeenAt,
@@ -903,9 +906,9 @@ export class CatalogWriteRepository {
       sql: `
         INSERT INTO notification_outbox (
           id, event_type, entity_type, entity_id, dedupe_key,
-          payload_json, status, attempt_count, last_error, created_at, sent_at
+          payload_json, status, attempt_count, last_error, created_at, claimed_at, sent_at
         )
-        VALUES (?, 'promotion.updated', 'promotion', ?, ?, ?, 'pending', 0, NULL, ?, NULL)
+        VALUES (?, 'promotion.updated', 'promotion', ?, ?, ?, 'pending', 0, NULL, ?, NULL, NULL)
         ON CONFLICT(dedupe_key) DO NOTHING
       `,
       args: [

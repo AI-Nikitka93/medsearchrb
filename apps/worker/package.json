@@ -7,11 +7,16 @@
     "build": "tsc --noEmit",
     "catalog:audit": "tsx ./scripts/catalog-quality-audit.ts",
     "catalog:backfill": "tsx ./scripts/backfill-from-batch.ts",
+    "catalog:remediate": "tsx ./scripts/catalog-remediate.ts",
+    "catalog:sanitize": "tsx ./scripts/catalog-sanitize.ts",
     "check": "tsc --noEmit",
     "clinics:health": "tsx ./scripts/clinic-site-health-sync.ts",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:migrate": "node ./scripts/apply-migrations.mjs",
+    "promo:coverage": "tsx ./scripts/promo-coverage-audit.ts",
+    "promo:priority": "tsx ./scripts/promo-priority-report.ts",
+    "promo:web-verify": "tsx ./scripts/promo-web-verify.ts",
     "verify:clinics": "tsx ./scripts/verify-clinic-sites.ts"
   },
   "dependencies": {

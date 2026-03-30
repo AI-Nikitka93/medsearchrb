@@ -11,7 +11,11 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 
 
 def _load_environment() -> None:
-    for candidate in (ROOT_DIR / ".env", ROOT_DIR / ".env.txt"):
+    for candidate in (
+        ROOT_DIR / ".env.local",
+        ROOT_DIR / ".env",
+        ROOT_DIR / ".env.txt",
+    ):
         if candidate.exists():
             load_dotenv(candidate, override=False)
 

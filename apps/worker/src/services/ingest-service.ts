@@ -20,6 +20,8 @@ import {
   normalizeAddress,
   normalizeClinicName,
   normalizeText,
+  sanitizeDoctorFullName,
+  sanitizeSpecialtyName,
   significantNameTokens,
   slugify,
 } from "../utils/normalize";
@@ -102,8 +104,10 @@ export class IngestService {
 
         const doctorMap = new Map<string, string>();
         for (const doctor of batch.doctors) {
-          const doctorId = await this.upsertDoctor(tx, doctor, clinicMap, counts);
-          doctorMap.set(doctor.external_id, doctorId);
+        const doctorId = await this.upsertDoctor(tx, doctor, clinicMap, counts);
+          if (doctorId) {
+            doctorMap.set(doctor.external_id, doctorId);
+          }
         }
 
         for (const review of batch.review_summaries) {
@@ -372,7 +376,16 @@ export class IngestService {
     doctor: DoctorRecord,
     clinicMap: Map<string, string>,
     counts: BatchRunCounts,
-  ): Promise<string> {
+  ): Promise<string | null> {
+    const sanitizedFullName = sanitizeDoctorFullName(doctor.full_name);
+    if (!sanitizedFullName) {
+      counts.skipped += 1;
+      return null;
+    }
+
+    const sanitizedSpecialtyNames = Array.from(
+      new Set(doctor.specialty_names.map((item) => sanitizeSpecialtyName(item)).filter(Boolean)),
+    ) as string[];
     const sourceType = this.normalizeSourceType(doctor.source_type);
     const verifiedOnClinicSite =
       (
@@ -390,11 +403,11 @@ export class IngestService {
     const preferredProfileUrl =
       doctor.official_profile_url ?? doctor.profile_url ?? doctor.source_url ?? doctor.url;
 
-    const normalizedName = normalizeText(doctor.full_name);
+    const normalizedName = normalizeText(sanitizedFullName);
     const checksum = await sha256(
       JSON.stringify({
-        name: doctor.full_name,
-        specialties: doctor.specialty_names,
+        name: sanitizedFullName,
+        specialties: sanitizedSpecialtyNames,
         clinics: doctor.clinic_external_ids,
         url: doctor.url,
         source_type: sourceType,
@@ -411,7 +424,7 @@ export class IngestService {
       doctorId = String(sourceRow.doctor_id);
       await this.repo.touchDoctor(db, {
         doctorId,
-        fullName: doctor.full_name,
+        fullName: sanitizedFullName,
         normalizedName,
         nowIso: doctor.captured_at,
       });
@@ -442,7 +455,7 @@ export class IngestService {
           .filter((item): item is string => Boolean(item)),
       );
       const specialtyTokenSet = new Set(
-        doctor.specialty_names
+        sanitizedSpecialtyNames
           .map((name) => normalizeText(name))
           .filter(Boolean),
       );
@@ -481,18 +494,18 @@ export class IngestService {
         doctorId = matchedId;
         await this.repo.touchDoctor(db, {
           doctorId,
-          fullName: doctor.full_name,
+          fullName: sanitizedFullName,
           normalizedName,
           nowIso: doctor.captured_at,
         });
         counts.updated += 1;
       } else {
         doctorId = crypto.randomUUID();
-        const slug = await this.uniqueSlug("doctor", doctor.full_name, doctor.external_id);
+        const slug = await this.uniqueSlug("doctor", sanitizedFullName, doctor.external_id);
         await this.repo.insertDoctor(db, {
           id: doctorId,
           slug,
-          fullName: doctor.full_name,
+          fullName: sanitizedFullName,
           normalizedName,
           suppressionKey: `doctor:${slug}`,
           nowIso: doctor.captured_at,
@@ -520,8 +533,8 @@ export class IngestService {
       });
     }
 
-    for (let index = 0; index < doctor.specialty_names.length; index += 1) {
-      const specialtyName = doctor.specialty_names[index];
+    for (let index = 0; index < sanitizedSpecialtyNames.length; index += 1) {
+      const specialtyName = sanitizedSpecialtyNames[index];
       const specialtyId = await this.ensureSpecialty(db, specialtyName);
       await this.repo.upsertDoctorSpecialty(db, {
         doctorId,
@@ -567,18 +580,23 @@ export class IngestService {
   }
 
   private async ensureSpecialty(db: SqlExecutor, specialtyName: string): Promise<string> {
-    const normalizedName = normalizeText(specialtyName);
+    const sanitizedName = sanitizeSpecialtyName(specialtyName);
+    if (!sanitizedName) {
+      throw new Error("Invalid specialty name");
+    }
+
+    const normalizedName = normalizeText(sanitizedName);
     const existing = await this.repo.findSpecialtyByNormalizedName(db, normalizedName);
     if (existing) {
       return String(existing.id);
     }
 
     const specialtyId = crypto.randomUUID();
-    const slug = await this.uniqueSlug("specialty", specialtyName, specialtyId);
+    const slug = await this.uniqueSlug("specialty", sanitizedName, specialtyId);
     await this.repo.insertSpecialty(db, {
       id: specialtyId,
       slug,
-      name: specialtyName,
+      name: sanitizedName,
       normalizedName,
     });
     return specialtyId;
@@ -678,6 +696,7 @@ export class IngestService {
       sourceName: promotion.source,
       sourceUrl: promotion.source_url ?? promotion.url,
       endsAt: promotion.valid_until ?? null,
+      publishedAt: promotion.published_at ?? null,
       fingerprintHash,
       lastSeenAt: promotion.captured_at,
       isActive,
@@ -687,7 +706,8 @@ export class IngestService {
       !existing ||
       String(existing.title ?? "") !== promotion.title ||
       String(existing.source_url ?? "") !== (promotion.source_url ?? promotion.url) ||
-      String(existing.ends_at ?? "") !== String(promotion.valid_until ?? "");
+      String(existing.ends_at ?? "") !== String(promotion.valid_until ?? "") ||
+      String(existing.published_at ?? "") !== String(promotion.published_at ?? "");
 
     if (materialChange) {
       const dedupeKey = await sha256(`${fingerprintHash}|${promotion.captured_at}`);
@@ -699,6 +719,7 @@ export class IngestService {
           title: promotion.title,
           source_url: promotion.source_url ?? promotion.url,
           clinic_id: clinicId,
+          published_at: promotion.published_at ?? null,
         }),
         createdAt: promotion.captured_at,
       });

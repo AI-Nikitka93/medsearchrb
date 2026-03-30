@@ -71,6 +71,33 @@ export function promotionIsExpired(
   return parsed.getTime() < threshold.getTime();
 }
 
+const CHANNEL_PROMOTION_MAX_AGE_DAYS = 45;
+
+export function promotionHasCurrentDateEvidence(args: {
+  endsAt?: string | null;
+  publishedAt?: string | null;
+  now?: Date;
+}) {
+  const now = args.now ?? new Date();
+
+  if (args.endsAt && !promotionIsExpired(args.endsAt, now)) {
+    return true;
+  }
+
+  const publishedAt = parsePromotionDate(args.publishedAt);
+  if (!publishedAt) {
+    return false;
+  }
+
+  const threshold = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  const ageMs = threshold.getTime() - publishedAt.getTime();
+  const maxAgeMs = CHANNEL_PROMOTION_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+  return ageMs >= 0 && ageMs <= maxAgeMs;
+}
+
 export function promotionIsActive(args: {
   title: string;
   endsAt?: string | null;

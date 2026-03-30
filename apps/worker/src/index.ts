@@ -10,6 +10,17 @@ import { PromotionChannelService } from "./services/promotion-channel-service";
 const app = new Hono<{ Bindings: WorkerBindings }>();
 const promotionChannelService = new PromotionChannelService();
 
+function currentMinskDate() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Minsk",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  return formatter.format(new Date());
+}
+
 function allowedOrigins(env: WorkerBindings): string[] {
   const raw =
     env.ALLOWED_ORIGINS ??
@@ -67,7 +78,7 @@ app.get("/health", (c) =>
     env: c.env.APP_ENV ?? "development",
     author: "Nikita",
     nickname: "AI_Nikitka93",
-    today: "2026-03-21",
+    today: currentMinskDate(),
   }),
 );
 

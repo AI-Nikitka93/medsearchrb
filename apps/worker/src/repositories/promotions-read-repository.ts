@@ -44,6 +44,7 @@ export class PromotionsReadRepository {
           c.id AS clinic_id,
           c.slug AS clinic_slug,
           c.name AS clinic_name,
+          c.address AS clinic_address,
           d.id AS doctor_id,
           d.slug AS doctor_slug,
           d.full_name AS doctor_name

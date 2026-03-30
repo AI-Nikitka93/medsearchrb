@@ -45,3 +45,8 @@ Workflow `.github/workflows/scraper.yml` подготовлен для cloud-onl
 - `run_scraper.bat` — локальный запуск scraper batch
 - `apps\\miniapp\\run.bat` — локальный запуск Mini App
 - `apps\\worker\\deploy_worker.bat` — деплой Worker
+
+## Local Secrets
+
+- Реальные секреты храните в `.env.local` или `.env`.
+- `.env.txt` оставлен как tracked template и не должен содержать production secrets.

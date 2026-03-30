@@ -14,6 +14,11 @@ http:
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 
 sources:
+  aquaminsk:
+    enabled: true
+    robots_reviewed_at: "2026-03-30"
+    notes:
+      - "Используем официальный раздел /news/ Аква-Минск Клиники и берём только свежие service-promo публикации, исключая поздравления и служебные объявления."
   "103.by":
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -54,11 +59,21 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем официальный раздел /akcii/ и article-based promo pages ФОРЕСТМЕД."
+  gurumed:
+    enabled: true
+    robots_reviewed_at: "2026-03-30"
+    notes:
+      - "Используем официальный раздел /sales/ клиники ГУРУ и detail pages акций."
   happyderm:
     enabled: true
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем /news как официальный раздел Новости / Акции."
+  idealmed:
+    enabled: true
+    robots_reviewed_at: "2026-03-30"
+    notes:
+      - "Используем официальный раздел /akczii-i-skidki.html и detail pages акций ИдеалМед."
   kaskad:
     enabled: true
     robots_reviewed_at: "2026-03-23"
@@ -99,6 +114,11 @@ sources:
     robots_reviewed_at: "2026-03-21"
     notes:
       - "Публичные страницы специалистов и акций доступны без авторизации."
+  medera:
+    enabled: true
+    robots_reviewed_at: "2026-03-30"
+    notes:
+      - "Используем публичную страницу /promotions/ медцентра Эра и разбираем live promo cards на самой странице."
   neomedical:
     enabled: true
     robots_reviewed_at: "2026-03-23"
@@ -114,6 +134,11 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную страницу акций и скидок /shares и связанные промо-страницы."
+  paracels:
+    enabled: true
+    robots_reviewed_at: "2026-03-30"
+    notes:
+      - "Используем официальный раздел /sales/ медицинского центра Парацельс на narkolog.by."
   sante:
     enabled: true
     robots_reviewed_at: "2026-03-23"

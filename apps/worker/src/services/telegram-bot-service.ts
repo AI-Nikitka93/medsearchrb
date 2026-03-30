@@ -36,6 +36,16 @@ type SendMessageParams = {
   disable_web_page_preview?: boolean;
 };
 
+function withStartParam(url: string, startParam?: string | null) {
+  if (!startParam?.trim()) {
+    return url;
+  }
+
+  const parsed = new URL(url);
+  parsed.searchParams.set("start", startParam.trim());
+  return parsed.toString();
+}
+
 function normalizeChannelUsername(rawValue?: string) {
   const value = (rawValue ?? "").trim();
   if (!value) {
@@ -70,14 +80,17 @@ function buildChannelLine(env: WorkerBindings) {
   return `\nТакже можно подписаться на канал с обновлениями и акциями: ${username}`;
 }
 
-function buildMainKeyboard(env: WorkerBindings): TelegramInlineKeyboard {
+function buildMainKeyboard(
+  env: WorkerBindings,
+  startParam?: string | null,
+): TelegramInlineKeyboard {
   const channelUsername = normalizeChannelUsername(env.TELEGRAM_CHANNEL_USERNAME);
   const rows: TelegramInlineKeyboard["inline_keyboard"] = [
     [
       {
         text: "🔍 Найти врача",
         web_app: {
-          url: requireBinding(env, "WEBAPP_URL"),
+          url: withStartParam(requireBinding(env, "WEBAPP_URL"), startParam),
         },
       },
     ],
@@ -239,18 +252,21 @@ export class TelegramBotService {
   }
 
   private async handleMessage(chatId: number, text: string) {
-    const command = text.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+    const trimmedText = text.trim();
+    const [command, ...args] = trimmedText.split(/\s+/);
+    const normalizedCommand = command?.toLowerCase() ?? "";
+    const startParam = args.join(" ").trim() || null;
 
-    if (command === "/start") {
+    if (normalizedCommand === "/start") {
       await this.sendMessage({
         chat_id: chatId,
         text: buildStartText(this.env),
-        reply_markup: buildMainKeyboard(this.env),
+        reply_markup: buildMainKeyboard(this.env, startParam),
       });
       return;
     }
 
-    if (command === "/help") {
+    if (normalizedCommand === "/help") {
       await this.sendMessage({
         chat_id: chatId,
         text: buildHelpText(this.env),
@@ -258,7 +274,7 @@ export class TelegramBotService {
       return;
     }
 
-    if (command === "/about") {
+    if (normalizedCommand === "/about") {
       await this.sendMessage({
         chat_id: chatId,
         text: buildAboutText(this.env),
@@ -267,7 +283,7 @@ export class TelegramBotService {
       return;
     }
 
-    if (command === "/privacy") {
+    if (normalizedCommand === "/privacy") {
       await this.sendMessage({
         chat_id: chatId,
         text: buildPrivacyText(this.env),

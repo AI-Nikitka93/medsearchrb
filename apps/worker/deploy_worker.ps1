@@ -2,10 +2,13 @@ $ErrorActionPreference = "Stop"
 
 $workerRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Resolve-Path (Join-Path $workerRoot "..\..")
-$rootEnv = Join-Path $repoRoot ".env.txt"
+$rootEnv = Join-Path $repoRoot ".env.local"
 $workerEnv = Join-Path $workerRoot ".dev.vars"
 if (-not (Test-Path $rootEnv)) {
   $rootEnv = Join-Path $repoRoot ".env"
+}
+if (-not (Test-Path $rootEnv)) {
+  $rootEnv = Join-Path $repoRoot ".env.txt"
 }
 
 if (-not (Test-Path $rootEnv) -and -not (Test-Path $workerEnv)) {

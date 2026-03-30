@@ -48,20 +48,72 @@ function applyThemeParams() {
   }
 }
 
+function applyViewportMetrics() {
+  try {
+    const webApp = window.Telegram?.WebApp;
+    if (!webApp) {
+      return;
+    }
+
+    if (typeof webApp.viewportHeight === "number") {
+      document.documentElement.style.setProperty(
+        "--tg-viewport-height",
+        `${webApp.viewportHeight}px`,
+      );
+    }
+
+    if (typeof webApp.viewportStableHeight === "number") {
+      document.documentElement.style.setProperty(
+        "--tg-viewport-stable-height",
+        `${webApp.viewportStableHeight}px`,
+      );
+    }
+
+    for (const side of ["top", "right", "bottom", "left"] as const) {
+      const safeAreaValue = webApp.safeAreaInset?.[side];
+      const contentSafeAreaValue = webApp.contentSafeAreaInset?.[side];
+
+      if (typeof safeAreaValue === "number") {
+        document.documentElement.style.setProperty(
+          `--tg-safe-area-inset-${side}`,
+          `${safeAreaValue}px`,
+        );
+      }
+
+      if (typeof contentSafeAreaValue === "number") {
+        document.documentElement.style.setProperty(
+          `--tg-content-safe-area-inset-${side}`,
+          `${contentSafeAreaValue}px`,
+        );
+      }
+    }
+  } catch (error) {
+    console.warn("Telegram viewport sync failed", error);
+  }
+}
+
 export function TelegramInit() {
   useEffect(() => {
     try {
       const webApp = window.Telegram?.WebApp;
       const syncTheme = () => applyThemeParams();
+      const syncViewport = () => applyViewportMetrics();
 
       applyThemeParams();
+      applyViewportMetrics();
       webApp?.ready();
       webApp?.expand();
       webApp?.onEvent?.("themeChanged", syncTheme);
+      webApp?.onEvent?.("viewportChanged", syncViewport);
+      webApp?.onEvent?.("safeAreaChanged", syncViewport);
+      webApp?.onEvent?.("contentSafeAreaChanged", syncViewport);
 
       return () => {
         try {
           webApp?.offEvent?.("themeChanged", syncTheme);
+          webApp?.offEvent?.("viewportChanged", syncViewport);
+          webApp?.offEvent?.("safeAreaChanged", syncViewport);
+          webApp?.offEvent?.("contentSafeAreaChanged", syncViewport);
         } catch (error) {
           console.warn("Telegram theme unsubscribe failed", error);
         }

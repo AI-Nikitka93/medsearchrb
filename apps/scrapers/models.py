@@ -80,6 +80,7 @@ class PromotionRecord:
     url: str
     clinic_external_id: str | None = None
     valid_until: str | None = None
+    published_at: str | None = None
     source_url: str | None = None
     captured_at: str = field(default_factory=utc_now_iso)
 

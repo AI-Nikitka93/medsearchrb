@@ -4,7 +4,11 @@ import type { WorkerBindings } from "../env";
 import { ensureDbReady } from "../lib/db";
 import { NotificationOutboxRepository } from "../repositories/notification-outbox-repository";
 import { TelegramBotService } from "./telegram-bot-service";
-import { promotionHasEndMarker, promotionIsActive } from "../utils/promotion-status";
+import {
+  promotionHasCurrentDateEvidence,
+  promotionHasEndMarker,
+  promotionIsActive,
+} from "../utils/promotion-status";
 import { PromotionAiService } from "./promotion-ai-service";
 
 export type PromotionDispatchResult = {
@@ -48,6 +52,21 @@ export class PromotionChannelService {
             client,
             event.id,
             "Promotion payload not found or hidden",
+          );
+          result.skipped += 1;
+          continue;
+        }
+
+        if (
+          !promotionHasCurrentDateEvidence({
+            endsAt: payload.ends_at,
+            publishedAt: payload.published_at,
+          })
+        ) {
+          await this.repo.markFailed(
+            client,
+            event.id,
+            "Promotion has no current published/expiry date evidence for channel",
           );
           result.skipped += 1;
           continue;
