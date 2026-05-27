@@ -47,8 +47,6 @@ jobs:
         shell: bash
         run: |
           required=(
-            CLOUDFLARE_API_TOKEN
-            CLOUDFLARE_ACCOUNT_ID
             TURSO_DATABASE_URL
             TURSO_AUTH_TOKEN
             INGEST_SHARED_SECRET
@@ -70,26 +68,45 @@ jobs:
 
           if [ ${#missing[@]} -gt 0 ]; then
             printf 'Missing GitHub secrets for worker deploy: %s\n' "${missing[*]}" >&2
-            printf 'Cloudflare CI deploy requires both CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.\n' >&2
             exit 1
           fi
 
-      - name: Validate Cloudflare API token
+      - name: Validate Cloudflare deploy credentials
         shell: bash
         run: |
-          response="$(curl -sS -w '\n%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            https://api.cloudflare.com/client/v4/user/tokens/verify || true)"
-          http_code="${response##*$'\n'}"
-          body="${response%$'\n'*}"
+          failed=0
 
-          if [ "$http_code" != "200" ] || ! grep -q '"success":true' <<< "$body"; then
-            if grep -q '"code":9109' <<< "$body"; then
-              printf '[ERROR] GitHub secret CLOUDFLARE_API_TOKEN is invalid or revoked. Cloudflare returned code 9109. Replace the secret with a scoped API token for this account.\n' >&2
-            else
-              printf '[ERROR] Cloudflare API token validation failed before deploy. HTTP %s\n%s\n' "$http_code" "$body" >&2
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            printf '[ERROR] CLOUDFLARE_API_TOKEN is not configured. Please set the secret in your environment.\n' >&2
+            failed=1
+          else
+            response="$(curl -sS -w '\n%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              https://api.cloudflare.com/client/v4/user/tokens/verify || true)"
+            http_code="${response##*$'\n'}"
+            body="${response%$'\n'*}"
+
+            if [ "$http_code" != "200" ] || ! grep -q '"success":true' <<< "$body"; then
+              if grep -q '"code":9109' <<< "$body"; then
+                printf '[ERROR] GitHub secret CLOUDFLARE_API_TOKEN is invalid or revoked. Cloudflare returned code 9109. Replace the secret with a scoped API token for this account.\n' >&2
+              else
+                printf '[ERROR] Cloudflare API token validation failed before deploy. HTTP %s\n%s\n' "$http_code" "$body" >&2
+              fi
+              failed=1
             fi
-            printf '[HINT] Required GitHub secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. The token must be allowed to deploy Workers and write Worker secrets for the target account.\n' >&2
+          fi
+
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            printf '[ERROR] CLOUDFLARE_ACCOUNT_ID is not configured. Add it as a GitHub secret for non-interactive Wrangler deploys.\n' >&2
+            failed=1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+              printf '[HINT] The token must be allowed to deploy Workers and write Worker secrets for the target account.\n' >&2
+            else
+              printf '[HINT] Required GitHub secrets: CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID.\n' >&2
+            fi
             exit 1
           fi
 
