@@ -3,6 +3,9 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $publishDir = "C:\Temp\medsearchrb-gh-pages"
 
+$env:NEXT_PUBLIC_BASE_PATH = "/medsearchrb"
+npm --prefix (Join-Path $repoRoot "apps\miniapp") run build | Out-Host
+
 if (Test-Path $publishDir) {
   Remove-Item -Recurse -Force $publishDir
 }
