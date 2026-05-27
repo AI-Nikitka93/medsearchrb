@@ -397,7 +397,7 @@ f3584f8a-912a-4315-b648-9e24cecb076e,Медицинский центр «Гра�
 a8326d01-fbef-4b36-a6be-6d9c519d32db,Медицинский центр «Династия Мед»,"Минск, ул. Прилукская, д. 60",https://dinastia.by/,dinastia.by,4,false,0,no_source_match,,,
 1b6d7a25-eae6-40b6-847d-a3e9d18f504d,Медицинский центр «ДомДок»,"Минск, переулок Корженевского, д. 2а",https://domdok.by/,domdok.by,1,false,0,no_source_match,,,
 aefafe6b-7043-430f-a30a-0f7a6f093e78,Медицинский центр «Здоровье»,"Минск, ул. К. Чорного, д. 8а",https://zdorovje.by/,zdorovje.by,4,false,0,no_source_match,,,
-686700e5-3ec4-4558-977c-9a7216ba8f94,Медицинский центр «Золотое Сечение Мед»,"Минск, проспект Дзержинского, д. 123",https://zsmed.by/,zsmed.by,11,false,0,source_in_sync_no_live_promo,zsmed,zsmed,
+686700e5-3ec4-4558-977c-9a7216ba8f94,Медицинский центр «Золотое Сечение Мед»,"Минск, проспект Дзержинского, д. 123",https://zsmed.by/,zsmed.by,11,false,0,robots_blocked_impl,zsmed,,zsmed
 6964305f-db24-4f42-bb16-8660b703ec3b,Медицинский центр «ИдеалМед» на Аэродромной,"Минск, ул. Аэродромная, д. 26",https://idealmed.by/,idealmed.by,3,false,0,source_in_sync_no_live_promo,idealmed,idealmed,
 8d0b6222-b730-45aa-add8-28548381ee07,Медицинский центр «ИдеалМед» на Клары Цеткин,"Минск, ул. Клары Цеткин, д. 16",https://idealmed.by/,idealmed.by,11,false,0,source_in_sync_no_live_promo,idealmed,idealmed,
 6ddf089b-c5a9-48e1-a172-d4f6a01ccf0e,Медицинский центр «ИдеалМед» на Солнечной,"Минск, ул. Солнечная, д. 30",https://idealmed.by/,idealmed.by,18,false,0,source_in_sync_no_live_promo,idealmed,idealmed,
@@ -423,7 +423,7 @@ b85eb2d1-964d-49ba-ac2e-9bcab8b3f293,Медицинский центр «Лод�
 2866bc03-f28b-43f9-bcbb-8dfab2a856ee,Медицинский центр «Марлен»,"Минск, ул. Каменногорская, д. 108",https://marlen.by/,marlen.by,5,false,0,no_source_match,,,
 a9dd7e47-c97e-4ace-9328-c6a7a356d5ae,Медицинский центр «Марта»,"Минск, ул. Алибегова, д. 12",https://martacare.by/,martacare.by,4,false,0,no_source_match,,,
 c0d9aab6-03f9-4751-aa2d-32af2fca8284,Медицинский центр «Маяк Здоровья»,"Минск, ул. Кирилла Туровского, д. 14",https://lighthouse.by/,lighthouse.by,59,false,0,source_in_sync_no_live_promo,lighthouse,lighthouse,
-fe21edf9-b482-4f34-8bc8-a8d8c1a44b08,Медицинский центр «Мед-Практика»,"Минск, ул. Максима Богдановича, д. 27",https://med-praktika.by/,med-praktika.by,20,false,0,source_in_sync_no_live_promo,medpraktika,medpraktika,
+fe21edf9-b482-4f34-8bc8-a8d8c1a44b08,Медицинский центр «Мед-Практика»,"Минск, ул. Максима Богдановича, д. 27",https://med-praktika.by/,med-praktika.by,20,false,0,robots_blocked_impl,medpraktika,,medpraktika
 8a78ffa4-cdbd-4ccf-84fb-7c7a848957c6,Медицинский центр «МедАвеню» на Грибоедова,"Минск, ул. Грибоедова, д. 11",https://medavenu.by/,medavenu.by,39,false,0,source_in_sync_no_live_promo,medavenu,medavenu,
 d001550e-c664-4a68-91e6-f7a6b21b14e0,Медицинский центр «МедАвеню» на Заславской,"Минск, ул. Заславская, д. 23А",https://medavenu.by/,medavenu.by,12,false,0,source_in_sync_no_live_promo,medavenu,medavenu,
 72779d83-b251-40f5-8f05-1066519f55af,Медицинский центр «МедАвеню» на Клары Цеткин,"Минск, ул. Клары Цеткин, д. 24",https://medavenu.by/,medavenu.by,30,false,0,source_in_sync_no_live_promo,medavenu,medavenu,
@@ -756,7 +756,7 @@ f647e182-c328-458a-839d-36b43ada265a,Центр здорового сна,Мин
 7a777e02-ec92-4cb3-8505-8a7172f151e6,Центр интегративной терапии психотравмы,"Минск, ул. Кальварийская, 33/3",,,1,false,0,no_site_url,,,
 31e8996b-f63f-4318-8100-c8aeef18fcdd,Центр медицинской реабилитации,"Минск, ул. Макаенка, 17",,,66,false,0,no_site_url,,,
 c7a55693-3a73-4320-9229-aa8a8a9d334d,Центр медицины,"Минск, ул. Одесская, 6",,,5,false,0,no_site_url,,,
-a1d01bb3-4e0d-47ed-b607-ee4be2fc7f88,Центр МРТ «Ортоклиник»,"Минск, ул. Филимонова, д. 53/2",https://ortoclinic.by/,ortoclinic.by,22,false,0,source_in_sync_no_live_promo,ortoclinic,ortoclinic,
+a1d01bb3-4e0d-47ed-b607-ee4be2fc7f88,Центр МРТ «Ортоклиник»,"Минск, ул. Филимонова, д. 53/2",https://ortoclinic.by/,ortoclinic.by,22,false,0,robots_blocked_impl,ortoclinic,,ortoclinic
 c3bbb401-bbf9-4ae5-bff5-d2a7ecdb019d,Центр пограничных состояний и психотерапии,"Минск, ул. Менделеева, д. 4",https://mgkpd.by/,mgkpd.by,9,false,0,no_source_match,,,
 236cd6eb-8aa9-4957-8400-db790c8851e2,Центр проктологии «МедКлиник»,"Минск, ул. Притыцкого, д. 79",https://medklinik.by/,medklinik.by,11,false,0,no_source_match,,,
 b0d9f94c-1958-447e-a7be-a1a9f6e96ce0,Центр психоневрологической реабилитации детей,"Минск, ул. Володарского, д. 1",https://firststep.by/,firststep.by,2,false,0,no_source_match,,,

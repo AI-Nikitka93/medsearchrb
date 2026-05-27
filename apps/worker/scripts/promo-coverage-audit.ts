@@ -66,7 +66,10 @@ const KNOWN_ROBOTS_BLOCKED_PROMO_SOURCES = new Set([
   "klinik",
   "makaenka17med",
   "medicplus",
+  "medpraktika",
+  "ortoclinic",
   "superdent",
+  "zsmed",
 ]);
 const PROMO_SOURCE_EXCLUSIONS = new Set(["103.by", "2doc.by", "doktora.by", "ydoc"]);
 

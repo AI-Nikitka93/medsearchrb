@@ -3,17 +3,17 @@
 - Generated at: 2026-05-27T15:54:57.583Z
 - Clinics in current Minsk catalog: 846
 - Clinics with live promotions: 14
-- Clinics with promo source already in sync but no live promo right now: 62
-- Clinics with implemented scraper blocked by robots: 13
+- Clinics with promo source already in sync but no live promo right now: 59
+- Clinics with implemented scraper blocked by robots: 16
 - Clinics with implemented scraper not in promo-sync: 0
 - Clinics without matched promo source: 320
 - Clinics without official site URL in snapshot: 437
 
 ## Promo Source Coverage
 
-- Configured promo-capable source implementations: 39
-- Sources currently in promo-sync workflow: 37
-- Sources verified as robots-blocked and excluded from safe automation: ems, happyderm, imred, klinik, makaenka17med, medicplus, superdent
+- Configured promo-capable source implementations: 36
+- Sources currently in promo-sync workflow: 34
+- Sources verified as robots-blocked and excluded from safe automation: ems, happyderm, imred, klinik, makaenka17med, medicplus, medpraktika, ortoclinic, superdent, zsmed
 
 ### Sources currently in promo-sync
 
@@ -38,13 +38,11 @@
 - medavenu
 - medera
 - medexpert
-- medpraktika
 - mercimed
 - minskdentist
 - mrtby
 - neomedical
 - nordin
-- ortoclinic
 - ortosmile
 - paracels
 - parodent
@@ -53,7 +51,6 @@
 - smartmedical
 - supramed
 - verba
-- zsmed
 
 ### Implemented promo sources in config
 
@@ -80,13 +77,11 @@
 - medavenu
 - medera
 - medexpert
-- medpraktika
 - mercimed
 - minskdentist
 - mrtby
 - neomedical
 - nordin
-- ortoclinic
 - ortosmile
 - paracels
 - parodent
@@ -95,7 +90,6 @@
 - smartmedical
 - supramed
 - verba
-- zsmed
 
 ## Sample uncovered clinics
 

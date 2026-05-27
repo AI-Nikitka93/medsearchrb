@@ -170,10 +170,10 @@ sources:
     notes:
       - "Candidate source only: /actions/ Медик Плюс найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
   medpraktika:
-    enabled: true
+    enabled: false
     robots_reviewed_at: "2026-05-27"
     notes:
-      - "Используем официальный раздел /novosti/ Мед-Практика и фильтруем промо-материалы."
+      - "Candidate source only: локально /novosti/ доступен, но GitHub Actions runner получил skipped_by_robots 2026-05-27."
   mercimed:
     enabled: true
     robots_reviewed_at: "2026-05-27"
@@ -200,10 +200,10 @@ sources:
     notes:
       - "Используем публичную страницу акций и скидок /shares и связанные промо-страницы."
   ortoclinic:
-    enabled: true
+    enabled: false
     robots_reviewed_at: "2026-05-27"
     notes:
-      - "Используем официальный раздел /novosti/ Ортоклиник и фильтруем промо-материалы."
+      - "Candidate source only: локально /novosti/ доступен, но GitHub Actions runner получил skipped_by_robots 2026-05-27."
   ortosmile:
     enabled: true
     robots_reviewed_at: "2026-05-27"
@@ -258,7 +258,7 @@ sources:
       - "Используем только doctor list/detail страницы и summary review metrics."
       - "Каталог врачей режется на bounded specialty buckets, чтобы cloud sync не упирался в 4h timeout."
   zsmed:
-    enabled: true
+    enabled: false
     robots_reviewed_at: "2026-05-27"
     notes:
-      - "Используем официальный раздел /novosti/ Золотое Сечение Мед и фильтруем промо-материалы."
+      - "Candidate source only: локально /novosti/ доступен, но GitHub Actions runner получил skipped_by_robots 2026-05-27."

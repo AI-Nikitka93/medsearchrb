@@ -3,7 +3,7 @@
     "generated_at": "2026-05-27T15:54:57.583Z",
     "total_clinics": 846,
     "clinics_with_live_promotions": 14,
-    "clinics_with_promo_source_in_sync": 76,
+    "clinics_with_promo_source_in_sync": 73,
     "clinics_with_source_impl": 89,
     "clinics_without_source_match": 320,
     "clinics_without_site_url": 437,
@@ -14,7 +14,10 @@
       "klinik",
       "makaenka17med",
       "medicplus",
-      "superdent"
+      "medpraktika",
+      "ortoclinic",
+      "superdent",
+      "zsmed"
     ],
     "configured_promo_sources": [
       "alphamed",
@@ -40,13 +43,11 @@
       "medavenu",
       "medera",
       "medexpert",
-      "medpraktika",
       "mercimed",
       "minskdentist",
       "mrtby",
       "neomedical",
       "nordin",
-      "ortoclinic",
       "ortosmile",
       "paracels",
       "parodent",
@@ -54,8 +55,7 @@
       "shineest",
       "smartmedical",
       "supramed",
-      "verba",
-      "zsmed"
+      "verba"
     ],
     "promo_sync_sources": [
       "alphamed",
@@ -79,13 +79,11 @@
       "medavenu",
       "medera",
       "medexpert",
-      "medpraktika",
       "mercimed",
       "minskdentist",
       "mrtby",
       "neomedical",
       "nordin",
-      "ortoclinic",
       "ortosmile",
       "paracels",
       "parodent",
@@ -93,8 +91,7 @@
       "shineest",
       "smartmedical",
       "supramed",
-      "verba",
-      "zsmed"
+      "verba"
     ]
   },
   "clinics": [
@@ -6169,11 +6166,11 @@
       "matched_source_impls": [
         "zsmed"
       ],
-      "promo_sync_sources": [
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [
         "zsmed"
       ],
-      "robots_blocked_sources": [],
-      "status": "source_in_sync_no_live_promo"
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "6964305f-db24-4f42-bb16-8660b703ec3b",
@@ -6615,11 +6612,11 @@
       "matched_source_impls": [
         "medpraktika"
       ],
-      "promo_sync_sources": [
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [
         "medpraktika"
       ],
-      "robots_blocked_sources": [],
-      "status": "source_in_sync_no_live_promo"
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "8a78ffa4-cdbd-4ccf-84fb-7c7a848957c6",
@@ -11778,11 +11775,11 @@
       "matched_source_impls": [
         "ortoclinic"
       ],
-      "promo_sync_sources": [
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [
         "ortoclinic"
       ],
-      "robots_blocked_sources": [],
-      "status": "source_in_sync_no_live_promo"
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "c3bbb401-bbf9-4ae5-bff5-d2a7ecdb019d",

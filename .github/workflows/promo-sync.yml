@@ -49,7 +49,7 @@ jobs:
           MAX_DOCTORS_PER_SOURCE: "0"
         run: >
           python -m apps.scrapers.main
-          --sources alphamed aquaminsk blossomclinic bullfinch centrsna dimeda doctortut eclinic eksana forestmed gurumed idealmed kaskad kravira lighthouse lifecity lode medart medavenu medera medexpert medpraktika mercimed minskdentist mrtby neomedical nordin ortoclinic ortosmile paracels parodent sante shineest smartmedical supramed verba zsmed
+          --sources alphamed aquaminsk blossomclinic bullfinch centrsna dimeda doctortut eclinic eksana forestmed gurumed idealmed kaskad kravira lighthouse lifecity lode medart medavenu medera medexpert mercimed minskdentist mrtby neomedical nordin ortosmile paracels parodent sante shineest smartmedical supramed verba
           --output-mode file
           --log-level INFO
 
