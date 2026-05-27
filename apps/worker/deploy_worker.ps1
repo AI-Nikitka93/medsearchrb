@@ -1,5 +1,10 @@
 $ErrorActionPreference = "Stop"
 
+if ([string]::IsNullOrWhiteSpace($env:CLOUDFLARE_API_TOKEN)) {
+  [Console]::Error.WriteLine("[ERROR] CLOUDFLARE_API_TOKEN is not configured. Please set the secret in your environment.")
+  exit 1
+}
+
 $workerRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Resolve-Path (Join-Path $workerRoot "..\..")
 $rootEnv = Join-Path $repoRoot ".env.local"
@@ -98,6 +103,35 @@ function Invoke-TelegramJson {
   return Invoke-RestMethod -Method Post -Uri $Uri -ContentType "application/json; charset=utf-8" -Body $bytes
 }
 
+function Test-CloudflareApiToken {
+  param([string]$Token)
+
+  try {
+    $response = Invoke-RestMethod `
+      -Method Get `
+      -Uri "https://api.cloudflare.com/client/v4/user/tokens/verify" `
+      -Headers @{ Authorization = "Bearer $Token" }
+
+    if (-not $response.success) {
+      throw "Cloudflare token verification returned success=false."
+    }
+  }
+  catch {
+    $message = $_.Exception.Message
+    if ($_.ErrorDetails -and -not [string]::IsNullOrWhiteSpace($_.ErrorDetails.Message)) {
+      $message = $_.ErrorDetails.Message
+    }
+
+    if ($message -match '"code"\s*:\s*9109|Invalid access token') {
+      [Console]::Error.WriteLine("[ERROR] CLOUDFLARE_API_TOKEN is invalid or revoked. Cloudflare returned code 9109. Replace the GitHub/local secret with a scoped API token for the target account.")
+    }
+    else {
+      [Console]::Error.WriteLine("[ERROR] Cloudflare API token validation failed before deploy. $message")
+    }
+    exit 1
+  }
+}
+
 Require-Command -Name "node" -WingetId "OpenJS.NodeJS.LTS"
 
 Push-Location $workerRoot
@@ -105,8 +139,6 @@ try {
   if (-not (Test-Path (Join-Path $workerRoot "node_modules"))) {
     npm install | Out-Host
   }
-
-  npx wrangler whoami | Out-Host
 
   $pairs = @{}
   if (Test-Path $rootEnv) {
@@ -116,6 +148,18 @@ try {
     $workerPairs = Get-EnvPairs -Path $workerEnv
     $pairs = Merge-EnvPairs -BasePairs $pairs -OverlayPairs $workerPairs
   }
+
+  if ([string]::IsNullOrWhiteSpace($env:CLOUDFLARE_ACCOUNT_ID) -and -not [string]::IsNullOrWhiteSpace($pairs["CLOUDFLARE_ACCOUNT_ID"])) {
+    $env:CLOUDFLARE_ACCOUNT_ID = $pairs["CLOUDFLARE_ACCOUNT_ID"]
+  }
+
+  if ([string]::IsNullOrWhiteSpace($env:CLOUDFLARE_ACCOUNT_ID)) {
+    [Console]::Error.WriteLine("[ERROR] CLOUDFLARE_ACCOUNT_ID is not configured. Set it as a GitHub secret or local environment variable for non-interactive Wrangler deploys.")
+    exit 1
+  }
+
+  Test-CloudflareApiToken -Token $env:CLOUDFLARE_API_TOKEN
+  Write-Host "[CLOUDFLARE] API token verified. Deploy target account is configured."
 
   Put-WorkerSecret -Pairs $pairs -SecretName "TURSO_DATABASE_URL" -EnvKey "TURSO_DATABASE_URL"
   Put-WorkerSecret -Pairs $pairs -SecretName "TURSO_AUTH_TOKEN" -EnvKey "TURSO_AUTH_TOKEN"
@@ -178,17 +222,17 @@ try {
 
   $setCommands = Invoke-TelegramJson -Uri ($telegramApiBase + "setMyCommands") -Payload @{
       commands = @(
-        @{ command = "start"; description = "Open main menu" },
-        @{ command = "help"; description = "Usage help" },
-        @{ command = "about"; description = "About the service" },
-        @{ command = "privacy"; description = "Privacy policy" }
+        @{ command = "start"; description = "Открыть главное меню" },
+        @{ command = "help"; description = "Как пользоваться ботом" },
+        @{ command = "about"; description = "О сервисе" },
+        @{ command = "privacy"; description = "Политика конфиденциальности" }
       )
     }
 
   $setMenu = Invoke-TelegramJson -Uri ($telegramApiBase + "setChatMenuButton") -Payload @{
       menu_button = @{
         type = "web_app"
-        text = "Open Mini App"
+        text = "Открыть каталог"
         web_app = @{
           url = $webAppUrl
         }
