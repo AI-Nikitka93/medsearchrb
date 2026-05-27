@@ -1,22 +1,35 @@
 {
   "summary": {
-    "generated_at": "2026-03-29T19:37:35.698Z",
-    "total_clinics": 845,
-    "clinics_with_live_promotions": 11,
-    "clinics_with_promo_source_in_sync": 41,
-    "clinics_with_source_impl": 46,
-    "clinics_without_source_match": 354,
-    "clinics_without_site_url": 445,
+    "generated_at": "2026-05-27T15:54:57.583Z",
+    "total_clinics": 846,
+    "clinics_with_live_promotions": 14,
+    "clinics_with_promo_source_in_sync": 76,
+    "clinics_with_source_impl": 89,
+    "clinics_without_source_match": 320,
+    "clinics_without_site_url": 437,
     "robots_blocked_sources": [
+      "ems",
       "happyderm",
-      "klinik"
+      "imred",
+      "klinik",
+      "makaenka17med",
+      "medicplus",
+      "superdent"
     ],
     "configured_promo_sources": [
+      "alphamed",
+      "aquaminsk",
+      "blossomclinic",
+      "bullfinch",
       "centrsna",
+      "dimeda",
       "doctortut",
       "eclinic",
+      "eksana",
       "forestmed",
+      "gurumed",
       "happyderm",
+      "idealmed",
       "kaskad",
       "klinik",
       "kravira",
@@ -25,18 +38,38 @@
       "lode",
       "medart",
       "medavenu",
+      "medera",
+      "medexpert",
+      "medpraktika",
+      "mercimed",
+      "minskdentist",
       "mrtby",
       "neomedical",
       "nordin",
+      "ortoclinic",
+      "ortosmile",
+      "paracels",
+      "parodent",
       "sante",
+      "shineest",
       "smartmedical",
-      "supramed"
+      "supramed",
+      "verba",
+      "zsmed"
     ],
     "promo_sync_sources": [
+      "alphamed",
+      "aquaminsk",
+      "blossomclinic",
+      "bullfinch",
       "centrsna",
+      "dimeda",
       "doctortut",
       "eclinic",
+      "eksana",
       "forestmed",
+      "gurumed",
+      "idealmed",
       "kaskad",
       "kravira",
       "lighthouse",
@@ -44,12 +77,24 @@
       "lode",
       "medart",
       "medavenu",
+      "medera",
+      "medexpert",
+      "medpraktika",
+      "mercimed",
+      "minskdentist",
       "mrtby",
       "neomedical",
       "nordin",
+      "ortoclinic",
+      "ortosmile",
+      "paracels",
+      "parodent",
       "sante",
+      "shineest",
       "smartmedical",
-      "supramed"
+      "supramed",
+      "verba",
+      "zsmed"
     ]
   },
   "clinics": [
@@ -67,21 +112,6 @@
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_site_url"
-    },
-    {
-      "clinic_id": "10ddaf8e-f3ed-43fc-b234-58499df66866",
-      "clinic_slug": "akva-minsk-klinika-00cbca01bc",
-      "clinic_name": "«Аква-Минск Клиника»",
-      "address": "Минск, проспект Рокоссовского, д. 44/2",
-      "site_url": "https://aquaminskclinic.by/",
-      "site_host": "aquaminskclinic.by",
-      "doctors_count": 71,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
     },
     {
       "clinic_id": "b07b2979-0395-4f57-92f3-12ca62fafdad",
@@ -142,10 +172,14 @@
       "doctors_count": 9,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "gurumed"
+      ],
+      "promo_sync_sources": [
+        "gurumed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "8f4ee3f7-8ff3-455f-ba13-229c17d323e6",
@@ -157,10 +191,14 @@
       "doctors_count": 13,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "gurumed"
+      ],
+      "promo_sync_sources": [
+        "gurumed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "6b5c71fa-0a77-4711-a314-7e29192734e8",
@@ -172,10 +210,14 @@
       "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "gurumed"
+      ],
+      "promo_sync_sources": [
+        "gurumed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "80ccb1c5-592b-46fa-a29c-0a46cf7dfeaf",
@@ -262,10 +304,14 @@
       "doctors_count": 27,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "superdent"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "superdent"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "5b3a4356-7f5c-45ac-a1d4-081ec7df5997",
@@ -307,10 +353,14 @@
       "doctors_count": 7,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "minskdentist"
+      ],
+      "promo_sync_sources": [
+        "minskdentist"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "4d410d69-b497-4c8d-a8a7-e73253394a03",
@@ -320,6 +370,21 @@
       "site_url": "https://stomnad.by/",
       "site_host": "stomnad.by",
       "doctors_count": 1,
+      "has_live_promo": false,
+      "live_promo_count": 0,
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [],
+      "status": "no_source_match"
+    },
+    {
+      "clinic_id": "e5fa7bf3-5e91-40eb-8aae-0a31d4a6368b",
+      "clinic_slug": "tsentr-issledovaniya-serdtsa-4d2ad194e8",
+      "clinic_name": "«Центр исследования сердца»",
+      "address": "Минск, ул. Наполеона Орды, д. 55",
+      "site_url": "https://kardiolita.by/",
+      "site_host": "kardiolita.by",
+      "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -352,10 +417,14 @@
       "doctors_count": 16,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "medexpert"
+      ],
+      "promo_sync_sources": [
+        "medexpert"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "9be0feb9-4822-4bb2-b920-66690a88ae1f",
@@ -379,7 +448,7 @@
       "address": "Минск, просп. Машерова, д. 17",
       "site_url": "https://implant-center.by/",
       "site_host": "implant-center.by",
-      "doctors_count": 22,
+      "doctors_count": 25,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -409,7 +478,7 @@
       "address": "Минск, ул. Филимонова, д. 53",
       "site_url": "https://uroandro.by/",
       "site_host": "uroandro.by",
-      "doctors_count": 7,
+      "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -454,7 +523,7 @@
       "address": "Минск, просп. Независимости, д. 64",
       "site_url": "https://1gkb.by/",
       "site_host": "1gkb.by",
-      "doctors_count": 71,
+      "doctors_count": 72,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -541,7 +610,7 @@
       "clinic_id": "7cf6a584-39f9-4ca5-a6d9-65f695f91dd7",
       "clinic_slug": "10-ya-gorodskaya-klinicheskaya-bolnitsa-7910cc0b15",
       "clinic_name": "10-я городская клиническая больница",
-      "address": "Минск, ул. Уборевича, 73",
+      "address": "Минск, ул. Уборевича, д. 73",
       "site_url": "https://www.10gkb.by/",
       "site_host": "10gkb.by",
       "doctors_count": 33,
@@ -1097,7 +1166,7 @@
       "clinic_slug": "19-ya-tsentralnaya-rayonnaya-poliklinika-0cfed33516",
       "clinic_name": "19-я центральная районная поликлиника",
       "address": "Минск, просп. Независимости, д. 119",
-      "site_url": "https://www.19crp.by/",
+      "site_url": "https://19crp.by/",
       "site_host": "19crp.by",
       "doctors_count": 4,
       "has_live_promo": false,
@@ -1171,7 +1240,7 @@
       "clinic_id": "b8001b2f-6678-48a3-a255-4fd74ac29795",
       "clinic_slug": "2-ya-gorodskaya-klinicheskaya-bolnitsa-f5e506e1e1",
       "clinic_name": "2-я городская клиническая больница",
-      "address": "Минск, ул. Энгельса, 25",
+      "address": "Минск, ул. Энгельса, д. 25",
       "site_url": "https://2gkb.by/",
       "site_host": "2gkb.by",
       "doctors_count": 17,
@@ -2209,7 +2278,7 @@
       "address": "Минск, ул. Филатова, д. 9",
       "site_url": "https://www.5gkb.by/",
       "site_host": "5gkb.by",
-      "doctors_count": 6,
+      "doctors_count": 7,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -2366,6 +2435,21 @@
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_site_url"
+    },
+    {
+      "clinic_id": "b8735502-3d22-43d8-bc31-27f86e04e582",
+      "clinic_slug": "7-ya-detskaya-poliklinika-2d6cb89c05",
+      "clinic_name": "7-я детская поликлиника",
+      "address": "Минск, ул. Плеханова, д. 127",
+      "site_url": "https://www.7gdp.by/",
+      "site_host": "7gdp.by",
+      "doctors_count": 1,
+      "has_live_promo": false,
+      "live_promo_count": 0,
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [],
+      "status": "no_source_match"
     },
     {
       "clinic_id": "a80b790a-f220-408d-9a5f-f1d1b950d64b",
@@ -2561,6 +2645,25 @@
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_site_url"
+    },
+    {
+      "clinic_id": "10ddaf8e-f3ed-43fc-b234-58499df66866",
+      "clinic_slug": "akva-minsk-klinika-00cbca01bc",
+      "clinic_name": "Аква-Минск Клиника",
+      "address": "Минск, пр-т Рокоссовского, 44/2",
+      "site_url": "https://aquaminskclinic.by",
+      "site_host": "aquaminskclinic.by",
+      "doctors_count": 71,
+      "has_live_promo": true,
+      "live_promo_count": 2,
+      "matched_source_impls": [
+        "aquaminsk"
+      ],
+      "promo_sync_sources": [
+        "aquaminsk"
+      ],
+      "robots_blocked_sources": [],
+      "status": "covered_live"
     },
     {
       "clinic_id": "14abf183-18b9-4f49-a967-2e529a533128",
@@ -3512,7 +3615,7 @@
       "clinic_slug": "detskiy-meditsinskiy-tsentr-dobryy-doktor-ae8b96d146",
       "clinic_name": "Детский медицинский центр «Добрый доктор»",
       "address": "Минск, просп. Победителей, д. 125",
-      "site_url": "https://vk.com/",
+      "site_url": "https://vk.com/public167113918",
       "site_host": "vk.com",
       "doctors_count": 16,
       "has_live_promo": false,
@@ -3649,7 +3752,7 @@
       "address": "Минск, ул. Колесникова, 15",
       "site_url": "https://doctortut.by",
       "site_host": "doctortut.by",
-      "doctors_count": 46,
+      "doctors_count": 50,
       "has_live_promo": true,
       "live_promo_count": 4,
       "matched_source_impls": [
@@ -3800,7 +3903,7 @@
       "clinic_id": "ab43ebc8-4e07-4932-b36e-e7e4245eba3f",
       "clinic_slug": "zhenskaya-konsultatsiya-polikliniki-2-3fc633e307",
       "clinic_name": "Женская консультация поликлиники №2",
-      "address": "Минск, ул. Сухаревская, 40",
+      "address": "Минск, ул. Сухаревская, д. 40",
       "site_url": "https://2crp.by/",
       "site_host": "2crp.by",
       "doctors_count": 5,
@@ -3965,7 +4068,7 @@
       "clinic_id": "9bf5a586-13a2-446e-9956-1d5231a43af0",
       "clinic_slug": "zhenskaya-konsultatsiya-polikliniki-37-af89b99d1d",
       "clinic_name": "Женская консультация поликлиники №37",
-      "address": "Минск, Лучины, 28",
+      "address": "Минск, ул. Янки Лучины, д. 28",
       "site_url": "https://www.37gp.by/",
       "site_host": "37gp.by",
       "doctors_count": 2,
@@ -4175,16 +4278,20 @@
       "clinic_id": "c1a78db4-3210-4794-b110-b74b1cb4e310",
       "clinic_slug": "idealmed-6899bc3dbc",
       "clinic_name": "ИдеалМед",
-      "address": "Минск, ул. Солнечная, 30",
-      "site_url": null,
-      "site_host": null,
+      "address": "Минск, ул. К. Цеткин, 16",
+      "site_url": "https://idealmed.by",
+      "site_host": "idealmed.by",
       "doctors_count": 28,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "has_live_promo": true,
+      "live_promo_count": 9,
+      "matched_source_impls": [
+        "idealmed"
+      ],
+      "promo_sync_sources": [
+        "idealmed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "covered_live"
     },
     {
       "clinic_id": "34d416a4-4514-4bb0-8ba4-40bf195e02b3",
@@ -4376,10 +4483,14 @@
       "doctors_count": 189,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "mercimed"
+      ],
+      "promo_sync_sources": [
+        "mercimed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "a8968752-50bb-46be-9fe1-c9ba9d11f70a",
@@ -4414,17 +4525,21 @@
     {
       "clinic_id": "5c384c39-393d-4adb-b411-6f74f581009e",
       "clinic_slug": "klinika-guru-a5e6da0ff8",
-      "clinic_name": "Клиника Гуру",
-      "address": "Минск, пр-т Дзержинского, 123",
-      "site_url": null,
-      "site_host": null,
+      "clinic_name": "Клиника ГУРУ",
+      "address": "Минск, ул. Первомайская, 22/1",
+      "site_url": "https://gurumed.by",
+      "site_host": "gurumed.by",
       "doctors_count": 24,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "has_live_promo": true,
+      "live_promo_count": 1,
+      "matched_source_impls": [
+        "gurumed"
+      ],
+      "promo_sync_sources": [
+        "gurumed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "covered_live"
     },
     {
       "clinic_id": "ed0ce666-3925-403e-9713-a94aac6a09ca",
@@ -4433,9 +4548,9 @@
       "address": "Минск",
       "site_url": "https://kaskadclinic.by",
       "site_host": "kaskadclinic.by",
-      "doctors_count": 91,
+      "doctors_count": 105,
       "has_live_promo": true,
-      "live_promo_count": 3,
+      "live_promo_count": 1,
       "matched_source_impls": [
         "kaskad"
       ],
@@ -4677,7 +4792,7 @@
       "address": "Минск, ул. Раковская, д. 25/2",
       "site_url": "https://doctorface.by/",
       "site_host": "doctorface.by",
-      "doctors_count": 1,
+      "doctors_count": 2,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -4752,7 +4867,7 @@
       "address": "Минск, ул. Притыцкого, д. 105",
       "site_url": "https://www.mark-estetic.by/",
       "site_host": "mark-estetic.by",
-      "doctors_count": 2,
+      "doctors_count": 3,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -4825,8 +4940,8 @@
       "clinic_slug": "kosmetologiya-oblaka-4431bbc89a",
       "clinic_name": "Косметология «Облака»",
       "address": "Минск, ул. Революционная, д. 13",
-      "site_url": "https://oblaka-salon.by/",
-      "site_host": "oblaka-salon.by",
+      "site_url": "https://start.hoster.by/",
+      "site_host": "start.hoster.by",
       "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
@@ -5241,25 +5356,6 @@
       "status": "no_site_url"
     },
     {
-      "clinic_id": "7ceeee3f-5a19-48bb-bd27-bf7787e3ccb2",
-      "clinic_slug": "meditsinskiy-tsentr-layf-siti-154be9a8f6",
-      "clinic_name": "Лайф Сити",
-      "address": "Минск",
-      "site_url": "https://lifecity.by",
-      "site_host": "lifecity.by",
-      "doctors_count": 13,
-      "has_live_promo": true,
-      "live_promo_count": 3,
-      "matched_source_impls": [
-        "lifecity"
-      ],
-      "promo_sync_sources": [
-        "lifecity"
-      ],
-      "robots_blocked_sources": [],
-      "status": "covered_live"
-    },
-    {
       "clinic_id": "639051c7-b550-4c61-a9e5-73769a936baa",
       "clinic_slug": "lesante-9f27e090ef",
       "clinic_name": "Лесанте",
@@ -5557,7 +5653,7 @@
       "site_host": "lighthouse.by",
       "doctors_count": 42,
       "has_live_promo": true,
-      "live_promo_count": 17,
+      "live_promo_count": 16,
       "matched_source_impls": [
         "lighthouse"
       ],
@@ -5591,7 +5687,7 @@
       "site_host": "medavenu.by",
       "doctors_count": 50,
       "has_live_promo": true,
-      "live_promo_count": 7,
+      "live_promo_count": 9,
       "matched_source_impls": [
         "medavenu"
       ],
@@ -5615,25 +5711,6 @@
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_site_url"
-    },
-    {
-      "clinic_id": "2823433c-2c12-4d7e-964a-f29cdcd89c58",
-      "clinic_slug": "medart-5e4629a274",
-      "clinic_name": "МедАрт",
-      "address": "ул. Платонова, 1-Б, 4 подъезд, 2 этаж, Минск",
-      "site_url": "https://medart.by",
-      "site_host": "medart.by",
-      "doctors_count": 23,
-      "has_live_promo": true,
-      "live_promo_count": 1,
-      "matched_source_impls": [
-        "medart"
-      ],
-      "promo_sync_sources": [
-        "medart"
-      ],
-      "robots_blocked_sources": [],
-      "status": "covered_live"
     },
     {
       "clinic_id": "82c6066a-dce2-49f9-9f17-f3e79fa8cf6f",
@@ -5777,7 +5854,7 @@
       "address": "Минск, ул. Стадионная, д. 5",
       "site_url": "https://aksamit-med.by/",
       "site_host": "aksamit-med.by",
-      "doctors_count": 2,
+      "doctors_count": 3,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -5807,13 +5884,17 @@
       "address": "Минск, просп. Независимости, д. 85",
       "site_url": "https://alphamed.by/",
       "site_host": "alphamed.by",
-      "doctors_count": 8,
+      "doctors_count": 9,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "alphamed"
+      ],
+      "promo_sync_sources": [
+        "alphamed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "54490d30-f531-4da3-8812-871b12b62628",
@@ -5825,10 +5906,14 @@
       "doctors_count": 8,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "alphamed"
+      ],
+      "promo_sync_sources": [
+        "alphamed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "7bbdb96b-2af6-444e-8c8a-6bb233b583fe",
@@ -5897,13 +5982,17 @@
       "address": "Минск, ул. Кирова, д. 18",
       "site_url": "https://blossomclinic.by/",
       "site_host": "blossomclinic.by",
-      "doctors_count": 10,
+      "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "blossomclinic"
+      ],
+      "promo_sync_sources": [
+        "blossomclinic"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "55c4cb4a-84a1-45b7-af28-6cd9e9d95b42",
@@ -5930,10 +6019,14 @@
       "doctors_count": 12,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "bullfinch"
+      ],
+      "promo_sync_sources": [
+        "bullfinch"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "3e3d37cf-5a86-4b3f-aedf-87fab3cfc53e",
@@ -5945,10 +6038,14 @@
       "doctors_count": 8,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "verba"
+      ],
+      "promo_sync_sources": [
+        "verba"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "69ba3869-3de4-4b22-87dc-14965422fc31",
@@ -6005,10 +6102,14 @@
       "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "dimeda"
+      ],
+      "promo_sync_sources": [
+        "dimeda"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "a8326d01-fbef-4b36-a6be-6d9c519d32db",
@@ -6065,10 +6166,14 @@
       "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "zsmed"
+      ],
+      "promo_sync_sources": [
+        "zsmed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "6964305f-db24-4f42-bb16-8660b703ec3b",
@@ -6080,10 +6185,14 @@
       "doctors_count": 3,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "idealmed"
+      ],
+      "promo_sync_sources": [
+        "idealmed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "8d0b6222-b730-45aa-add8-28548381ee07",
@@ -6095,10 +6204,14 @@
       "doctors_count": 11,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "idealmed"
+      ],
+      "promo_sync_sources": [
+        "idealmed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "6ddf089b-c5a9-48e1-a172-d4f6a01ccf0e",
@@ -6110,10 +6223,14 @@
       "doctors_count": 18,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "idealmed"
+      ],
+      "promo_sync_sources": [
+        "idealmed"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "9894df7a-e6bc-4681-9b3f-00e987c16cc4",
@@ -6125,10 +6242,14 @@
       "doctors_count": 5,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "imred"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "imred"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "01cb2340-9875-4b7f-a1e5-7c3eafcf23a5",
@@ -6137,13 +6258,17 @@
       "address": "Минск, ул. Семашко, д. 12А",
       "site_url": "https://imred.by/",
       "site_host": "imred.by",
-      "doctors_count": 15,
+      "doctors_count": 35,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "imred"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "imred"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "e56249a2-4d46-45ab-8d65-679a8b7fccd7",
@@ -6276,7 +6401,7 @@
       "address": "Минск, проспект Победителей, д. 45",
       "site_url": "https://kravira.by/",
       "site_host": "kravira.by",
-      "doctors_count": 19,
+      "doctors_count": 20,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -6329,7 +6454,7 @@
       "address": "Минск, ул. Гикало, д. 1",
       "site_url": "https://www.lode.by/",
       "site_host": "lode.by",
-      "doctors_count": 9,
+      "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -6367,7 +6492,7 @@
       "address": "Минск, проспект Независимости, д. 58А",
       "site_url": "https://www.lode.by/",
       "site_host": "lode.by",
-      "doctors_count": 22,
+      "doctors_count": 24,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -6465,7 +6590,7 @@
       "address": "Минск, ул. Кирилла Туровского, д. 14",
       "site_url": "https://lighthouse.by/",
       "site_host": "lighthouse.by",
-      "doctors_count": 22,
+      "doctors_count": 59,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -6484,13 +6609,17 @@
       "address": "Минск, ул. Максима Богдановича, д. 27",
       "site_url": "https://med-praktika.by/",
       "site_host": "med-praktika.by",
-      "doctors_count": 18,
+      "doctors_count": 20,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "medpraktika"
+      ],
+      "promo_sync_sources": [
+        "medpraktika"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "8a78ffa4-cdbd-4ccf-84fb-7c7a848957c6",
@@ -6575,13 +6704,17 @@
       "address": "Минск, ​ул. Чюрлёниса, д. 24",
       "site_url": "https://medicplus.by/",
       "site_host": "medicplus.by",
-      "doctors_count": 12,
+      "doctors_count": 39,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "medicplus"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "medicplus"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "0b89d9f5-dc16-487c-949e-b89fc827416a",
@@ -6606,6 +6739,21 @@
       "site_url": "https://ydoc.by/minsk/klinika/",
       "site_host": "ydoc.by",
       "doctors_count": 3,
+      "has_live_promo": false,
+      "live_promo_count": 0,
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [],
+      "status": "no_source_match"
+    },
+    {
+      "clinic_id": "cd7b2449-3f3a-45ff-9f7a-8ecaad784610",
+      "clinic_slug": "meditsinskiy-tsentr-mtz-59043ffae0",
+      "clinic_name": "Медицинский центр «МТЗ»",
+      "address": "Минск, ул. Стахановская, д. 10а",
+      "site_url": "https://www.mtzmedservice.com/",
+      "site_host": "mtzmedservice.com",
+      "doctors_count": 46,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -6752,13 +6900,17 @@
       "address": "Минск, ул. Маяковского, д. 129а/1",
       "site_url": "https://www.narkolog.by/",
       "site_host": "narkolog.by",
-      "doctors_count": 23,
+      "doctors_count": 26,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "paracels"
+      ],
+      "promo_sync_sources": [
+        "paracels"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "e0639021-f5ba-4e49-b781-5b7bca1d87b1",
@@ -6842,7 +6994,7 @@
       "address": "Минск, ул. Калиновского, д. 55",
       "site_url": "https://resursmed.by/",
       "site_host": "resursmed.by",
-      "doctors_count": 3,
+      "doctors_count": 9,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -6906,7 +7058,7 @@
       "address": "Минск, ул. Филимонова, д. 53",
       "site_url": "https://7nebo.by/",
       "site_host": "7nebo.by",
-      "doctors_count": 2,
+      "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -6921,7 +7073,7 @@
       "address": "Минск, ул. Халтурина, д. 39",
       "site_url": "https://7nebo.by/",
       "site_host": "7nebo.by",
-      "doctors_count": 4,
+      "doctors_count": 17,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -7004,7 +7156,7 @@
       "address": "Минск, ул. Волгоградская, д. 3",
       "site_url": "https://terramedika.by/",
       "site_host": "terramedika.by",
-      "doctors_count": 2,
+      "doctors_count": 3,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -7144,7 +7296,7 @@
       "address": "Минск, просп. Независимости, д. 72а",
       "site_url": "https://centrsna.by/",
       "site_host": "centrsna.by",
-      "doctors_count": 87,
+      "doctors_count": 89,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -7166,10 +7318,14 @@
       "doctors_count": 2,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "shineest"
+      ],
+      "promo_sync_sources": [
+        "shineest"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "edc7f67a-ab3e-4ca4-8c69-408076e0ef3c",
@@ -7178,13 +7334,17 @@
       "address": "Минск, проспект Дзержинского, д. 19",
       "site_url": "https://www.shine-est.by/",
       "site_host": "shine-est.by",
-      "doctors_count": 1,
+      "doctors_count": 2,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "shineest"
+      ],
+      "promo_sync_sources": [
+        "shineest"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "86f6c0a7-5e86-424b-a332-80b886943df8",
@@ -7193,13 +7353,17 @@
       "address": "Минск, ул. Революционная, д. 26а",
       "site_url": "https://www.shine-est.by/",
       "site_host": "shine-est.by",
-      "doctors_count": 11,
+      "doctors_count": 12,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "shineest"
+      ],
+      "promo_sync_sources": [
+        "shineest"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "009416da-d135-4510-9060-841233cf995c",
@@ -7208,13 +7372,17 @@
       "address": "Минск, ул. Льва Толстого, д. 4",
       "site_url": "https://ems.by/",
       "site_host": "ems.by",
-      "doctors_count": 23,
+      "doctors_count": 25,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "ems"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "ems"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "b3ce25ed-67a9-4a96-8673-0939c4747484",
@@ -7226,10 +7394,14 @@
       "doctors_count": 42,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "eksana"
+      ],
+      "promo_sync_sources": [
+        "eksana"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "24cf2bc8-c4ec-4390-a093-6b125cefdf9b",
@@ -7241,10 +7413,14 @@
       "doctors_count": 60,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "eksana"
+      ],
+      "promo_sync_sources": [
+        "eksana"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "33dd1a69-912d-42dd-b178-5dd66f2c5673",
@@ -7256,10 +7432,14 @@
       "doctors_count": 21,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "eksana"
+      ],
+      "promo_sync_sources": [
+        "eksana"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "de32f8a6-5b9d-47e9-88ca-112bb5698ea2",
@@ -7286,10 +7466,14 @@
       "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "medera"
+      ],
+      "promo_sync_sources": [
+        "medera"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "1edb3d19-0b40-4edf-b4d4-f1303681a52f",
@@ -7328,7 +7512,7 @@
       "address": "Минск, ул. Комсомольская, д. 12",
       "site_url": "https://e-clinic.by/",
       "site_host": "e-clinic.by",
-      "doctors_count": 24,
+      "doctors_count": 25,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -7347,7 +7531,7 @@
       "address": "Минск, ул. Ленина, д. 5",
       "site_url": "https://e-clinic.by/",
       "site_host": "e-clinic.by",
-      "doctors_count": 12,
+      "doctors_count": 14,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [
@@ -7381,7 +7565,7 @@
       "address": "Минск, ул. Дзержинского, д. 123",
       "site_url": "https://linii.by/",
       "site_host": "linii.by",
-      "doctors_count": 4,
+      "doctors_count": 5,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -7456,13 +7640,32 @@
       "address": "Минск, переулок Калинина, д. 16",
       "site_url": "https://sportlab.by/",
       "site_host": "sportlab.by",
-      "doctors_count": 1,
+      "doctors_count": 2,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_source_match"
+    },
+    {
+      "clinic_id": "2823433c-2c12-4d7e-964a-f29cdcd89c58",
+      "clinic_slug": "medart-5e4629a274",
+      "clinic_name": "Медицинский центр в Минске",
+      "address": "ул. Платонова, 1-Б, 4 подъезд, 2 этаж, Минск",
+      "site_url": "https://medart.by",
+      "site_host": "medart.by",
+      "doctors_count": 23,
+      "has_live_promo": true,
+      "live_promo_count": 1,
+      "matched_source_impls": [
+        "medart"
+      ],
+      "promo_sync_sources": [
+        "medart"
+      ],
+      "robots_blocked_sources": [],
+      "status": "covered_live"
     },
     {
       "clinic_id": "e59197ab-5f3f-4968-a5c1-ce3f1cdab395",
@@ -7478,21 +7681,6 @@
       "promo_sync_sources": [],
       "robots_blocked_sources": [],
       "status": "no_site_url"
-    },
-    {
-      "clinic_id": "cd7b2449-3f3a-45ff-9f7a-8ecaad784610",
-      "clinic_slug": "meditsinskiy-tsentr-mtz-59043ffae0",
-      "clinic_name": "Медицинский центр МТЗ",
-      "address": "Минск, ул. Стахановская, 10А",
-      "site_url": "https://www.mtzmedservice.com/",
-      "site_host": "mtzmedservice.com",
-      "doctors_count": 46,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
     },
     {
       "clinic_id": "e74d29d3-2bc3-4a6b-a9dc-7e9d3bf4a841",
@@ -7927,7 +8115,7 @@
       "site_host": "nordin.by",
       "doctors_count": 203,
       "has_live_promo": true,
-      "live_promo_count": 2,
+      "live_promo_count": 3,
       "matched_source_impls": [
         "nordin"
       ],
@@ -8226,16 +8414,20 @@
       "clinic_id": "c00bee19-2b98-4095-88b6-d1212a48b902",
       "clinic_slug": "paratsels-8d9316bdc1",
       "clinic_name": "Парацельс",
-      "address": "Минск, ул. Короля, 47",
-      "site_url": null,
-      "site_host": null,
+      "address": "Минск, ул. Маяковского, 129А/1",
+      "site_url": "https://www.narkolog.by",
+      "site_host": "narkolog.by",
       "doctors_count": 35,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "has_live_promo": true,
+      "live_promo_count": 2,
+      "matched_source_impls": [
+        "paracels"
+      ],
+      "promo_sync_sources": [
+        "paracels"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "covered_live"
     },
     {
       "clinic_id": "8dfc71aa-a6e4-4927-807b-b00a54a566ee",
@@ -8397,10 +8589,14 @@
       "doctors_count": 5,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "makaenka17med"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "makaenka17med"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "6fd960dd-0029-4bd3-a21e-0f10ad3ba376",
@@ -9033,6 +9229,21 @@
       "status": "no_source_match"
     },
     {
+      "clinic_id": "3d6e0b6d-f09f-4d87-aa0b-e99736b3aca4",
+      "clinic_slug": "reproduktivnyy-tsentr-eko-14b4b9db8e",
+      "clinic_name": "Репродуктивный центр «ЭКО»",
+      "address": "Минск, ул. Сурганова, д. 54",
+      "site_url": "https://ecocenter.by/",
+      "site_host": "ecocenter.by",
+      "doctors_count": 9,
+      "has_live_promo": false,
+      "live_promo_count": 0,
+      "matched_source_impls": [],
+      "promo_sync_sources": [],
+      "robots_blocked_sources": [],
+      "status": "no_source_match"
+    },
+    {
       "clinic_id": "27b52eff-5245-4616-ac7e-8e30e6d04a83",
       "clinic_slug": "respublikanskiy-gospital-mvd-c683f293e5",
       "clinic_name": "Республиканский госпиталь МВД",
@@ -9129,13 +9340,17 @@
       "address": "Минск, ул. Макаенка, д. 17",
       "site_url": "https://makaenka17med.by/",
       "site_host": "makaenka17med.by",
-      "doctors_count": 9,
+      "doctors_count": 10,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "makaenka17med"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "robots_blocked_sources": [
+        "makaenka17med"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "ebe314df-4261-4478-9e28-89dc32e18c7e",
@@ -9219,7 +9434,7 @@
       "address": "Минск, ул. Франциска Скорины, д. 24",
       "site_url": "https://neuro.by/",
       "site_host": "neuro.by",
-      "doctors_count": 80,
+      "doctors_count": 81,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -9249,7 +9464,7 @@
       "address": "Минск, Долгиновский тракт, д. 152",
       "site_url": "https://mentalhealth.by/",
       "site_host": "mentalhealth.by",
-      "doctors_count": 14,
+      "doctors_count": 15,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -9294,7 +9509,7 @@
       "address": "Минск, ул. Лейтенанта Кижеватова, д. 60, корп. 4",
       "site_url": "https://ortoped.by/",
       "site_host": "ortoped.by",
-      "doctors_count": 28,
+      "doctors_count": 29,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -10284,7 +10499,7 @@
       "address": "Минск, просп. Независимости, д. 92",
       "site_url": "https://kano.by/",
       "site_host": "kano.by",
-      "doctors_count": 3,
+      "doctors_count": 4,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -10516,10 +10731,14 @@
       "doctors_count": 9,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "ortosmile"
+      ],
+      "promo_sync_sources": [
+        "ortosmile"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "ac961f5e-8c04-4ea7-badf-c5b764ccefa7",
@@ -10531,10 +10750,14 @@
       "doctors_count": 9,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "parodent"
+      ],
+      "promo_sync_sources": [
+        "parodent"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "2cce29dc-17ec-44a3-b225-535520921ebc",
@@ -10556,8 +10779,8 @@
       "clinic_slug": "stomatologiya-praymdent-d24e371b42",
       "clinic_name": "Стоматология «ПраймДент»",
       "address": "Минск, просп. Победителей, д. 104",
-      "site_url": "https://primedent.by/",
-      "site_host": "primedent.by",
+      "site_url": "https://kano.by/",
+      "site_host": "kano.by",
       "doctors_count": 1,
       "has_live_promo": false,
       "live_promo_count": 0,
@@ -11084,8 +11307,8 @@
       "site_url": "https://supramed.by",
       "site_host": "supramed.by",
       "doctors_count": 20,
-      "has_live_promo": true,
-      "live_promo_count": 1,
+      "has_live_promo": false,
+      "live_promo_count": 0,
       "matched_source_impls": [
         "supramed"
       ],
@@ -11093,7 +11316,7 @@
         "supramed"
       ],
       "robots_blocked_sources": [],
-      "status": "covered_live"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "01bfa5fc-cc1b-4a18-991e-2cc819e1db5d",
@@ -11363,7 +11586,7 @@
       "site_host": "forestmed.by",
       "doctors_count": 6,
       "has_live_promo": true,
-      "live_promo_count": 2,
+      "live_promo_count": 1,
       "matched_source_impls": [
         "forestmed"
       ],
@@ -11513,21 +11736,6 @@
       "status": "no_site_url"
     },
     {
-      "clinic_id": "e5fa7bf3-5e91-40eb-8aae-0a31d4a6368b",
-      "clinic_slug": "tsentr-issledovaniya-serdtsa-4d2ad194e8",
-      "clinic_name": "Центр исследования сердца",
-      "address": "Минск, ул. Наполеона Орды, 55",
-      "site_url": "https://kardiolita.by/",
-      "site_host": "kardiolita.by",
-      "doctors_count": 10,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_source_match"
-    },
-    {
       "clinic_id": "31e8996b-f63f-4318-8100-c8aeef18fcdd",
       "clinic_slug": "tsentr-meditsinskoy-reabilitatsii-1685d9fad2",
       "clinic_name": "Центр медицинской реабилитации",
@@ -11567,10 +11775,14 @@
       "doctors_count": 22,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "ortoclinic"
+      ],
+      "promo_sync_sources": [
+        "ortoclinic"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_source_match"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "c3bbb401-bbf9-4ae5-bff5-d2a7ecdb019d",
@@ -11924,7 +12136,7 @@
       "address": "Минск, ул. Красная, д. 5",
       "site_url": "https://www.endominsk.by/",
       "site_host": "endominsk.by",
-      "doctors_count": 4,
+      "doctors_count": 6,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -11939,7 +12151,7 @@
       "address": "Минск, ул. Киселева, д. 7",
       "site_url": "https://www.endominsk.by/",
       "site_host": "endominsk.by",
-      "doctors_count": 1,
+      "doctors_count": 2,
       "has_live_promo": false,
       "live_promo_count": 0,
       "matched_source_impls": [],
@@ -11952,15 +12164,19 @@
       "clinic_slug": "era-082ba0ac85",
       "clinic_name": "Эра",
       "address": "Минск, ул. Пионерская, 32",
-      "site_url": null,
-      "site_host": null,
+      "site_url": "https://medera.by",
+      "site_host": "medera.by",
       "doctors_count": 8,
-      "has_live_promo": false,
-      "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "has_live_promo": true,
+      "live_promo_count": 10,
+      "matched_source_impls": [
+        "medera"
+      ],
+      "promo_sync_sources": [
+        "medera"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "covered_live"
     },
     {
       "clinic_id": "4cdcd7a1-4068-4606-adf5-8ec44723e57e",
@@ -12092,10 +12308,14 @@
       "doctors_count": 8,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "bullfinch"
+      ],
+      "promo_sync_sources": [
+        "bullfinch"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "ecea82b3-e52a-45a2-b4fc-f8ee77b6fee2",
@@ -12242,10 +12462,14 @@
       "doctors_count": 12,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "dimeda"
+      ],
+      "promo_sync_sources": [
+        "dimeda"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "7c15c601-4c67-4cd9-9acb-1b240b7a5538",
@@ -12286,7 +12510,7 @@
       "site_host": "e-clinic.by",
       "doctors_count": 29,
       "has_live_promo": true,
-      "live_promo_count": 3,
+      "live_promo_count": 2,
       "matched_source_impls": [
         "eclinic"
       ],
@@ -12445,10 +12669,14 @@
       "doctors_count": 28,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
+      "matched_source_impls": [
+        "imred"
+      ],
       "promo_sync_sources": [],
-      "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "robots_blocked_sources": [
+        "imred"
+      ],
+      "status": "robots_blocked_impl"
     },
     {
       "clinic_id": "71d65247-8ad6-494c-bedb-8e4be4f673d1",
@@ -12847,10 +13075,14 @@
       "doctors_count": 6,
       "has_live_promo": false,
       "live_promo_count": 0,
-      "matched_source_impls": [],
-      "promo_sync_sources": [],
+      "matched_source_impls": [
+        "verba"
+      ],
+      "promo_sync_sources": [
+        "verba"
+      ],
       "robots_blocked_sources": [],
-      "status": "no_site_url"
+      "status": "source_in_sync_no_live_promo"
     },
     {
       "clinic_id": "f8178c33-4334-4589-9055-050f4ed6568c",

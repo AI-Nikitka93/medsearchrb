@@ -59,7 +59,15 @@ type ScraperDescriptor = {
   host: string | null;
 };
 
-const KNOWN_ROBOTS_BLOCKED_PROMO_SOURCES = new Set(["happyderm", "klinik"]);
+const KNOWN_ROBOTS_BLOCKED_PROMO_SOURCES = new Set([
+  "ems",
+  "happyderm",
+  "imred",
+  "klinik",
+  "makaenka17med",
+  "medicplus",
+  "superdent",
+]);
 const PROMO_SOURCE_EXCLUSIONS = new Set(["103.by", "2doc.by", "doktora.by", "ydoc"]);
 
 function repoRoot() {
@@ -124,6 +132,7 @@ function parseConfiguredSources(configPath: string) {
   const lines = raw.split(/\r?\n/u);
   const sources = new Set<string>();
   let insideSources = false;
+  let currentSource: string | null = null;
 
   for (const line of lines) {
     if (!insideSources) {
@@ -139,9 +148,14 @@ function parseConfiguredSources(configPath: string) {
 
     const match = line.match(/^ {2}"?([A-Za-z0-9._-]+)"?:\s*$/u);
     if (match) {
-      const sourceName = match[1].trim();
-      if (!PROMO_SOURCE_EXCLUSIONS.has(sourceName)) {
-        sources.add(sourceName);
+      currentSource = match[1].trim();
+      continue;
+    }
+
+    const enabledMatch = line.match(/^ {4}enabled:\s*(true|false)\s*$/u);
+    if (enabledMatch && currentSource) {
+      if (enabledMatch[1] === "true" && !PROMO_SOURCE_EXCLUSIONS.has(currentSource)) {
+        sources.add(currentSource);
       }
     }
   }

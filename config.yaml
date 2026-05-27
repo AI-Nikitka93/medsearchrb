@@ -14,6 +14,21 @@ http:
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
 
 sources:
+  alphamed:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /akcii/ Альфамед и detail pages акций."
+  blossomclinic:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /news/ Блоссом Клиник и фильтруем промо-материалы."
+  bullfinch:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /news/ Bullfinch и фильтруем промо-материалы."
   aquaminsk:
     enabled: true
     robots_reviewed_at: "2026-03-30"
@@ -43,6 +58,11 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем официальный раздел /sale/ для акций и скидок центра Доктор Тут."
+  dimeda:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /news/ Димеда и фильтруем промо-материалы."
   "doktora.by":
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -54,6 +74,16 @@ sources:
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем /news/ и фильтруем промо-материалы по ключевым словам."
+  eksana:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /news/ Эксаны и фильтруем промо-материалы по ключевым словам."
+  ems:
+    enabled: false
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Candidate source only: /novosti/ был найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
   forestmed:
     enabled: true
     robots_reviewed_at: "2026-03-23"
@@ -74,6 +104,11 @@ sources:
     robots_reviewed_at: "2026-03-30"
     notes:
       - "Используем официальный раздел /akczii-i-skidki.html и detail pages акций ИдеалМед."
+  imred:
+    enabled: false
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Candidate source only: официальный сайт IMRED найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
   kaskad:
     enabled: true
     robots_reviewed_at: "2026-03-23"
@@ -94,6 +129,11 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную news-ленту и фильтруем промо-материалы по заголовкам и content."
+  makaenka17med:
+    enabled: false
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Candidate source only: сайт медицинского центра на Макаенка 17 найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
   lighthouse:
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -119,6 +159,31 @@ sources:
     robots_reviewed_at: "2026-03-30"
     notes:
       - "Используем публичную страницу /promotions/ медцентра Эра и разбираем live promo cards на самой странице."
+  medexpert:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /aktsii/ Центра семейной стоматологии."
+  medicplus:
+    enabled: false
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Candidate source only: /actions/ Медик Плюс найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
+  medpraktika:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /novosti/ Мед-Практика и фильтруем промо-материалы."
+  mercimed:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /news/ клиники Мерси и фильтруем промо-материалы."
+  minskdentist:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /sale стоматологии имени Жадовича."
   neomedical:
     enabled: true
     robots_reviewed_at: "2026-03-23"
@@ -134,16 +199,36 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную страницу акций и скидок /shares и связанные промо-страницы."
+  ortoclinic:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /novosti/ Ортоклиник и фильтруем промо-материалы."
+  ortosmile:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /aktsii/ Ортосмайл."
   paracels:
     enabled: true
     robots_reviewed_at: "2026-03-30"
     notes:
       - "Используем официальный раздел /sales/ медицинского центра Парацельс на narkolog.by."
+  parodent:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /akcii/ Пародент."
   sante:
     enabled: true
     robots_reviewed_at: "2026-03-23"
     notes:
       - "Используем официальный раздел /promotions и берем только currentPromotions из __NEXT_DATA__."
+  shineest:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /skidki Шайнэст."
   smartmedical:
     enabled: true
     robots_reviewed_at: "2026-03-22"
@@ -154,6 +239,16 @@ sources:
     robots_reviewed_at: "2026-03-22"
     notes:
       - "Используем публичную страницу /sales официального сайта."
+  superdent:
+    enabled: false
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Candidate source only: /akcii/ был найден, но robots/сетевой ответ заблокировал безопасный автоматический обход 2026-05-27."
+  verba:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /aktsii/ Verba."
   ydoc:
     enabled: true
     robots_reviewed_at: "2026-03-21"
@@ -162,3 +257,8 @@ sources:
     notes:
       - "Используем только doctor list/detail страницы и summary review metrics."
       - "Каталог врачей режется на bounded specialty buckets, чтобы cloud sync не упирался в 4h timeout."
+  zsmed:
+    enabled: true
+    robots_reviewed_at: "2026-05-27"
+    notes:
+      - "Используем официальный раздел /novosti/ Золотое Сечение Мед и фильтруем промо-материалы."
