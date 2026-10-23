@@ -1,0 +1,85 @@
+name: miniapp-health
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: medsearchrb-miniapp-health
+  cancel-in-progress: true
+
+jobs:
+  probe-public-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check public Mini App and catalog freshness
+        env:
+          PUBLIC_SITE_URL: https://ai-nikitka93.github.io/medsearchrb
+        run: |
+          node --input-type=module <<'NODE'
+          const site = process.env.PUBLIC_SITE_URL.replace(/\/+$/, "");
+          const maxAgeMs = 24 * 60 * 60 * 1000;
+
+          async function request(path, method = "HEAD") {
+            const response = await fetch(`${site}${path}`, {
+              method,
+              redirect: "follow",
+              cache: "no-store",
+              signal: AbortSignal.timeout(12_000),
+            });
+            if (!response.ok) {
+              throw new Error(`${method} ${path} returned HTTP ${response.status}`);
+            }
+            return response;
+          }
+
+          await request("/");
+
+          const overviewResponse = await fetch(
+            `${site}/data/catalog-overview.json?healthcheck=${Date.now()}`,
+            { cache: "no-store", signal: AbortSignal.timeout(12_000) },
+          );
+          if (!overviewResponse.ok) {
+            throw new Error(`GET catalog overview returned HTTP ${overviewResponse.status}`);
+          }
+
+          const overview = await overviewResponse.json();
+          const generatedAt = Date.parse(overview.generated_at);
+          const ageMs = Date.now() - generatedAt;
+          if (!Number.isFinite(generatedAt) || ageMs < -5 * 60 * 1000 || ageMs > maxAgeMs) {
+            throw new Error("Published catalog is missing a valid timestamp or is older than 24 hours.");
+          }
+          if (!Number.isInteger(overview.doctors_total) || overview.doctors_total < 1) {
+            throw new Error("Published catalog reports no doctors.");
+          }
+          if (!Number.isInteger(overview.clinics_total) || overview.clinics_total < 1) {
+            throw new Error("Published catalog reports no clinics.");
+          }
+
+          const version = overview.generated_at.replace(/[^0-9a-z]/gi, "").toLowerCase();
+          if (!version) {
+            throw new Error("Could not derive the catalog snapshot version.");
+          }
+
+          const snapshotPaths = [
+            `/data/catalog.${version}.json`,
+            `/data/catalog-overview.${version}.json`,
+            `/data/catalog-list.${version}.json`,
+            `/data/promotions.${version}.json`,
+          ];
+          await Promise.all(snapshotPaths.map((path) => request(path)));
+
+          console.log(JSON.stringify({
+            status: "healthy",
+            generated_at: overview.generated_at,
+            age_minutes: Math.floor(ageMs / 60_000),
+            doctors: overview.doctors_total,
+            clinics: overview.clinics_total,
+            snapshot_assets_checked: snapshotPaths.length,
+          }));
+          NODE
