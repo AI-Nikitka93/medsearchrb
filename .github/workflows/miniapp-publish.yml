@@ -1,0 +1,184 @@
+name: miniapp-publish
+
+on:
+  workflow_run:
+    workflows:
+      - doctor-catalog-sync
+      - promo-sync
+      - review-sync
+      - review-sync-103
+      - review-sync-2doc
+      - review-sync-doktora
+      - clinic-site-sync
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: medsearchrb-miniapp-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/miniapp/package-lock.json
+
+      - name: Validate catalog credentials
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          if [[ -z "$TURSO_DATABASE_URL" || -z "$TURSO_AUTH_TOKEN" ]]; then
+            echo "Required catalog credentials are not configured in GitHub Actions secrets." >&2
+            exit 1
+          fi
+
+      - name: Install Mini App dependencies
+        run: npm --prefix apps/miniapp ci --no-audit --prefer-offline
+
+      - name: Build static Mini App and live catalog snapshot
+        env:
+          NEXT_PUBLIC_BASE_PATH: /medsearchrb
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm --prefix apps/miniapp run build
+
+      - name: Validate exported catalog before publish
+        working-directory: apps/miniapp
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const readJson = (file) => JSON.parse(fs.readFileSync(`out/data/${file}`, "utf8"));
+          const catalog = readJson("catalog.json");
+          const overview = readJson("catalog-overview.json");
+          const doctorList = readJson("catalog-list.json");
+          const promotions = readJson("promotions.json");
+          const generatedAt = Date.parse(overview.generated_at);
+          const ageMs = Date.now() - generatedAt;
+
+          if (!Number.isFinite(generatedAt) || ageMs < -5 * 60 * 1000 || ageMs > 24 * 60 * 60 * 1000) {
+            throw new Error("Catalog snapshot is missing a trustworthy generation time or is older than 24 hours.");
+          }
+          if ([catalog, doctorList, promotions].some((snapshot) => snapshot.generated_at !== overview.generated_at)) {
+            throw new Error("Exported catalog files do not belong to the same snapshot version.");
+          }
+          if (!Array.isArray(catalog.doctors) || catalog.doctors.length === 0) {
+            throw new Error("Catalog snapshot contains no doctors.");
+          }
+          if (overview.doctors_total !== catalog.doctors.length || !Array.isArray(doctorList.items) || doctorList.items.length !== catalog.doctors.length) {
+            throw new Error("Doctor totals do not agree across exported catalog files.");
+          }
+          if (!Array.isArray(catalog.promotions) || !Array.isArray(promotions.items) || overview.promotions_total !== catalog.promotions.length || promotions.items.length !== catalog.promotions.length) {
+            throw new Error("Promotion totals do not agree across exported catalog files.");
+          }
+          if (!Array.isArray(overview.specialties) || overview.specialties.length === 0 || overview.clinics_total < 1) {
+            throw new Error("Catalog snapshot is missing clinic or specialty data.");
+          }
+
+          const publicSlugPattern = /^[\p{L}\p{N}][\p{L}\p{N}\p{M}._~-]*$/u;
+          const doctorSlugs = new Set();
+          const clinicsBySlug = new Map();
+
+          if (!fs.existsSync("out/index.html") || !fs.existsSync("out/list/index.html")) {
+            throw new Error("Static export is missing the homepage or doctor search page.");
+          }
+
+          for (const doctor of catalog.doctors) {
+            if (typeof doctor.slug !== "string" || !publicSlugPattern.test(doctor.slug)) {
+              throw new Error("Catalog contains a doctor with an invalid public slug.");
+            }
+            if (doctorSlugs.has(doctor.slug)) {
+              throw new Error("Catalog contains duplicate doctor slug: " + doctor.slug);
+            }
+            doctorSlugs.add(doctor.slug);
+
+            for (const clinic of doctor.clinics ?? []) {
+              if (typeof clinic.slug !== "string" || !publicSlugPattern.test(clinic.slug)) {
+                throw new Error("Catalog contains a clinic with an invalid public slug.");
+              }
+              const existingClinicId = clinicsBySlug.get(clinic.slug);
+              if (existingClinicId && existingClinicId !== clinic.id) {
+                throw new Error("Catalog contains duplicate clinic slug: " + clinic.slug);
+              }
+              clinicsBySlug.set(clinic.slug, clinic.id);
+            }
+          }
+
+          if (clinicsBySlug.size !== overview.clinics_total) {
+            throw new Error("Clinic totals do not agree with the unique public clinic slugs.");
+          }
+
+          let sitemapUrls = [];
+          if (fs.existsSync("out/sitemap.xml")) {
+            const publicBaseUrl = "https://ai-nikitka93.github.io/medsearchrb/";
+            for (const slug of doctorSlugs) {
+              if (!fs.existsSync("out/doctor/" + encodeURIComponent(slug) + "/index.html")) {
+                throw new Error("Static export is missing a doctor profile: " + slug);
+              }
+            }
+            for (const slug of clinicsBySlug.keys()) {
+              if (!fs.existsSync("out/clinic/" + encodeURIComponent(slug) + "/index.html")) {
+                throw new Error("Static export is missing a clinic profile: " + slug);
+              }
+            }
+
+            const sitemapXml = fs.readFileSync("out/sitemap.xml", "utf8");
+            sitemapUrls = Array.from(
+              sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g),
+              (match) => match[1],
+            );
+            const expectedSitemapUrls = new Set([
+              publicBaseUrl,
+              publicBaseUrl + "list/",
+              ...Array.from(
+                doctorSlugs,
+                (slug) => publicBaseUrl + "doctor/" + encodeURIComponent(slug) + "/",
+              ),
+              ...Array.from(
+                clinicsBySlug.keys(),
+                (slug) => publicBaseUrl + "clinic/" + encodeURIComponent(slug) + "/",
+              ),
+            ]);
+            const actualSitemapUrls = new Set(sitemapUrls);
+            if (
+              sitemapUrls.length !== expectedSitemapUrls.size ||
+              actualSitemapUrls.size !== sitemapUrls.length ||
+              Array.from(expectedSitemapUrls).some((url) => !actualSitemapUrls.has(url))
+            ) {
+              throw new Error("Sitemap URLs do not match the exported doctor and clinic pages.");
+            }
+          }
+
+          console.log(JSON.stringify({
+            generated_at: overview.generated_at,
+            doctors: catalog.doctors.length,
+            clinics: clinicsBySlug.size,
+            specialties: overview.specialties.length,
+            promotions: catalog.promotions.length,
+            sitemap_urls: sitemapUrls.length,
+          }));
+          NODE
+
+      - name: Publish validated export to gh-pages
+        env:
+          NEXT_PUBLIC_BASE_PATH: /medsearchrb
+        run: bash scripts/publish-miniapp-gh-pages.sh
