@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "node ./scripts/generate-catalog-snapshot.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test scripts/lib/snapshot-freshness.test.mjs scripts/lib/snapshot-files.test.mjs"
   },
   "dependencies": {
     "next": "16.2.1",

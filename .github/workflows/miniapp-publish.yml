@@ -34,7 +34,23 @@ jobs:
         with:
           ref: ${{ github.event.repository.default_branch }}
 
+      - name: Respect the 20-hour publication cooldown
+        id: publish_window
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch origin gh-pages --depth=1
+            last_publication="$(git show -s --format=%ct FETCH_HEAD)"
+            age_seconds="$(( $(date -u +%s) - last_publication ))"
+            if (( age_seconds < 72000 )); then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "Skipping publish: the last Pages update was less than 20 hours ago."
+              exit 0
+            fi
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Setup Node
+        if: steps.publish_window.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -42,6 +58,7 @@ jobs:
           cache-dependency-path: apps/miniapp/package-lock.json
 
       - name: Validate catalog credentials
+        if: steps.publish_window.outputs.skip != 'true'
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
@@ -52,9 +69,11 @@ jobs:
           fi
 
       - name: Install Mini App dependencies
+        if: steps.publish_window.outputs.skip != 'true'
         run: npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Build static Mini App and live catalog snapshot
+        if: steps.publish_window.outputs.skip != 'true'
         env:
           NEXT_PUBLIC_BASE_PATH: /medsearchrb
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
@@ -62,6 +81,7 @@ jobs:
         run: npm --prefix apps/miniapp run build
 
       - name: Validate exported catalog before publish
+        if: steps.publish_window.outputs.skip != 'true'
         working-directory: apps/miniapp
         run: |
           node --input-type=module <<'NODE'
@@ -179,6 +199,7 @@ jobs:
           NODE
 
       - name: Publish validated export to gh-pages
+        if: steps.publish_window.outputs.skip != 'true'
         env:
           NEXT_PUBLIC_BASE_PATH: /medsearchrb
         run: bash scripts/publish-miniapp-gh-pages.sh

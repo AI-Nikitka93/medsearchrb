@@ -1,4 +1,5 @@
 import { SNAPSHOT_VERSION } from "@/lib/generated/snapshot-version";
+import { classifySnapshotFreshness } from "../scripts/lib/snapshot-freshness.mjs";
 
 const LOCAL_API_BASE_URL = "http://127.0.0.1:8787";
 const DEFAULT_API_BASE_URL = "https://medsearchrb-api.aiomdurman.workers.dev";
@@ -426,12 +427,23 @@ function resolveApiBaseUrl() {
   return DEFAULT_API_BASE_URL;
 }
 
-function resolveSourceOrder(): DataSourcePreference[] {
-  return isLocalHost() ? ["worker", "snapshot"] : ["snapshot", "worker"];
-}
+async function resolveSourceOrder(): Promise<DataSourcePreference[]> {
+  if (isLocalHost()) {
+    return ["worker", "snapshot"];
+  }
 
-function resolveDoctorDetailSourceOrder(): DataSourcePreference[] {
-  return resolveSourceOrder();
+  try {
+    const freshness = classifySnapshotFreshness(
+      (await loadOverviewSnapshot()).generated_at,
+    );
+    if (freshness === "fresh") {
+      return ["snapshot", "worker"];
+    }
+  } catch {
+    // Prefer live catalog data if the static freshness marker is unavailable.
+  }
+
+  return ["worker", "snapshot"];
 }
 
 function isLocalHost() {
@@ -1544,7 +1556,7 @@ export async function fetchDoctors(params: {
 
   let lastError: unknown = null;
 
-  for (const source of resolveSourceOrder()) {
+  for (const source of await resolveSourceOrder()) {
     try {
       if (source === "snapshot") {
         return await fetchDoctorsFromSnapshot(params);
@@ -1577,7 +1589,7 @@ export async function fetchDoctors(params: {
 export async function fetchDoctorDetail(doctorId: string, signal?: AbortSignal) {
   let lastError: unknown = null;
 
-  for (const source of resolveDoctorDetailSourceOrder()) {
+  for (const source of await resolveSourceOrder()) {
     try {
       if (source === "snapshot") {
         return await fetchDoctorDetailFromSnapshot(doctorId);
@@ -1616,7 +1628,7 @@ export async function fetchPromotions(params?: {
 }) {
   let lastError: unknown = null;
 
-  for (const source of resolveSourceOrder()) {
+  for (const source of await resolveSourceOrder()) {
     try {
       if (source === "snapshot") {
         return await fetchPromotionsFromSnapshot(params);
@@ -1642,7 +1654,51 @@ export async function fetchPromotions(params?: {
   throw lastError instanceof Error ? lastError : new Error("Не удалось загрузить акции");
 }
 
+async function fetchLiveCatalogOverview(
+  signal?: AbortSignal,
+): Promise<CatalogOverview> {
+  const [doctors, promotions] = await Promise.all([
+    tryWorkerJson<DoctorsListResponse>(
+      "/api/v1/doctors",
+      { page: 1, per_page: 1 },
+      { cache: "no-store", signal },
+    ),
+    tryWorkerJson<PromotionListResponse>(
+      "/api/v1/promotions",
+      { page: 1, per_page: 1 },
+      { cache: "no-store", signal },
+    ),
+  ]);
+
+  return {
+    generated_at: null,
+    doctors_total: doctors.total,
+    promotions_total: promotions.total,
+    clinics_total: 0,
+    specialties: [],
+  };
+}
+
 export async function fetchCatalogOverview(signal?: AbortSignal) {
+  if ((await resolveSourceOrder())[0] === "worker") {
+    try {
+      const liveOverview = await fetchLiveCatalogOverview(signal);
+      try {
+        const snapshotOverview = await loadOverviewSnapshot();
+        return {
+          ...snapshotOverview,
+          ...liveOverview,
+          clinics_total: snapshotOverview.clinics_total,
+          specialties: snapshotOverview.specialties,
+        } satisfies CatalogOverview;
+      } catch {
+        return liveOverview;
+      }
+    } catch {
+      // Keep the static snapshot available if the live API is temporarily down.
+    }
+  }
+
   try {
     return await loadOverviewSnapshot();
   } catch {
@@ -1690,40 +1746,160 @@ export async function fetchCatalogOverview(signal?: AbortSignal) {
         }),
       } satisfies CatalogOverview;
     } catch {
-      const [doctors, promotions] = await Promise.all([
-        tryWorkerJson<DoctorsListResponse>(
-          "/api/v1/doctors",
-          {
-            page: 1,
-            per_page: 1,
-          },
-          {
-            cache: "no-store",
-            signal,
-          },
-        ),
-        tryWorkerJson<PromotionListResponse>(
-          "/api/v1/promotions",
-          {
-            page: 1,
-            per_page: 1,
-          },
-          {
-            cache: "no-store",
-            signal,
-          },
-        ),
-      ]);
-
-      return {
-        generated_at: null,
-        doctors_total: doctors.total,
-        promotions_total: promotions.total,
-        clinics_total: 0,
-        specialties: [],
-      } satisfies CatalogOverview;
+      return fetchLiveCatalogOverview(signal);
     }
   }
+}
+
+async function fetchSmartSearchFromLiveApi(
+  query: string,
+  signal?: AbortSignal,
+): Promise<SmartSearchResponse> {
+  const mappedSpecialties = mapProblemSpecialties(query);
+  const searchedBySpecialty = mappedSpecialties.length > 0;
+  const intent = inferIntent(query, mappedSpecialties, 0, 0, 0);
+  const normalizedQuery = normalizeText(query);
+  const tokens = tokenizeSearch(normalizedQuery);
+
+  const doctorResponse =
+    intent === "promo"
+      ? { total: 0, page: 1, per_page: 12, items: [] }
+      : sanitizeDoctorsListResponse(
+          await tryWorkerJson<DoctorsListResponse>(
+            "/api/v1/doctors",
+            {
+              q: mappedSpecialties.length > 0 ? undefined : query,
+              specialty: mappedSpecialties[0],
+              page: 1,
+              per_page: 12,
+            },
+            { cache: "no-store", signal },
+          ),
+        );
+
+  const promotionResponse =
+    intent === "promo"
+      ? await fetchPromotions({ page: 1, perPage: 50, signal })
+      : { total: 0, page: 1, per_page: 50, items: [] };
+
+  if (signal?.aborted) {
+    throw new Error("Search aborted");
+  }
+
+  const doctors = doctorResponse.items
+    .map<SmartSearchDoctorItem | null>((doctor) => {
+      const doctorName = normalizeText(doctor.full_name);
+      const specialtyNames = doctor.specialties;
+      const clinicNames = doctor.clinics;
+      const haystack = normalizeText(
+        [doctor.full_name, ...specialtyNames, ...clinicNames].join(" "),
+      );
+      const specialtyOverlap = mappedSpecialties.filter((specialty) =>
+        specialtyNames.some((item) => normalizeText(item).includes(normalizeText(specialty))),
+      );
+      const matchedSpecialty = specialtyOverlap[0] ??
+        (searchedBySpecialty ? mappedSpecialties[0] : null);
+      let score =
+        scoreTextMatch(doctorName, normalizedQuery, tokens) +
+        scoreTextMatch(haystack, normalizedQuery, tokens);
+
+      if (score <= 0 && !matchedSpecialty) {
+        return null;
+      }
+      if (matchedSpecialty) {
+        score += 50;
+      }
+      if (doctor.reviews_count > 0) {
+        score += Math.min(doctor.reviews_count, 200) / 5;
+      }
+      if (score < 35) {
+        return null;
+      }
+
+      return {
+        kind: "doctor",
+        id: doctor.id,
+        slug: doctor.slug,
+        full_name: doctor.full_name,
+        specialty: specialtyNames[0] ?? "Специалист",
+        clinic: clinicNames[0] ?? "Клиника уточняется",
+        rating_avg: doctor.rating_avg,
+        reviews_count: doctor.reviews_count,
+        verified_clinic: false,
+        score,
+        reason:
+          matchedSpecialty
+            ? `Подходит по проблеме: ${matchedSpecialty}`
+            : doctorName.includes(normalizedQuery)
+              ? "Точное совпадение по врачу"
+              : "Подходит по имени, клинике или специальности",
+      };
+    })
+    .filter((item): item is SmartSearchDoctorItem => Boolean(item))
+    .sort((left, right) => right.score - left.score || compareByDoctorPriority(left, right))
+    .slice(0, 6);
+
+  const promotions = promotionResponse.items
+    .map<SmartSearchPromotionItem | null>((promotion) => {
+      const haystack = normalizeText([promotion.title, promotion.clinic.name].join(" "));
+      const contentTokens = tokens.filter(
+        (token) =>
+          !PROMO_INTENT_TERMS.some((term) =>
+            normalizeText(term)
+              .split(" ")
+              .some((termToken) => token.includes(termToken) || termToken.includes(token)),
+          ),
+      );
+      const contentQuery = contentTokens.join(" ");
+      let score = contentQuery
+        ? scoreTextMatch(haystack, contentQuery, contentTokens)
+        : 50;
+      if (contentQuery && score > 0) {
+        score += 24;
+      }
+      if (score < 30) {
+        return null;
+      }
+
+      return {
+        kind: "promotion",
+        id: promotion.id,
+        title: promotion.title,
+        clinic_name: promotion.clinic.name,
+        source_url: promotion.source_url,
+        ends_at: promotion.ends_at,
+        score,
+      };
+    })
+    .filter((item): item is SmartSearchPromotionItem => Boolean(item))
+    .sort((left, right) => right.score - left.score || left.title.localeCompare(right.title, "ru"))
+    .slice(0, 4);
+
+  const inferredIntent = inferIntent(
+    query,
+    mappedSpecialties,
+    doctors.length,
+    0,
+    promotions.length,
+  );
+  const bestMatch =
+    inferredIntent === "promo"
+      ? promotions[0] ?? doctors[0] ?? null
+      : doctors[0] ?? promotions[0] ?? null;
+
+  return {
+    query,
+    normalized_query: normalizedQuery,
+    intent: inferredIntent,
+    best_match: bestMatch,
+    doctors,
+    clinics: [],
+    promotions,
+    specialties: [],
+    suggestions: mappedSpecialties
+      .map((specialty) => `Лучшие врачи: ${specialty}`)
+      .slice(0, 6),
+  };
 }
 
 export async function fetchSmartSearch(query: string, signal?: AbortSignal) {
@@ -1754,6 +1930,14 @@ export async function fetchSmartSearch(query: string, signal?: AbortSignal) {
       specialties: [],
       suggestions: [],
     } satisfies SmartSearchResponse;
+  }
+
+  if ((await resolveSourceOrder())[0] === "worker") {
+    try {
+      return await fetchSmartSearchFromLiveApi(trimmedQuery, signal);
+    } catch {
+      // Retain snapshot search when the live Worker API is temporarily unavailable.
+    }
   }
 
   return fetchSmartSearchFromSnapshot(trimmedQuery, signal);

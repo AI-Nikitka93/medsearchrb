@@ -3,10 +3,10 @@ name: doctor-catalog-sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15,45 * * * *"
+    - cron: "17 */2 * * *"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: medsearchrb-doctor-catalog-sync
@@ -42,7 +42,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           npm --prefix apps/worker ci --no-audit --prefer-offline
-          npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Compute YDoc specialty bucket
         id: chunk
@@ -148,3 +147,4 @@ jobs:
           name: ydoc-source-batch
           path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
           if-no-files-found: warn
+          retention-days: 3

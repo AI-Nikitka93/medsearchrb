@@ -2,7 +2,7 @@ name: miniapp-health
 
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "41 */6 * * *"
   workflow_dispatch:
 
 permissions: {}
