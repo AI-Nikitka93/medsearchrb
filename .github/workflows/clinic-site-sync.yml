@@ -3,10 +3,10 @@ name: clinic-site-sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "20 */6 * * *"
+    - cron: "37 2 * * 0"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: medsearchrb-clinic-site-sync
@@ -33,7 +33,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm --prefix apps/worker ci --no-audit --prefer-offline
-          npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Apply database migrations
         env:

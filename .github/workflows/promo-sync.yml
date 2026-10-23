@@ -3,10 +3,10 @@ name: promo-sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "23 */6 * * *"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: medsearchrb-promo-sync
@@ -42,7 +42,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           npm --prefix apps/worker ci --no-audit --prefer-offline
-          npm --prefix apps/miniapp ci --no-audit --prefer-offline
 
       - name: Run promo sources to batch file
         env:
@@ -114,3 +113,4 @@ jobs:
           name: promo-source-batch
           path: ~/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json
           if-no-files-found: warn
+          retention-days: 3

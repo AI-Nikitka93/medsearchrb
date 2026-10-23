@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createClient } from "@libsql/client";
+import { classifySnapshotFallback } from "./lib/snapshot-freshness.mjs";
+import { pruneObsoleteVersionedSnapshots } from "./lib/snapshot-files.mjs";
 
 const miniappRoot = process.cwd();
 const repoRoot = path.resolve(miniappRoot, "..", "..");
@@ -238,9 +240,58 @@ function toSnapshotVersion(value) {
     .toLowerCase();
 }
 
+function getExistingSnapshotFreshness() {
+  try {
+    const overview = JSON.parse(fs.readFileSync(overviewOutputPath, "utf8"));
+    const versionModule = fs.readFileSync(snapshotVersionModulePath, "utf8");
+    const actualVersion =
+      versionModule.match(/SNAPSHOT_VERSION\s*=\s*["']([^"']+)["']/u)?.[1] ??
+      null;
+    const expectedVersion = toSnapshotVersion(overview.generated_at);
+    const versionedPaths = actualVersion
+      ? [
+          path.join(outputDir, `catalog.${actualVersion}.json`),
+          path.join(outputDir, `catalog-overview.${actualVersion}.json`),
+          path.join(outputDir, `catalog-list.${actualVersion}.json`),
+          path.join(outputDir, `promotions.${actualVersion}.json`),
+        ]
+      : [];
+    const requiredPaths = [
+      outputPath,
+      overviewOutputPath,
+      doctorsListOutputPath,
+      promotionsOutputPath,
+      ...versionedPaths,
+    ];
+    const hasAllSnapshotFiles =
+      versionedPaths.length === 4 && requiredPaths.every(fs.existsSync);
+    const versionedOverview = hasAllSnapshotFiles
+      ? JSON.parse(fs.readFileSync(versionedPaths[1], "utf8"))
+      : null;
+
+    return classifySnapshotFallback({
+      generatedAt: overview.generated_at,
+      versionedGeneratedAt: versionedOverview?.generated_at,
+      expectedVersion,
+      actualVersion,
+      hasAllSnapshotFiles,
+    });
+  } catch {
+    return "unknown";
+  }
+}
+
 function reuseExistingSnapshotsOrThrow(error) {
-  if (!fs.existsSync(outputPath) || !fs.existsSync(overviewOutputPath)) {
-    throw error;
+  const snapshotFreshness = getExistingSnapshotFreshness();
+  if (snapshotFreshness !== "fresh") {
+    const reason =
+      snapshotFreshness === "stale"
+        ? "the active versioned snapshot is older than 24 hours"
+        : "the canonical and versioned snapshot files are missing, out of sync, or have no trustworthy generation time";
+    throw new Error(
+      `Cannot reuse an old catalog snapshot after live generation failed: ${reason}.`,
+      { cause: error },
+    );
   }
 
   const message = error instanceof Error ? error.message : String(error);
@@ -680,6 +731,10 @@ fs.writeFileSync(
   snapshotVersionModulePath,
   `export const SNAPSHOT_VERSION = ${JSON.stringify(snapshotVersion)};\n`,
 );
+const prunedSnapshotCount = pruneObsoleteVersionedSnapshots(
+  outputDir,
+  snapshotVersion,
+);
 
 console.log(
   JSON.stringify({
@@ -692,6 +747,7 @@ console.log(
     versioned_doctors_list_output: versionedDoctorsListOutputPath,
     versioned_promotions_output: versionedPromotionsOutputPath,
     snapshot_version: snapshotVersion,
+    pruned_obsolete_snapshots: prunedSnapshotCount,
     doctors: doctors.length,
     promotions: promotions.length,
   }),
