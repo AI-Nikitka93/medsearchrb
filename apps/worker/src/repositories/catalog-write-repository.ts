@@ -792,7 +792,7 @@ export class CatalogWriteRepository {
   async findPromotionByFingerprint(db: SqlExecutor, fingerprintHash: string) {
     const result = await db.execute({
       sql: `
-        SELECT id, title, source_url, discount_label, ends_at, published_at
+        SELECT id, title, description_short, source_url, discount_label, ends_at, published_at
         FROM promotions
         WHERE fingerprint_hash = ?
         LIMIT 1
@@ -810,6 +810,7 @@ export class CatalogWriteRepository {
       clinicId: string;
       doctorId: string | null;
       title: string;
+      descriptionShort: string | null;
       sourceName: string;
       sourceUrl: string;
       endsAt: string | null;
@@ -826,11 +827,12 @@ export class CatalogWriteRepository {
           discount_label, starts_at, ends_at, published_at, is_active, is_hidden,
           fingerprint_hash, last_seen_at, created_at, updated_at
         )
-        VALUES (?, ?, ?, ?, NULL, ?, ?, NULL, NULL, ?, ?, ?, 0, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?, ?, ?, 0, ?, ?, ?, ?)
         ON CONFLICT(fingerprint_hash) DO UPDATE SET
           clinic_id = excluded.clinic_id,
           doctor_id = excluded.doctor_id,
           title = excluded.title,
+          description_short = COALESCE(excluded.description_short, promotions.description_short),
           source_url = excluded.source_url,
           ends_at = excluded.ends_at,
           published_at = excluded.published_at,
@@ -843,6 +845,7 @@ export class CatalogWriteRepository {
         args.clinicId,
         args.doctorId,
         args.title,
+        args.descriptionShort,
         args.sourceName,
         args.sourceUrl,
         args.endsAt,

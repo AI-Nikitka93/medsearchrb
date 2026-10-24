@@ -7,6 +7,16 @@ type TelegramApiResponse<T> = {
   description?: string;
 };
 
+type TelegramSentMessage = {
+  message_id: number;
+  chat: { id: number | string };
+};
+
+export type ChannelMessageReceipt = {
+  chatId: string;
+  messageId: number;
+};
+
 type TelegramInlineKeyboard = {
   inline_keyboard: Array<Array<Record<string, unknown>>>;
 };
@@ -334,12 +344,13 @@ export class TelegramBotService {
 
   async sendPromotionToChannel(args: {
     title: string;
+    description: string | null;
     clinicName: string;
     sourceName: string;
     sourceUrl: string;
     clinicSiteUrl: string | null;
     endsAt: string | null;
-  }) {
+  }): Promise<ChannelMessageReceipt> {
     const chatId = this.channelTarget();
     if (!chatId) {
       throw new Error("Missing TELEGRAM_CHANNEL_ID or TELEGRAM_CHANNEL_USERNAME");
@@ -361,6 +372,11 @@ export class TelegramBotService {
       `Клиника: ${escapeHtml(args.clinicName)}`,
       `Источник: ${escapeHtml(args.sourceName)}`,
     ];
+
+    if (args.description?.trim()) {
+      const description = args.description.trim().slice(0, 1800);
+      lines.push("", "<b>Предложение и условия:</b>", escapeHtml(description));
+    }
 
     if (deadline) {
       lines.push(`Действует до: ${escapeHtml(deadline)}`);
@@ -400,12 +416,153 @@ export class TelegramBotService {
       ]);
     }
 
-    await this.sendMessage({
+    const sent = await this.callTelegram<TelegramSentMessage>("sendMessage", {
       chat_id: chatId,
       text: lines.join("\n"),
       reply_markup: { inline_keyboard: buttons },
+      parse_mode: "HTML",
       disable_web_page_preview: true,
     });
+
+    return {
+      chatId: String(sent.chat.id),
+      messageId: sent.message_id,
+    };
+  }
+
+  async editPromotionInChannel(args: {
+    chatId: string;
+    messageId: number;
+    title: string;
+    description: string | null;
+    clinicName: string;
+    sourceName: string;
+    sourceUrl: string;
+    clinicSiteUrl: string | null;
+    endsAt: string | null;
+  }) {
+    const lines = [
+      "✏️ <b>Обновление акции медцентра в Минске</b>",
+      "",
+      `<b>${escapeHtml(args.title)}</b>`,
+      `Клиника: ${escapeHtml(args.clinicName)}`,
+      `Источник: ${escapeHtml(args.sourceName)}`,
+    ];
+
+    if (args.description?.trim()) {
+      lines.push(
+        "",
+        "<b>Предложение и условия:</b>",
+        escapeHtml(args.description.trim().slice(0, 1800)),
+      );
+    }
+
+    if (args.endsAt) {
+      const deadline = new Intl.DateTimeFormat("ru-BY", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Europe/Minsk",
+      }).format(new Date(args.endsAt));
+      lines.push(`Действует до: ${escapeHtml(deadline)}`);
+    }
+
+    lines.push(
+      "",
+      "Проверьте условия акции перед записью и переходите по ссылкам ниже.",
+      "",
+      "Создано @AI_Nikitka93",
+    );
+
+    const buttons: TelegramInlineKeyboard["inline_keyboard"] = [
+      [{ text: "Открыть акцию", url: args.sourceUrl }],
+    ];
+    if (args.clinicSiteUrl && args.clinicSiteUrl !== args.sourceUrl) {
+      buttons.push([{ text: "Сайт клиники", url: args.clinicSiteUrl }]);
+    }
+    if (this.env.WEBAPP_URL?.trim()) {
+      buttons.push([{ text: "Открыть каталог врачей", url: this.env.WEBAPP_URL.trim() }]);
+    }
+
+    await this.editMessageText({
+      chat_id: args.chatId,
+      message_id: args.messageId,
+      text: lines.join("\n"),
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: buttons },
+      disable_web_page_preview: true,
+    });
+  }
+
+  async editPromotionToEnded(args: {
+    chatId: string;
+    messageId: number;
+    title: string;
+    description?: string | null;
+    clinicName: string;
+    sourceName: string;
+    sourceUrl: string;
+    clinicSiteUrl: string | null;
+    endsAt: string | null;
+  }) {
+    const lines = [
+      "⚠️ <b>Акция завершена</b>",
+      "",
+      `<b>${escapeHtml(args.title)}</b>`,
+      `Клиника: ${escapeHtml(args.clinicName)}`,
+      `Источник: ${escapeHtml(args.sourceName)}`,
+      "",
+      "Предложение больше не действует. Проверяйте актуальные условия у клиники.",
+    ];
+
+    if (args.description?.trim()) {
+      lines.push(
+        "",
+        "<b>Предложение и условия:</b>",
+        escapeHtml(args.description.trim().slice(0, 1800)),
+      );
+    }
+
+    if (args.endsAt) {
+      const deadline = new Intl.DateTimeFormat("ru-BY", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Europe/Minsk",
+      }).format(new Date(args.endsAt));
+      lines.push(`По опубликованным условиям акция действовала до ${escapeHtml(deadline)}.`);
+    }
+
+    lines.push("", "Создано @AI_Nikitka93");
+
+    const buttons: TelegramInlineKeyboard["inline_keyboard"] = [
+      [{ text: "Проверить источник", url: args.sourceUrl }],
+    ];
+    if (args.clinicSiteUrl && args.clinicSiteUrl !== args.sourceUrl) {
+      buttons.push([{ text: "Сайт клиники", url: args.clinicSiteUrl }]);
+    }
+
+    await this.editMessageText({
+      chat_id: args.chatId,
+      message_id: args.messageId,
+      text: lines.join("\n"),
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: buttons },
+      disable_web_page_preview: true,
+    });
+  }
+
+  private async editMessageText(payload: Record<string, unknown>) {
+    try {
+      await this.callTelegram("editMessageText", payload);
+    } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !error.message.toLowerCase().includes("message is not modified")
+      ) {
+        throw error;
+      }
+    }
   }
 
   private async callTelegram<T>(method: string, payload: Record<string, unknown>) {

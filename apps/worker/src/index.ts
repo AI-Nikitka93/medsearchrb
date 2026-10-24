@@ -117,11 +117,27 @@ app.onError((error, c) => {
 
 export default {
   fetch: app.fetch,
-  scheduled(_controller: ScheduledController, env: WorkerBindings, ctx: ExecutionContext) {
-    ctx.waitUntil(
-      promotionChannelService.dispatchPending(env).catch((error) => {
+  scheduled(controller: ScheduledController, env: WorkerBindings, ctx: ExecutionContext) {
+    const scheduledAt = new Date(controller.scheduledTime);
+    const runDailyAudit =
+      controller.cron === "*/20 * * * *" &&
+      scheduledAt.getUTCHours() === 0 &&
+      scheduledAt.getUTCMinutes() === 0;
+
+    ctx.waitUntil((async () => {
+      try {
+        await promotionChannelService.dispatchPending(env);
+      } catch (error) {
         console.error("promotion_channel_cron_error", error);
-      }),
-    );
+      }
+
+      if (runDailyAudit) {
+        try {
+          await promotionChannelService.auditPostedPromotions(env);
+        } catch (error) {
+          console.error("promotion_channel_audit_cron_error", error);
+        }
+      }
+    })());
   },
 };

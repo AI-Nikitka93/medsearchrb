@@ -10,6 +10,7 @@ export class PromotionsReadRepository {
   async list(db: SqlExecutor, filters: PromotionFilters) {
     const whereClauses = [
       "p.is_active = 1",
+      "(p.ends_at IS NULL OR date(p.ends_at) >= date('now'))",
       "p.is_hidden = 0",
       "c.is_hidden = 0",
       "c.opt_out = 0",
