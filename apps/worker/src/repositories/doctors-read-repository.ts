@@ -295,6 +295,7 @@ export class DoctorsReadRepository {
         FROM promotions p
         INNER JOIN clinics c ON c.id = p.clinic_id
         WHERE p.is_active = 1
+          AND (p.ends_at IS NULL OR date(p.ends_at) >= date('now'))
           AND p.is_hidden = 0
           AND c.is_hidden = 0
           AND c.opt_out = 0
@@ -477,6 +478,7 @@ export class DoctorsReadRepository {
         WHERE dc.doctor_id IN (${this.placeholders(doctorIds.length)})
           AND dc.is_active = 1
           AND p.is_active = 1
+          AND (p.ends_at IS NULL OR date(p.ends_at) >= date('now'))
           AND p.is_hidden = 0
           AND c.is_hidden = 0
           AND c.opt_out = 0

@@ -61,6 +61,25 @@ export class IngestService {
     };
 
     for (const batch of sourceBatches) {
+      const report = batch.report;
+      if (!report || report.status !== "ok" || report.source !== batch.source) {
+        totals.skipped += 1;
+        console.warn(
+          "ingest_batch_skipped",
+          JSON.stringify({
+            source: batch.source,
+            reportSource: report?.source ?? null,
+            reportStatus: report?.status ?? null,
+            reason: !report
+              ? "missing_report"
+              : report.status !== "ok"
+                ? "scrape_not_successful"
+                : "source_mismatch",
+          }),
+        );
+        continue;
+      }
+
       const batchId = await sha256(JSON.stringify(batch));
       const existingRun = await this.repo.getScrapeRunByBatchId(client, batchId);
       if (existingRun && String(existingRun.status) === "completed") {
@@ -127,11 +146,30 @@ export class IngestService {
             activePromotionFingerprints.push(fingerprintHash);
           }
         }
-        await this.repo.deactivateMissingPromotionsForSource(tx, {
-          sourceName: batch.source,
-          activeFingerprints: activePromotionFingerprints,
-          nowIso: batch.captured_at,
-        });
+        const promotionSnapshotComplete =
+          report.promotions_complete &&
+          report.promotions_found === batch.promotions.length &&
+          activePromotionFingerprints.length === batch.promotions.length &&
+          report.notes.length === 0;
+
+        if (promotionSnapshotComplete) {
+          await this.repo.deactivateMissingPromotionsForSource(tx, {
+            sourceName: batch.source,
+            activeFingerprints: activePromotionFingerprints,
+            nowIso: batch.captured_at,
+          });
+        } else if (report.promotions_complete) {
+          console.warn(
+            "ingest_promotion_snapshot_incomplete",
+            JSON.stringify({
+              source: batch.source,
+              reported: report.promotions_found,
+              received: batch.promotions.length,
+              resolved: activePromotionFingerprints.length,
+              notes: report.notes.length,
+            }),
+          );
+        }
 
         await tx.commit();
         await this.repo.completeScrapeRun(
@@ -693,6 +731,7 @@ export class IngestService {
       clinicId,
       doctorId: null,
       title: promotion.title,
+      descriptionShort: promotion.description?.trim() || null,
       sourceName: promotion.source,
       sourceUrl: promotion.source_url ?? promotion.url,
       endsAt: promotion.valid_until ?? null,
@@ -707,7 +746,9 @@ export class IngestService {
       String(existing.title ?? "") !== promotion.title ||
       String(existing.source_url ?? "") !== (promotion.source_url ?? promotion.url) ||
       String(existing.ends_at ?? "") !== String(promotion.valid_until ?? "") ||
-      String(existing.published_at ?? "") !== String(promotion.published_at ?? "");
+      String(existing.published_at ?? "") !== String(promotion.published_at ?? "") ||
+      (Boolean(promotion.description?.trim()) &&
+        String(existing.description_short ?? "") !== promotion.description?.trim());
 
     if (materialChange) {
       const dedupeKey = await sha256(`${fingerprintHash}|${promotion.captured_at}`);
@@ -717,6 +758,7 @@ export class IngestService {
         dedupeKey,
         payloadJson: JSON.stringify({
           title: promotion.title,
+          description: promotion.description?.trim() || null,
           source_url: promotion.source_url ?? promotion.url,
           clinic_id: clinicId,
           published_at: promotion.published_at ?? null,

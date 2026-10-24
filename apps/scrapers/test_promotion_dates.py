@@ -12,6 +12,7 @@ from apps.scrapers.scrapers.lifecity import LifeCityScraper
 from apps.scrapers.scrapers.mrtby import MrtByScraper
 from apps.scrapers.scrapers.neomedical import NeoMedicalScraper
 from apps.scrapers.scrapers.smartmedical import SmartMedicalScraper
+from apps.scrapers.models import ScrapeReport
 
 
 RUS_MONTHS = (
@@ -28,6 +29,71 @@ RUS_MONTHS = (
     "ноября",
     "декабря",
 )
+
+
+def test_scrape_report_does_not_claim_promotion_completeness_by_default() -> None:
+    assert ScrapeReport(source="test", status="ok").promotions_complete is False
+
+
+def test_eclinic_monthly_promotion_splits_offers_and_keeps_source_text() -> None:
+    promo_url = "https://e-clinic.by/news/skidki-i-aktsii-mesyatsa/"
+    article = """
+    <html>
+      <h1>Скидки и акции месяца</h1>
+      <span class="date">1 октября 2026</span>
+      <div class="detail_wrap">
+        <div class="introtext">Скидки и акции октября в медицинском центре E-clinic.</div>
+        <div class="content">
+          <p>Специальные предложения этого месяца для всех клиентов:</p>
+          <ul>
+            <li>Лазерная эпиляция -20% отдельные зоны</li>
+            <li>Фотодинамическая терапия Heleo4 -20% на первую процедуру</li>
+            <li>Комплексный уход THESERA -40%</li>
+          </ul>
+        </div>
+      </div>
+      <div class="order-block">Запись онлайн</div>
+    </html>
+    """
+    pages = {
+        "https://e-clinic.by/news/": _archive(promo_url),
+        "https://e-clinic.by/news/?PAGEN_1=2": "",
+        promo_url: article,
+    }
+    scraper = EClinicScraper(
+        client=FakeClient(pages),
+        config=SimpleNamespace(source_config={}, selectors={}),
+    )
+
+    with patch.object(scraper, "polite_sleep"):
+        promotions = scraper._extract_promotions("test-clinic")
+
+    assert len(promotions) == 3
+    assert [promotion.title for promotion in promotions] == [
+        "Лазерная эпиляция — скидка 20%",
+        "Фотодинамическая терапия Heleo4 — скидка 20%",
+        "Комплексный уход THESERA — скидка 40%",
+    ]
+    assert promotions[0].external_id == "skidki-i-aktsii-mesyatsa-offer-debb44711ff2"
+    assert all(promotion.valid_until == "2026-10-31" for promotion in promotions)
+    assert promotions[0].description == "Лазерная эпиляция -20% отдельные зоны"
+    assert promotions[1].description == "Фотодинамическая терапия Heleo4 -20% на первую процедуру"
+    assert promotions[2].description == "Комплексный уход THESERA -40%"
+    assert len({promotion.external_id for promotion in promotions}) == len(promotions)
+
+
+def test_eclinic_keeps_up_to_discount_in_offer_title() -> None:
+    scraper = EClinicScraper(
+        client=FakeClient({}),
+        config=SimpleNamespace(source_config={}, selectors={}),
+    )
+
+    title, description = scraper._split_offer(
+        "Премиальный уход THESERA — скидка до -40% на комплекс"
+    )
+
+    assert title == "Премиальный уход THESERA — скидка до 40%"
+    assert description == "Премиальный уход THESERA — скидка до -40% на комплекс"
 
 
 class FakeClient:

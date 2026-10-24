@@ -83,6 +83,7 @@ class PromotionRecord:
     published_at: str | None = None
     source_url: str | None = None
     captured_at: str = field(default_factory=utc_now_iso)
+    description: str | None = None
 
 
 @dataclass(slots=True)
@@ -108,6 +109,8 @@ class ScrapeReport:
     review_summaries_found: int = 0
     started_at: str = field(default_factory=utc_now_iso)
     finished_at: str | None = None
+    # Only an explicitly complete listing may deactivate promotions missing from a batch.
+    promotions_complete: bool = False
 
 
 @dataclass(slots=True)

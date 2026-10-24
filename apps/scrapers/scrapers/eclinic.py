@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import calendar
 from datetime import date
+import hashlib
 import re
 
 from apps.scrapers.models import ClinicRecord, PromotionRecord
@@ -98,27 +100,110 @@ class EClinicScraper(BaseScraper):
             soup = self.soup(response.text)
             heading = soup.find("h1")
             title = self.normalize_space(heading.get_text(" ", strip=True) if heading else fallback_title)
-            content = soup.select_one(".detail-text-wrap") or soup.select_one(".detail")
-            content_text = self.normalize_space(content.get_text(" ", strip=True) if content else soup.get_text(" ", strip=True))
+            article = (
+                soup.select_one(".detail_wrap")
+                or soup.select_one(".detail-text-wrap")
+                or soup.select_one(".detail")
+            )
+            content = article.select_one(".content") if article else None
+            content_text = self.normalize_space(
+                content.get_text(" ", strip=True)
+                if content
+                else article.get_text(" ", strip=True)
+                if article
+                else soup.get_text(" ", strip=True)
+            )
             if not any(keyword in content_text.lower() for keyword in PROMO_KEYWORDS):
                 continue
             published_on = self._find_published_on(soup)
+            valid_until = self._infer_month_end_date(published_on, content_text)
             if self._is_stale_news_promotion(published_on):
                 continue
-            if not self.promotion_is_active(title, content_text, None):
-                continue
-            promotions.append(
-                PromotionRecord(
-                    source=self.source_name,
-                    external_id=promo_url.rstrip("/").split("/")[-1],
-                    title=title,
-                    url=promo_url,
-                    clinic_external_id=clinic_external_id,
-                    published_at=published_on,
-                    source_url=response.url,
+
+            offer_items = self._extract_offer_items(content)
+            if not offer_items:
+                if self._is_generic_promotion_title(title):
+                    continue
+                offer_items = [content_text]
+
+            article_id = promo_url.rstrip("/").split("/")[-1]
+            for offer_text in offer_items:
+                offer_title, description = self._split_offer(offer_text)
+                if not self.promotion_is_active(offer_title, offer_text, valid_until):
+                    continue
+
+                offer_id = hashlib.sha256(offer_title.casefold().encode("utf-8")).hexdigest()[:12]
+                promotions.append(
+                    PromotionRecord(
+                        source=self.source_name,
+                        external_id=f"{article_id}-offer-{offer_id}",
+                        title=offer_title,
+                        url=promo_url,
+                        description=description,
+                        clinic_external_id=clinic_external_id,
+                        valid_until=valid_until,
+                        published_at=published_on,
+                        source_url=response.url,
+                    )
                 )
-            )
         return promotions
+
+    def _extract_offer_items(self, content) -> list[str]:
+        if not content:
+            return []
+
+        return [
+            text
+            for item in content.select("li")
+            if (text := self.normalize_space(item.get_text(" ", strip=True)))
+        ]
+
+    def _is_generic_promotion_title(self, title: str) -> bool:
+        normalized = self.normalize_space(title).lower().replace("ё", "е")
+        return normalized in {
+            "акции",
+            "акции месяца",
+            "скидки и акции",
+            "скидки и акции месяца",
+            "специальные предложения",
+            "предложения месяца",
+        }
+
+    def _split_offer(self, offer_text: str) -> tuple[str, str]:
+        normalized = self.normalize_space(offer_text)
+        discount = re.search(
+            r"(?:(?:со\s+)?скидк(?:а|ой)\s+)?(?P<maximum>до\s+)?[-−]?\s*"
+            r"(?P<amount>\d+(?:[.,]\d+)?)\s*%",
+            normalized,
+            re.IGNORECASE,
+        )
+        if discount:
+            service = normalized[: discount.start()].rstrip(" -–—:")
+            amount = discount.group("amount").replace(",", ".")
+            maximum = "до " if discount.group("maximum") else ""
+            title = (
+                f"{service} — скидка {maximum}{amount}%"
+                if service
+                else f"Скидка {maximum}{amount}%"
+            )
+            return title, normalized
+
+        return normalized, normalized
+
+    def _infer_month_end_date(
+        self,
+        published_on: str | None,
+        content_text: str,
+    ) -> str | None:
+        if "этого месяца" not in content_text.lower():
+            return None
+
+        published_date = self.parse_promotion_date(published_on)
+        if not published_date:
+            return None
+
+        last_day = calendar.monthrange(published_date.year, published_date.month)[1]
+        return date(published_date.year, published_date.month, last_day).isoformat()
 
     def _unique_candidates(self, candidates: list[tuple[str, str]]) -> list[tuple[str, str]]:
         seen: set[str] = set()

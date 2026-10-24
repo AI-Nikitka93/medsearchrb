@@ -2,6 +2,15 @@ name: worker-deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Deploy Worker or only apply database migrations"
+        type: choice
+        options:
+          - deploy
+          - migrations-only
+        default: deploy
+        required: true
   push:
     branches:
       - main
@@ -72,6 +81,7 @@ jobs:
           fi
 
       - name: Validate Cloudflare deploy credentials
+        if: ${{ inputs.mode != 'migrations-only' }}
         shell: bash
         run: |
           failed=0
@@ -127,6 +137,7 @@ jobs:
         run: npm --prefix apps/worker run db:migrate
 
       - name: Sync Worker runtime secrets
+        if: ${{ inputs.mode != 'migrations-only' }}
         shell: bash
         working-directory: apps/worker
         run: |
@@ -159,5 +170,6 @@ jobs:
           put_secret GROQ_API_KEY "$GROQ_API_KEY"
 
       - name: Deploy Worker
+        if: ${{ inputs.mode != 'migrations-only' }}
         working-directory: apps/worker
         run: npx wrangler deploy
