@@ -135,6 +135,36 @@ test("a generic promotion heading is deferred when it has no offer details", asy
   }
 });
 
+test("a promotion without current date evidence is discarded instead of retrying forever", async () => {
+  const { repository, calls } = makeRepository({
+    getPromotionChannelPayload: async () => ({
+      ...payload,
+      ends_at: null,
+      published_at: null,
+    }),
+  });
+  let requested = false;
+  const restoreFetch = replaceFetch(async () => {
+    requested = true;
+    throw new Error("unexpected network request");
+  });
+
+  try {
+    const service = new PromotionChannelService(repository, 10, {} as PromotionAiService);
+    const result = await service.dispatchPendingWithClient({} as Client, env);
+
+    assert.equal(result.sent, 0);
+    assert.equal(result.skipped, 1);
+    assert.equal(requested, false);
+    const discardedCall = calls.find((call) => call.method === "markDiscarded");
+    assert.ok(discardedCall);
+    assert.match(String(discardedCall.args[2]), /no current published\/expiry date evidence/);
+    assert.equal(calls.some((call) => call.method === "markFailed"), false);
+  } finally {
+    restoreFetch();
+  }
+});
+
 test("offers from one article share one source-page check", async () => {
   const offers = [
     { ...payload, promotion_id: "promotion-1", title: "Offer one" },

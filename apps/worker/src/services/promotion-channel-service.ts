@@ -94,12 +94,10 @@ export class PromotionChannelService {
             publishedAt: payload.published_at,
           })
         ) {
-          await this.repo.markFailed(
+          await this.repo.markDiscarded(
             client,
             event.id,
             "Promotion has no current published/expiry date evidence for channel",
-            event.attempt_count,
-            24 * 60 * 60 * 1000,
           );
           result.skipped += 1;
           continue;
