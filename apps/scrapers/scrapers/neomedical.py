@@ -105,6 +105,7 @@ class NeoMedicalScraper(BaseScraper):
                     url=promo_url,
                     clinic_external_id=clinic_external_id,
                     valid_until=valid_until,
+                    published_at=published_on,
                     source_url=response.url,
                 )
             )

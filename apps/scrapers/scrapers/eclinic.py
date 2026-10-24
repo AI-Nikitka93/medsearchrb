@@ -114,6 +114,7 @@ class EClinicScraper(BaseScraper):
                     title=title,
                     url=promo_url,
                     clinic_external_id=clinic_external_id,
+                    published_at=published_on,
                     source_url=response.url,
                 )
             )
