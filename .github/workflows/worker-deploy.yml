@@ -92,11 +92,17 @@ jobs:
           else
             response="$(curl -sS -w '\n%{http_code}' \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              https://api.cloudflare.com/client/v4/user/tokens/verify || true)"
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" || true)"
             http_code="${response##*$'\n'}"
             body="${response%$'\n'*}"
 
-            if [ "$http_code" != "200" ] || ! grep -q '"success":true' <<< "$body"; then
+            if [ "$http_code" != "200" ] || ! grep -Eq '"success"[[:space:]]*:[[:space:]]*true' <<< "$body"; then
+              response="$(curl -sS -w '\n%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" https://api.cloudflare.com/client/v4/user/tokens/verify || true)"
+              http_code="${response##*$'\n'}"
+              body="${response%$'\n'*}"
+            fi
+
+            if [ "$http_code" != "200" ] || ! grep -Eq '"success"[[:space:]]*:[[:space:]]*true' <<< "$body"; then
               if grep -q '"code":9109' <<< "$body"; then
                 printf '[ERROR] GitHub secret CLOUDFLARE_API_TOKEN is invalid or revoked. Cloudflare returned code 9109. Replace the secret with a scoped API token for this account.\n' >&2
               else
