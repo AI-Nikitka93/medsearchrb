@@ -87,7 +87,7 @@ jobs:
           import urllib.request
 
           request = urllib.request.Request(
-              "https://medsearchrb-api.aiomdurman.workers.dev/internal/notifications/promotions/flush",
+              "https://medsearchrb-api.aiartnikitka93.workers.dev/internal/notifications/promotions/flush",
               method="POST",
               headers={
                   "Authorization": f"Bearer {os.environ['INGEST_SHARED_SECRET']}",
@@ -109,7 +109,7 @@ jobs:
           import urllib.request
 
           request = urllib.request.Request(
-              "https://medsearchrb-api.aiomdurman.workers.dev/api/v1/promotions?page=1&per_page=1",
+              "https://medsearchrb-api.aiartnikitka93.workers.dev/api/v1/promotions?page=1&per_page=1",
               headers={"User-Agent": "MedsearchRB-GitHubActions/1.0"},
           )
 
