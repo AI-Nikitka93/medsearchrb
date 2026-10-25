@@ -105,6 +105,48 @@ jobs:
               print(json.dumps(payload, ensure_ascii=False))
           PY
 
+      - name: Report recent promotion delivery retries
+        working-directory: apps/worker
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import { createClient } from "@libsql/client";
+
+          const client = createClient({
+            url: process.env.TURSO_DATABASE_URL,
+            authToken: process.env.TURSO_AUTH_TOKEN,
+          });
+          const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+          const result = await client.execute({
+            sql: `
+              SELECT p.source_name, p.title, o.attempt_count, o.last_error, o.next_attempt_at
+              FROM notification_outbox o
+              JOIN promotions p ON p.id = o.entity_id
+              WHERE o.event_type = 'promotion.updated'
+                AND o.entity_type = 'promotion'
+                AND o.status = 'failed'
+                AND o.created_at >= ?
+              ORDER BY o.created_at DESC
+              LIMIT 20
+            `,
+            args: [since],
+          });
+          const failures = result.rows.map((row) => ({
+            source: row.source_name,
+            title: row.title,
+            attempts: Number(row.attempt_count ?? 0),
+            nextAttemptAt: row.next_attempt_at,
+            reason: String(row.last_error ?? "").replace(
+              /https:\/\/api\.telegram\.org\/bot[^/\s]+|bot\d+:[A-Za-z0-9_-]+/giu,
+              "[redacted]",
+            ).slice(0, 300),
+          }));
+          console.log(JSON.stringify({ recentFailedDeliveries: failures }, null, 2));
+          await client.close();
+          JS
+
       - name: Verify live promo total
         run: |
           python - <<'PY'

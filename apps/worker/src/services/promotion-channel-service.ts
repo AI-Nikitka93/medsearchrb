@@ -21,6 +21,7 @@ export type PromotionDispatchResult = {
   edited: number;
   failed: number;
   skipped: number;
+  failureDetails: Array<{ title: string; reason: string }>;
 };
 
 export type PostedPromotionAuditResult = {
@@ -145,6 +146,7 @@ export class PromotionChannelService {
       edited: 0,
       failed: 0,
       skipped: 0,
+      failureDetails: [],
     };
     const sourcePagesByUrl = new Map<string, Promise<PromotionSourcePage>>();
 
@@ -243,14 +245,16 @@ export class PromotionChannelService {
         }
 
         if (recheck.status === "inconclusive") {
+          const reason = recheck.reason ?? "Promotion source could not be verified";
           await this.repo.markFailed(
             client,
             event.id,
-            recheck.reason ?? "Promotion source could not be verified",
+            reason,
             event.attempt_count,
             6 * 60 * 60 * 1000,
           );
           result.failed += 1;
+          result.failureDetails.push({ title: payload.title, reason });
           continue;
         }
 
@@ -290,13 +294,15 @@ export class PromotionChannelService {
         );
         result.sent += 1;
       } catch (error) {
+        const reason = this.sanitizeDispatchError(error);
         await this.repo.markFailed(
           client,
           event.id,
-          error instanceof Error ? error.message : "Unknown promotion dispatch error",
+          reason,
           event.attempt_count,
         );
         result.failed += 1;
+        result.failureDetails.push({ title: "Promotion dispatch", reason });
       }
     }
 
@@ -509,5 +515,13 @@ export class PromotionChannelService {
       status: response.status,
       text: response.ok ? (await response.text()).slice(0, 200_000) : "",
     };
+  }
+
+  private sanitizeDispatchError(error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown promotion dispatch error";
+    return message
+      .replace(/https:\/\/api\.telegram\.org\/bot[^/\s]+/giu, "https://api.telegram.org/bot[redacted]")
+      .replace(/bot\d+:[A-Za-z0-9_-]+/gu, "bot[redacted]")
+      .slice(0, 300);
   }
 }
