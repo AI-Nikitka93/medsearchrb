@@ -35,6 +35,12 @@ type PromotionSourceCheck = {
   reason?: string;
 };
 
+type PromotionSourcePage = {
+  ok: boolean;
+  status: number;
+  text: string;
+};
+
 function isGenericPromotionTitle(title: string) {
   const normalized = title
     .toLocaleLowerCase("ru")
@@ -45,6 +51,73 @@ function isGenericPromotionTitle(title: string) {
   return /^(?:(?:скидки?\s+и\s+)?акции|скидки|(?:специальные\s+)?предложения)(?:\s+месяца)?$/.test(
     normalized,
   );
+}
+
+function normalizeOfferEvidence(value: string) {
+  return value
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/giu, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/giu, " ")
+    .replace(/<[^>]+>/gu, " ")
+    .replace(/&nbsp;|&#160;|&#xA0;/giu, " ")
+    .replace(/&amp;/giu, " ")
+    .replace(/&quot;|&apos;|&#39;/giu, " ")
+    .replace(/&(?:ndash|mdash);/giu, "-")
+    .replace(/&#(x[\da-f]+|\d+);/giu, (_match, code: string) => {
+      const value = code.toLowerCase().startsWith("x")
+        ? Number.parseInt(code.slice(1), 16)
+        : Number.parseInt(code, 10);
+      return Number.isFinite(value) && value >= 0 && value <= 0x10ffff && !(value >= 0xd800 && value <= 0xdfff)
+        ? String.fromCodePoint(value)
+        : " ";
+    })
+    .toLocaleLowerCase("ru-BY")
+    .replace(/ё/gu, "е")
+    .replace(/[–—−]/gu, "-")
+    .replace(/[^\p{L}\p{N}%]+/gu, " ")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
+function hasOfferEvidenceOnPage(pageHtml: string, title: string, description: string) {
+  const page = normalizeOfferEvidence(pageHtml);
+  const titleTokens = normalizeOfferEvidence(title)
+    .split(" ")
+    .filter((token) => token.length >= 4 || /\d/u.test(token));
+  const numericTitleTokens = titleTokens.filter((token) => /\d/u.test(token));
+  const descriptionTokens = normalizeOfferEvidence(description).split(" ");
+  const detailTokens = descriptionTokens.filter(
+    (token) =>
+      token.length >= 6 &&
+      !["скидка", "скидки", "акция", "акции", "действует", "предложение", "условия"].includes(token),
+  );
+  const numericTokens = descriptionTokens.filter((token) => /\d/u.test(token));
+  const requiredTitleMatches = Math.min(3, titleTokens.length);
+  const matchedTitleTokens = titleTokens.filter((token) => page.includes(token)).length;
+  const requiredDetailMatches = Math.min(3, detailTokens.length);
+  const matchedDetailTokens = detailTokens.filter((token) => page.includes(token)).length;
+
+  return (
+    titleTokens.length >= 2 &&
+    matchedTitleTokens >= requiredTitleMatches &&
+    numericTitleTokens.every((token) => page.includes(token)) &&
+    requiredDetailMatches > 0 &&
+    matchedDetailTokens >= requiredDetailMatches &&
+    numericTokens.every((token) => page.includes(token))
+  );
+}
+
+function isSameOfficialHost(sourceUrl: string, clinicSiteUrl: string | null) {
+  if (!clinicSiteUrl) {
+    return false;
+  }
+
+  try {
+    const sourceHost = new URL(sourceUrl).hostname.toLocaleLowerCase("en-US").replace(/^www\./u, "");
+    const clinicHost = new URL(clinicSiteUrl).hostname.toLocaleLowerCase("en-US").replace(/^www\./u, "");
+    return sourceHost === clinicHost;
+  } catch {
+    return false;
+  }
 }
 
 export class PromotionChannelService {
@@ -73,7 +146,7 @@ export class PromotionChannelService {
       failed: 0,
       skipped: 0,
     };
-    const sourceChecksByUrl = new Map<string, Promise<PromotionSourceCheck>>();
+    const sourcePagesByUrl = new Map<string, Promise<PromotionSourcePage>>();
 
     for (const event of events) {
       try {
@@ -88,31 +161,32 @@ export class PromotionChannelService {
           continue;
         }
 
-        if (
-          !promotionHasCurrentDateEvidence({
-            endsAt: payload.ends_at,
-            publishedAt: payload.published_at,
-          })
-        ) {
+        const hasCurrentDateEvidence = promotionHasCurrentDateEvidence({
+          endsAt: payload.ends_at,
+          publishedAt: payload.published_at,
+        });
+        const description = payload.description_short?.trim() ?? "";
+
+        if (isGenericPromotionTitle(payload.title)) {
           await this.repo.markDiscarded(
             client,
             event.id,
-            "Promotion has no current published/expiry date evidence for channel",
+            "Generic promotion title does not identify a concrete offer",
           );
           result.skipped += 1;
           continue;
         }
 
         if (
-          isGenericPromotionTitle(payload.title) &&
-          !payload.description_short?.trim()
+          description.length < 40 ||
+          (!hasCurrentDateEvidence && description.length < 80)
         ) {
-          await this.repo.markFailed(
+          await this.repo.markDiscarded(
             client,
             event.id,
-            "Generic promotion title has no offer details; waiting for a richer source record",
-            event.attempt_count,
-            24 * 60 * 60 * 1000,
+            hasCurrentDateEvidence
+              ? "Promotion has no detailed offer conditions for the channel"
+              : "Undated promotion has no detailed offer conditions for the channel",
           );
           result.skipped += 1;
           continue;
@@ -123,19 +197,22 @@ export class PromotionChannelService {
           payload.promotion_id,
         );
 
-        let sourceCheck = sourceChecksByUrl.get(payload.source_url);
-        if (!sourceCheck) {
-          sourceCheck = this.recheckPromotionSource(
-            payload.source_url,
-            payload.title,
-            payload.ends_at,
-            env,
-            payload.clinic_name,
-            payload.source_name,
-          );
-          sourceChecksByUrl.set(payload.source_url, sourceCheck);
+        let sourcePage = sourcePagesByUrl.get(payload.source_url);
+        if (!sourcePage) {
+          sourcePage = this.fetchPromotionSource(payload.source_url);
+          sourcePagesByUrl.set(payload.source_url, sourcePage);
         }
-        const recheck = await sourceCheck;
+        const recheck = await this.recheckPromotionSource(
+          payload.source_url,
+          payload.title,
+          payload.ends_at,
+          description,
+          payload.clinic_site_url,
+          env,
+          payload.clinic_name,
+          payload.source_name,
+          sourcePage,
+        );
         if (recheck.status === "ended") {
           if (existingPost) {
             await telegram.editPromotionToEnded({
@@ -283,6 +360,8 @@ export class PromotionChannelService {
         post.source_url,
         post.title,
         post.ends_at,
+        post.description_short ?? "",
+        post.clinic_site_url,
         env,
         post.clinic_name,
         post.source_name,
@@ -345,9 +424,12 @@ export class PromotionChannelService {
     sourceUrl: string,
     title: string,
     endsAt: string | null,
+    description: string,
+    clinicSiteUrl: string | null,
     env: WorkerBindings,
     clinicName: string,
     sourceName: string,
+    sourcePagePromise?: Promise<PromotionSourcePage>,
   ): Promise<PromotionSourceCheck> {
     if (!promotionIsActive({ title, endsAt })) {
       return {
@@ -356,25 +438,36 @@ export class PromotionChannelService {
       };
     }
 
-    const response = await fetch(sourceUrl, {
-      redirect: "follow",
-      headers: {
-        "User-Agent": "MedsearchRB-Worker/1.0",
-      },
-    });
-
-    if (!response.ok) {
+    const sourcePage = await (sourcePagePromise ?? this.fetchPromotionSource(sourceUrl));
+    if (!sourcePage.ok) {
       return {
         status: "inconclusive",
-        reason: `Promotion source returned HTTP ${response.status}; this does not confirm that it ended`,
+        reason: `Promotion source returned HTTP ${sourcePage.status}; this does not confirm that it ended`,
       };
     }
 
-    const pageText = (await response.text()).slice(0, 200_000);
+    const pageText = sourcePage.text;
     if (promotionHasEndMarker(title, pageText)) {
       return {
         status: "ended",
         reason: "Promotion page contains ended marker",
+      };
+    }
+
+    if (!hasOfferEvidenceOnPage(pageText, title, description)) {
+      return {
+        status: "inconclusive",
+        reason: "The source page no longer confirms the offer title and conditions",
+      };
+    }
+
+    if (
+      !promotionHasCurrentDateEvidence({ endsAt, publishedAt: null }) &&
+      !isSameOfficialHost(sourceUrl, clinicSiteUrl)
+    ) {
+      return {
+        status: "inconclusive",
+        reason: "An undated offer must be confirmed on the clinic's official site",
       };
     }
 
@@ -401,5 +494,20 @@ export class PromotionChannelService {
     }
 
     return { status: "active" };
+  }
+
+  private async fetchPromotionSource(sourceUrl: string): Promise<PromotionSourcePage> {
+    const response = await fetch(sourceUrl, {
+      redirect: "follow",
+      headers: {
+        "User-Agent": "MedsearchRB-Worker/1.0",
+      },
+    });
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      text: response.ok ? (await response.text()).slice(0, 200_000) : "",
+    };
   }
 }

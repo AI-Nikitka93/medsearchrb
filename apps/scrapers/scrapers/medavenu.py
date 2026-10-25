@@ -77,11 +77,17 @@ class MedAvenuScraper(BaseScraper):
                 continue
             if promo_response.url.rstrip("/").endswith("/akcii/#content") or promo_response.url.endswith("#content"):
                 continue
-            content = promo_soup.select_one(".content") or promo_soup.select_one(".entry-content") or promo_soup.select_one(".page-content")
+            content = (
+                promo_soup.select_one(".single_block__cont")
+                or promo_soup.select_one(".content")
+                or promo_soup.select_one(".entry-content")
+                or promo_soup.select_one(".page-content")
+            )
             content_text = self.normalize_space(content.get_text(" ", strip=True) if content else promo_soup.get_text(" ", strip=True))
             valid_until = self._find_deadline(content_text)
             if not self.promotion_is_active(title, content_text, valid_until):
                 continue
+            description = self._extract_description(content or promo_soup, content_text)
             promotions.append(
                 PromotionRecord(
                     source=self.source_name,
@@ -91,9 +97,51 @@ class MedAvenuScraper(BaseScraper):
                     clinic_external_id=clinic_external_id,
                     valid_until=valid_until,
                     source_url=promo_response.url,
+                    description=description,
                 )
             )
         return promotions
+
+    def _extract_description(self, content, content_text: str) -> str | None:
+        fragments = [
+            self.normalize_space(node.get_text(" ", strip=True))
+            for node in content.select("p, li")
+        ] if content else []
+        relevant_fragments = [
+            fragment
+            for fragment in fragments
+            if fragment
+            and len(fragment) <= 240
+            and re.search(
+                r"акци|скид|первич|прием|запис|включ|вход|byn|руб|%|подар|процедур|консультац|пальцев|аноскоп|ректоскоп|обследован",
+                fragment,
+                re.IGNORECASE,
+            )
+            and not re.search(r"получить скидку|записаться|подробнее", fragment, re.IGNORECASE)
+        ]
+
+        prices = list(
+            dict.fromkeys(
+                self.normalize_space(match.group(0))
+                for match in re.finditer(
+                    r"\d[\d\s]*(?:[,.]\d{1,2})?\s*(?:BYN|руб(?:лей|ля|ль)?\.?)(?=\s|$)",
+                    content_text,
+                    re.IGNORECASE,
+                )
+            )
+        )
+        parts: list[str] = []
+        if prices:
+            parts.append(f"Цены на странице: {'; '.join(prices[:2])}.")
+        parts.extend(dict.fromkeys(relevant_fragments))
+
+        if not parts:
+            fallback = re.sub(r"\bполучить скидку\b", "", content_text, flags=re.IGNORECASE)
+            fallback = self.normalize_space(fallback)
+            return fallback[:500].rstrip() or None
+
+        description = self.normalize_space(" ".join(parts))
+        return description[:500].rstrip() or None
 
     def _find_deadline(self, text: str) -> str | None:
         match = re.search(r"(\d{2}\.\d{2}\.\d{4})", text)

@@ -380,6 +380,8 @@ export class TelegramBotService {
 
     if (deadline) {
       lines.push(`Действует до: ${escapeHtml(deadline)}`);
+    } else {
+      lines.push("Срок действия на странице клиники не указан.");
     }
 
     lines.push(
@@ -465,6 +467,8 @@ export class TelegramBotService {
         timeZone: "Europe/Minsk",
       }).format(new Date(args.endsAt));
       lines.push(`Действует до: ${escapeHtml(deadline)}`);
+    } else {
+      lines.push("Срок действия на странице клиники не указан.");
     }
 
     lines.push(

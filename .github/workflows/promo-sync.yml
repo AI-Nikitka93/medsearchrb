@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: "Run all configured clinics or only E-clinic"
+        description: "Run all configured clinics or one selected clinic"
         type: choice
         options:
           - all
           - eclinic
+          - medavenu
         default: all
         required: true
   schedule:
@@ -59,6 +60,8 @@ jobs:
         run: |
           if [ "$PROMO_SCOPE" = "eclinic" ]; then
             sources=(eclinic)
+          elif [ "$PROMO_SCOPE" = "medavenu" ]; then
+            sources=(medavenu)
           else
             sources=(alphamed aquaminsk blossomclinic bullfinch centrsna dimeda doctortut eclinic eksana forestmed gurumed idealmed kaskad kravira lighthouse lifecity lode medart medavenu medera medexpert mercimed minskdentist mrtby neomedical nordin ortosmile paracels parodent sante shineest smartmedical supramed verba)
           fi
