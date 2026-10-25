@@ -10,6 +10,7 @@ on:
           - all
           - eclinic
           - medavenu
+          - diagnostics
         default: all
         required: true
   schedule:
@@ -54,6 +55,7 @@ jobs:
           npm --prefix apps/worker ci --no-audit --prefer-offline
 
       - name: Run promo sources to batch file
+        if: ${{ inputs.scope != 'diagnostics' }}
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
           PROMO_SCOPE: ${{ inputs.scope || 'all' }}
@@ -71,6 +73,7 @@ jobs:
             --log-level INFO
 
       - name: Backfill promo batch to Turso
+        if: ${{ inputs.scope != 'diagnostics' }}
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
@@ -81,6 +84,7 @@ jobs:
           --chunk-size 50
 
       - name: Flush promotion posts to Telegram channel
+        if: ${{ inputs.scope != 'diagnostics' }}
         env:
           INGEST_SHARED_SECRET: ${{ secrets.INGEST_SHARED_SECRET }}
         run: |
@@ -106,6 +110,7 @@ jobs:
           PY
 
       - name: Report recent promotion delivery retries
+        if: ${{ inputs.scope == 'diagnostics' || success() }}
         working-directory: apps/worker
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
@@ -121,7 +126,7 @@ jobs:
           const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
           const result = await client.execute({
             sql: `
-              SELECT p.source_name, p.title, o.attempt_count, o.last_error, o.next_attempt_at
+              SELECT p.source_name, p.title, o.created_at, o.attempt_count, o.last_error, o.next_attempt_at
               FROM notification_outbox o
               JOIN promotions p ON p.id = o.entity_id
               WHERE o.event_type = 'promotion.updated'
@@ -136,6 +141,7 @@ jobs:
           const failures = result.rows.map((row) => ({
             source: row.source_name,
             title: row.title,
+            createdAt: row.created_at,
             attempts: Number(row.attempt_count ?? 0),
             nextAttemptAt: row.next_attempt_at,
             reason: String(row.last_error ?? "").replace(
@@ -148,6 +154,7 @@ jobs:
           JS
 
       - name: Verify live promo total
+        if: ${{ inputs.scope != 'diagnostics' }}
         run: |
           python - <<'PY'
           import json
@@ -164,10 +171,12 @@ jobs:
           PY
 
       - name: Skip Mini App publish
+        if: ${{ inputs.scope != 'diagnostics' }}
         run: |
           echo "Mini App publish is intentionally decoupled from promo sync to protect the stable gh-pages release."
 
       - name: Upload promo batch artifact
+        if: ${{ inputs.scope != 'diagnostics' }}
         uses: actions/upload-artifact@v4
         with:
           name: promo-source-batch
