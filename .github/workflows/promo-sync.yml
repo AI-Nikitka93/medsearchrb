@@ -11,6 +11,7 @@ on:
           - eclinic
           - medavenu
           - diagnostics
+          - retry-medavenu
         default: all
         required: true
   schedule:
@@ -55,7 +56,7 @@ jobs:
           npm --prefix apps/worker ci --no-audit --prefer-offline
 
       - name: Run promo sources to batch file
-        if: ${{ inputs.scope != 'diagnostics' }}
+        if: ${{ inputs.scope != 'diagnostics' && inputs.scope != 'retry-medavenu' }}
         env:
           MAX_DOCTORS_PER_SOURCE: "0"
           PROMO_SCOPE: ${{ inputs.scope || 'all' }}
@@ -73,7 +74,7 @@ jobs:
             --log-level INFO
 
       - name: Backfill promo batch to Turso
-        if: ${{ inputs.scope != 'diagnostics' }}
+        if: ${{ inputs.scope != 'diagnostics' && inputs.scope != 'retry-medavenu' }}
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
@@ -82,6 +83,38 @@ jobs:
           npm --prefix apps/worker run catalog:backfill --
           --batch-file "$HOME/.local/share/MedsearchRB/scraper/batches/latest-source-batch.json"
           --chunk-size 50
+
+      - name: Make recent MedAvenue delivery failures eligible for retry
+        if: ${{ inputs.scope == 'retry-medavenu' }}
+        working-directory: apps/worker
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import { createClient } from "@libsql/client";
+
+          const client = createClient({
+            url: process.env.TURSO_DATABASE_URL,
+            authToken: process.env.TURSO_AUTH_TOKEN,
+          });
+          const now = new Date().toISOString();
+          const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+          const result = await client.execute({
+            sql: `
+              UPDATE notification_outbox
+              SET next_attempt_at = ?
+              WHERE event_type = 'promotion.updated'
+                AND entity_type = 'promotion'
+                AND status = 'failed'
+                AND created_at >= ?
+                AND entity_id IN (SELECT id FROM promotions WHERE source_name = 'medavenu')
+            `,
+            args: [now, since],
+          });
+          console.log(JSON.stringify({ eligibleMedAvenueRetries: Number(result.rowsAffected ?? 0) }));
+          await client.close();
+          JS
 
       - name: Flush promotion posts to Telegram channel
         if: ${{ inputs.scope != 'diagnostics' }}
@@ -154,7 +187,7 @@ jobs:
           JS
 
       - name: Verify live promo total
-        if: ${{ inputs.scope != 'diagnostics' }}
+        if: ${{ inputs.scope != 'diagnostics' && inputs.scope != 'retry-medavenu' }}
         run: |
           python - <<'PY'
           import json
@@ -171,12 +204,12 @@ jobs:
           PY
 
       - name: Skip Mini App publish
-        if: ${{ inputs.scope != 'diagnostics' }}
+        if: ${{ inputs.scope != 'diagnostics' && inputs.scope != 'retry-medavenu' }}
         run: |
           echo "Mini App publish is intentionally decoupled from promo sync to protect the stable gh-pages release."
 
       - name: Upload promo batch artifact
-        if: ${{ inputs.scope != 'diagnostics' }}
+        if: ${{ inputs.scope != 'diagnostics' && inputs.scope != 'retry-medavenu' }}
         uses: actions/upload-artifact@v4
         with:
           name: promo-source-batch
