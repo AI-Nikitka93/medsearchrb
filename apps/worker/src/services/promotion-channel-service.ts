@@ -513,7 +513,7 @@ export class PromotionChannelService {
     return {
       ok: response.ok,
       status: response.status,
-      text: response.ok ? (await response.text()).slice(0, 200_000) : "",
+      text: response.ok ? (await response.text()).slice(0, 1_000_000) : "",
     };
   }
 
